@@ -102,9 +102,14 @@ class GameEngine:
                     self.scene_manager.handle_event(event)
 
                 self.scene_manager.update(dt)
+                if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
+                    self.scene_manager.current_scene.effects.update(dt)
 
                 self.screen.fill((0, 0, 0)) # Clear screen
                 self.scene_manager.draw(self.screen)
+                if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
+                    for sprite in self.scene_manager.current_scene.effects:
+                        self.screen.blit(sprite.image, (sprite.rect.x - self.scene_manager.current_scene.camera_x, sprite.rect.y - self.scene_manager.current_scene.camera_y))
 
                 self.input_handler.reset_inputs() # Reset input states for the next frame
 

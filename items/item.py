@@ -7,6 +7,7 @@ class Item:
         self.item_type = item_type  # e.g., "weapon", "armor", "consumable", "quest_item"
         self.level_requirement = level_requirement
         self.price = price
+        self.gem_slots = []  # List to store gem objects
 
     def __str__(self):
         return f"{self.name} ({self.item_type.capitalize()})"
@@ -22,3 +23,21 @@ class Item:
     def get_price(self):
         """Returns the price of this item."""
         return self.price
+
+    def add_gem(self, gem):
+        """Adds a gem to the item's gem slots."""
+        if len(self.gem_slots) < self.get_max_gem_slots():
+            self.gem_slots.append(gem)
+            return True
+        else:
+            print("No available gem slots.")
+            return False
+
+    def remove_gem(self, gem):
+        """Removes a gem from the item's gem slots."""
+        if gem in self.gem_slots:
+            self.gem_slots.remove(gem)
+
+    def get_max_gem_slots(self):
+        """Returns the maximum number of gem slots for this item."""
+        return 0  # Base items have no gem slots by default

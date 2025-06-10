@@ -293,7 +293,37 @@ class BaseGameplayScene(BaseScene):
             hud_drawn = False
 
         if hasattr(self, 'display_death_message') and self.display_death_message:
+            # Load the defeat window image
+            try:
+                defeat_image = pygame.image.load(os.path.join(os.getcwd(), "graphics", "gui", "window_defeat.png")).convert_alpha()
+            except FileNotFoundError:
+                print("Defeat window image not found!")
+                defeat_image = None
+
+            # Get the screen dimensions
+            screen_width = self.game.settings.SCREEN_WIDTH
+            screen_height = self.game.settings.SCREEN_HEIGHT
+
+            # Calculate the center position
+            center_x = screen_width // 2
+            center_y = screen_height // 2
+
+            # If the defeat image is loaded, blit it to the center of the screen
+            if defeat_image:
+                defeat_rect = defeat_image.get_rect(center=(center_x, center_y))
+                screen.blit(defeat_image, defeat_rect)
+
+            # Display "YOU DIED" message
             font = pygame.font.Font(None, 100)
             text_surface = font.render("YOU DIED", True, (255, 0, 0))
-            text_rect = text_surface.get_rect(center=(self.game.settings.SCREEN_WIDTH // 2, self.game.settings.SCREEN_HEIGHT // 2))
+            text_rect = text_surface.get_rect(center=(center_x, center_y))
             screen.blit(text_surface, text_rect)
+
+            # Update the display
+            pygame.display.flip()
+
+            # Wait for a few seconds
+            pygame.time.delay(3000)
+
+            # Send the player to SpawnTown
+            self.game.scene_manager.set_scene("spawn_town")

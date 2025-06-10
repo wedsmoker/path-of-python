@@ -39,7 +39,12 @@ class LootGenerator:
         description = f"A powerful weapon for level {item_level} adventurers."
         weapon_type = random.choice(self.weapon_types)
         damage = random.randint(item_level * 2, item_level * 4)
-        return Weapon(name, description, weapon_type, damage, level_requirement=item_level)
+        weapon = Weapon(name, description, weapon_type, damage, level_requirement=item_level)
+        # Randomly populate gem slots
+        for i in range(len(weapon.gem_slots)):
+            if random.random() < 0.5:  # 50% chance to have a gem
+                weapon.gem_slots[i] = self.generate_gem(item_level)
+        return weapon
 
     def generate_armor(self, item_level):
         """Generates an armor piece based on the item level."""
@@ -55,5 +60,5 @@ class LootGenerator:
         description = f"A gem that enhances your abilities for level {item_level} adventurers."
         gem_type = random.choice(self.gem_types)
         effect = random.choice(self.effects)
-        effect_value = random.randint(item_level, item_level * 3)
-        return Gem(name, description, gem_type, effect, effect_value, level_requirement=item_level)
+        # effect_value = random.randint(item_level, item_level * 3) # Remove effect_value since Gem class doesn't have it
+        return Gem(name, description, effect) # Remove effect_value since Gem class doesn't have it

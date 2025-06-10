@@ -17,6 +17,8 @@ from config.constants import ( # Import necessary constants
 import math # Import math for distance calculation
 from core.swamp_cave_dungeon import SwampCaveDungeon # Import the dungeon scene
 from config import settings # Import settings
+from items.weapon import Weapon # Import the Weapon class
+from items.potion import HealthPotion # Import the HealthPotion class
 
 class SpawnTown(BaseGameplayScene):
     def __init__(self, game):
@@ -151,9 +153,14 @@ class SpawnTown(BaseGameplayScene):
                 print("SpawnTown: Warning: dungeon_portal image path not found in zone_data.json")
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
             print(f"SpawnTown: Warning: Could not load dungeon_portal image from zone_data.json: {e}")
-# Add potions to player's inventory
-        self.player.inventory.add_item("health_potion", 1)
-        self.player.inventory.add_item("mana_potion", 1)
+
+        # Create items
+        weapon = Weapon("Basic Sword", "A simple sword.", "sword", 10)
+        health_potion = HealthPotion("Health Potion", "A potion that heals you.")
+
+        # Add items to player's inventory
+        self.player.inventory.add_item(health_potion, 1)
+        self.player.inventory.add_item(weapon, 1)
 
     def spawn_enemy(self):
         """Spawns a new enemy at a random location within a certain distance of the player."""

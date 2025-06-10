@@ -23,6 +23,11 @@ class Player(pygame.sprite.Sprite):
         self.last_move_time = pygame.time.get_ticks()
         self.move_interval = 50  # milliseconds between sprite updates
 
+        # Footstep attributes
+        self.footstep_sprites = []
+        self.footstep_interval = 100  # milliseconds between footsteps
+        self.last_footstep_time = pygame.time.get_ticks()
+
         # Load player sprites
         self.head1_sprite = get_player_head_sprite(class_name)
         self.hand1_sprite = get_player_hand_sprite(class_name)
@@ -77,18 +82,12 @@ class Player(pygame.sprite.Sprite):
         }
 
         from items.inventory import Inventory
-self.footstep_sprites = []
-        self.footstep_interval = 100  # milliseconds between footsteps
-        self.last_footstep_time = pygame.time.get_ticks()
-self.footstep_sprites = []
-        self.footstep_interval = 100  # milliseconds between footsteps
-        self.last_footstep_time = pygame.time.get_ticks()
         self.inventory = Inventory(self.game, 20) # Initialize inventory with a capacity of 20 slots
 
         # Load skill data from JSON
         self.skills = self.load_skills('data/skill_tree.json')
         self.unlocked_skills = [] # List to store unlocked skill IDs
-        self.skill_key_bindings = {} # Dictionary to store skill key bindings
+        self.skill_key_bindings = {}
 
         # Create skill key bindings
         for skill in self.skills:
@@ -196,7 +195,7 @@ self.footstep_sprites = []
             self.velocity.y = 0
             self.is_moving = False
             self.target = None
-        
+    
     def take_damage(self, damage):
         """Reduces the player's current life by the specified damage amount and triggers a screen pulse."""
         self.current_life -= damage
@@ -218,25 +217,6 @@ self.footstep_sprites = []
         """Activates the Arc skill, chaining electricity to strike multiple enemies."""
         self.arc_skill.activate()
 
-current_time = pygame.time.get_ticks()
-        if self.is_moving and current_time - self.last_footstep_time > self.footstep_interval:
-            self.last_footstep_time = current_time
-            self.create_footstep()
-
-        for sprite in list(self.footstep_sprites):  # Iterate over a copy of the list
-            if current_time - sprite.creation_time > 2000:  # 2 seconds
-                self.footstep_sprites.remove(sprite)
-                self.game.current_scene.effects.remove(sprite)
-
-    def create_footstep(self):
-        # Load a random cloud_magic_trail image
-        footstep_image = pygame.image.load(f"graphics/effect/cloud_magic_trail{random.randint(0, 3)}.png").convert_alpha()
-        footstep_sprite = pygame.sprite.Sprite()
-        footstep_sprite.image = footstep_image
-        footstep_sprite.rect = footstep_sprite.image.get_rect(center=self.rect.center)
-        footstep_sprite.creation_time = pygame.time.get_ticks()  # Store creation time
-        self.footstep_sprites.append(footstep_sprite)
-        self.game.current_scene.effects.add(footstep_sprite)
     def update(self, dt):
         dt = min(dt, 0.1)  # Clamp dt to a maximum of 0.1
         if self.is_moving and self.target:
@@ -273,6 +253,17 @@ current_time = pygame.time.get_ticks()
                     self.is_moving = False
                     self.target = None
 
+        # Footstep logic
+        current_time = pygame.time.get_ticks()
+        if self.is_moving and current_time - self.last_footstep_time > self.footstep_interval:
+            self.last_footstep_time = current_time
+            self.create_footstep()
+
+        for sprite in list(self.footstep_sprites):  # Iterate over a copy of the list
+            if current_time - sprite.creation_time > 2000:  # 2 seconds
+                self.footstep_sprites.remove(sprite)
+                self.game.current_scene.effects.remove(sprite)
+
         # Screen pulse effect
         if self.is_taking_damage:
             current_time = pygame.time.get_ticks()
@@ -283,6 +274,16 @@ current_time = pygame.time.get_ticks()
         # keys = pygame.key.get_pressed()
         # if keys[pygame.K_PAGEDOWN]:
         #     self.activate_arc()
+
+    def create_footstep(self):
+        # Load a random cloud_magic_trail image
+        footstep_image = pygame.image.load(f"graphics/effect/cloud_magic_trail{random.randint(0, 3)}.png").convert_alpha()
+        footstep_sprite = pygame.sprite.Sprite()
+        footstep_sprite.image = footstep_image
+        footstep_sprite.rect = footstep_sprite.image.get_rect(center=self.rect.center)
+        footstep_sprite.creation_time = pygame.time.get_ticks()  # Store creation time
+        self.footstep_sprites.append(footstep_sprite)
+        self.game.current_scene.effects.add(footstep_sprite)
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x - self.game.current_scene.camera_x, self.rect.y - self.game.current_scene.camera_y))
