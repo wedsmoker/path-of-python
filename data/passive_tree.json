@@ -1,0 +1,345 @@
+{
+  "nodes": [
+    {
+      "id": "start_node_001",
+      "name": "Survivor's Resolve",
+      "description": "Grants a small amount of Life and Energy Shield.",
+      "type": "start",
+      "effects": {"life": 10, "energy_shield": 5},
+      "connections": ["minor_life_001", "minor_es_001", "minor_strength_001", "minor_dexterity_001", "minor_intelligence_001"]
+    },
+    {
+      "id": "minor_life_001",
+      "name": "Unyielding Spirit",
+      "description": "Increases maximum Life.",
+      "type": "minor",
+      "effects": {"life": 15},
+      "connections": ["minor_life_002", "minor_armor_001"]
+    },
+    {
+      "id": "minor_life_002",
+      "name": "Hardened Constitution",
+      "description": "Increases maximum Life.",
+      "type": "minor",
+      "effects": {"life": 15},
+      "connections": ["major_life_001"]
+    },
+    {
+      "id": "minor_armor_001",
+      "name": "Plated Skin",
+      "description": "Increases Armor.",
+      "type": "minor",
+      "effects": {"armor": 10},
+      "connections": ["minor_armor_002"]
+    },
+    {
+      "id": "minor_armor_002",
+      "name": "Reinforced Plating",
+      "description": "Increases Armor.",
+      "type": "minor",
+      "effects": {"armor": 10},
+      "connections": ["major_armor_001"]
+    },
+    {
+      "id": "major_life_001",
+      "name": "Iron Will",
+      "description": "Grants a significant amount of Life and Physical Damage Reduction.",
+      "type": "major",
+      "effects": {"life": 30, "physical_damage_reduction": 3},
+      "connections": []
+    },
+    {
+      "id": "major_armor_001",
+      "name": "Bastion of Steel",
+      "description": "Grants a significant amount of Armor and increased Block Chance.",
+      "type": "major",
+      "effects": {"armor": 25, "block_chance": 5},
+      "connections": []
+    },
+
+    {
+      "id": "minor_es_001",
+      "name": "Aetherial Weave",
+      "description": "Increases maximum Energy Shield.",
+      "type": "minor",
+      "effects": {"energy_shield": 10},
+      "connections": ["minor_es_002", "minor_es_recharge_001"]
+    },
+    {
+      "id": "minor_es_002",
+      "name": "Focused Barrier",
+      "description": "Increases maximum Energy Shield.",
+      "type": "minor",
+      "effects": {"energy_shield": 10},
+      "connections": ["major_es_001"]
+    },
+    {
+      "id": "minor_es_recharge_001",
+      "name": "Rapid Recharge",
+      "description": "Increases Energy Shield Recharge Rate.",
+      "type": "minor",
+      "effects": {"energy_shield_recharge_rate": 5},
+      "connections": ["minor_es_recharge_002"]
+    },
+    {
+      "id": "minor_es_recharge_002",
+      "name": "Swift Recovery",
+      "description": "Increases Energy Shield Recharge Rate.",
+      "type": "minor",
+      "effects": {"energy_shield_recharge_rate": 5},
+      "connections": ["major_es_recharge_001"]
+    },
+    {
+      "id": "major_es_001",
+      "name": "Void Barrier",
+      "description": "Grants a significant amount of Energy Shield and Energy Shield Recharge Rate.",
+      "type": "major",
+      "effects": {"energy_shield": 25, "energy_shield_recharge_rate": 10},
+      "connections": []
+    },
+    {
+      "id": "major_es_recharge_001",
+      "name": "Overcharged",
+      "description": "Energy Shield starts recharging faster.",
+      "type": "major",
+      "effects": {"energy_shield_recharge_delay_reduction": 0.2},
+      "connections": []
+    },
+
+    {
+      "id": "minor_strength_001",
+      "name": "Brawn",
+      "description": "Increases Strength.",
+      "type": "minor",
+      "effects": {"strength": 10},
+      "connections": ["minor_strength_002", "minor_melee_damage_001"]
+    },
+    {
+      "id": "minor_strength_002",
+      "name": "Might",
+      "description": "Increases Strength.",
+      "type": "minor",
+      "effects": {"strength": 10},
+      "connections": ["major_strength_001"]
+    },
+    {
+      "id": "minor_melee_damage_001",
+      "name": "Savage Strikes",
+      "description": "Increases Melee Physical Damage.",
+      "type": "minor",
+      "effects": {"melee_physical_damage_percent": 5},
+      "connections": ["minor_melee_damage_002"]
+    },
+    {
+      "id": "minor_melee_damage_002",
+      "name": "Brutal Blows",
+      "description": "Increases Melee Physical Damage.",
+      "type": "minor",
+      "effects": {"melee_physical_damage_percent": 5},
+      "connections": ["major_melee_damage_001"]
+    },
+    {
+      "id": "major_strength_001",
+      "name": "Goliath's Stance",
+      "description": "Grants a significant amount of Strength and increased Stun Threshold.",
+      "type": "major",
+      "effects": {"strength": 20, "stun_threshold_reduction": 15},
+      "connections": []
+    },
+    {
+      "id": "major_melee_damage_001",
+      "name": "Carnage",
+      "description": "Grants a significant amount of Melee Physical Damage and Melee Attack Speed.",
+      "type": "major",
+      "effects": {"melee_physical_damage_percent": 15, "melee_attack_speed": 8},
+      "connections": []
+    },
+
+    {
+      "id": "minor_dexterity_001",
+      "name": "Agility",
+      "description": "Increases Dexterity.",
+      "type": "minor",
+      "effects": {"dexterity": 10},
+      "connections": ["minor_dexterity_002", "minor_projectile_damage_001"]
+    },
+    {
+      "id": "minor_dexterity_002",
+      "name": "Precision",
+      "description": "Increases Dexterity.",
+      "type": "minor",
+      "effects": {"dexterity": 10},
+      "connections": ["major_dexterity_001"]
+    },
+    {
+      "id": "minor_projectile_damage_001",
+      "name": "Sharpshooter",
+      "description": "Increases Projectile Damage.",
+      "type": "minor",
+      "effects": {"projectile_damage_percent": 5},
+      "connections": ["minor_projectile_damage_002"]
+    },
+    {
+      "id": "minor_projectile_damage_002",
+      "name": "Piercing Shots",
+      "description": "Increases Projectile Damage.",
+      "type": "minor",
+      "effects": {"projectile_damage_percent": 5},
+      "connections": ["major_projectile_damage_001"]
+    },
+    {
+      "id": "major_dexterity_001",
+      "name": "Fleet-Footed",
+      "description": "Grants a significant amount of Dexterity and increased Movement Speed.",
+      "type": "major",
+      "effects": {"dexterity": 20, "movement_speed": 5},
+      "connections": []
+    },
+    {
+      "id": "major_projectile_damage_001",
+      "name": "Ballistic Mastery",
+      "description": "Grants a significant amount of Projectile Damage and Projectile Speed.",
+      "type": "major",
+      "effects": {"projectile_damage_percent": 15, "projectile_speed": 10},
+      "connections": []
+    },
+
+    {
+      "id": "minor_intelligence_001",
+      "name": "Intellect",
+      "description": "Increases Intelligence.",
+      "type": "minor",
+      "effects": {"intelligence": 10},
+      "connections": ["minor_intelligence_002", "minor_spell_damage_001"]
+    },
+    {
+      "id": "minor_intelligence_002",
+      "name": "Wisdom",
+      "description": "Increases Intelligence.",
+      "type": "minor",
+      "effects": {"intelligence": 10},
+      "connections": ["major_intelligence_001"]
+    },
+    {
+      "id": "minor_spell_damage_001",
+      "name": "Arcane Acuity",
+      "description": "Increases Spell Damage.",
+      "type": "minor",
+      "effects": {"spell_damage_percent": 5},
+      "connections": ["minor_spell_damage_002"]
+    },
+    {
+      "id": "minor_spell_damage_002",
+      "name": "Potent Spells",
+      "description": "Increases Spell Damage.",
+      "type": "minor",
+      "effects": {"spell_damage_percent": 5},
+      "connections": ["major_spell_damage_001"]
+    },
+    {
+      "id": "major_intelligence_001",
+      "name": "Mind Over Matter",
+      "description": "Grants a significant amount of Intelligence and a portion of damage is taken from Mana before Life.",
+      "type": "major",
+      "effects": {"intelligence": 20, "damage_taken_from_mana_before_life": 0.3},
+      "connections": []
+    },
+    {
+      "id": "major_spell_damage_001",
+      "name": "Mystic Resonance",
+      "description": "Grants a significant amount of Spell Damage and Cast Speed.",
+      "type": "major",
+      "effects": {"spell_damage_percent": 15, "cast_speed": 8},
+      "connections": []
+    },
+
+    {
+      "id": "keystone_elemental_overload",
+      "name": "Elemental Overload",
+      "description": "Your elemental damage can no longer deal Critical Strikes. Instead, if you've dealt a Critical Strike recently, gain 40% more Elemental Damage.",
+      "type": "keystone",
+      "effects": {"no_elemental_crit": true, "more_elemental_damage_on_crit_recently": 0.4},
+      "connections": ["major_spell_damage_001", "major_projectile_damage_001"]
+    },
+    {
+      "id": "keystone_iron_reflexes",
+      "name": "Iron Reflexes",
+      "description": "Converts all Evasion Rating to Armor. Dexterity provides no inherent Evasion Rating bonus.",
+      "type": "keystone",
+      "effects": {"convert_evasion_to_armor": true, "dex_no_evasion": true},
+      "connections": ["major_armor_001", "major_dexterity_001"]
+    },
+    {
+      "id": "keystone_chaos_inoculation",
+      "name": "Chaos Inoculation",
+      "description": "Maximum Life becomes 1. Grants immunity to Chaos Damage.",
+      "type": "keystone",
+      "effects": {"max_life_becomes_1": true, "chaos_immunity": true},
+      "connections": ["major_es_001", "major_es_recharge_001"]
+    },
+    {
+      "id": "notable_elemental_penetration",
+      "name": "Elemental Penetration",
+      "description": "Your elemental damage penetrates 10% of enemy Elemental Resistances.",
+      "type": "notable",
+      "effects": {"elemental_penetration": 10},
+      "connections": ["minor_spell_damage_002", "minor_projectile_damage_002"]
+    },
+    {
+      "id": "notable_crit_mastery",
+      "name": "Critical Strike Mastery",
+      "description": "Increases Global Critical Strike Chance and Critical Strike Multiplier.",
+      "type": "notable",
+      "effects": {"global_crit_chance": 5, "global_crit_multiplier": 15},
+      "connections": ["minor_melee_damage_002", "minor_spell_damage_002"]
+    },
+    {
+      "id": "notable_ailment_mastery",
+      "name": "Ailment Mastery",
+      "description": "Increases Ailment Effect and Ailment Duration.",
+      "type": "notable",
+      "effects": {"ailment_effect": 10, "ailment_duration": 10},
+      "connections": ["minor_intelligence_002", "minor_dexterity_002"]
+    },
+    {
+      "id": "notable_mana_flow",
+      "name": "Mana Flow",
+      "description": "Increases maximum Mana and Mana Regeneration Rate.",
+      "type": "notable",
+      "effects": {"mana": 20, "mana_regen_percent": 15},
+      "connections": ["minor_intelligence_002"]
+    },
+    {
+      "id": "notable_life_leech",
+      "name": "Life Leech",
+      "description": "Attacks and Spells have 0.5% of Damage Leeched as Life.",
+      "type": "notable",
+      "effects": {"life_leech_percent": 0.005},
+      "connections": ["minor_strength_002"]
+    },
+    {
+      "id": "notable_minion_commander",
+      "name": "Minion Commander",
+      "description": "Increases Minion Damage and Minion Life.",
+      "type": "notable",
+      "effects": {"minion_damage_percent": 15, "minion_life_percent": 15},
+      "connections": ["minor_intelligence_002"]
+    },
+    {
+      "id": "notable_aura_effect",
+      "name": "Aura Effect",
+      "description": "Increases the effect of your Auras.",
+      "type": "notable",
+      "effects": {"aura_effect_percent": 10},
+      "connections": ["minor_intelligence_002"]
+    },
+    {
+      "id": "notable_charge_generation",
+      "name": "Charge Generation",
+      "description": "Increases maximum Frenzy, Endurance, and Power Charges. Grants a chance to gain a charge on kill.",
+      "type": "notable",
+      "effects": {"max_frenzy_charges": 1, "max_endurance_charges": 1, "max_power_charges": 1, "chance_to_gain_charge_on_kill": 0.1},
+      "connections": ["minor_strength_002", "minor_dexterity_002", "minor_intelligence_002"]
+    }
+  ]
+}

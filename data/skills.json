@@ -1,0 +1,203 @@
+{
+  "active_skills": [
+    {
+      "id": "fireball",
+      "name": "Fireball",
+      "description": "Launches a fiery projectile that explodes on impact.",
+      "type": "spell",
+      "tags": ["fire", "projectile", "aoe"],
+      "mana_cost": 8,
+      "base_damage": {"min": 10, "max": 15, "type": "fire"},
+      "cooldown": 0,
+      "cast_time": 0.5
+    },
+    {
+      "id": "cleave",
+      "name": "Cleave",
+      "description": "A wide, sweeping attack that damages enemies in an arc.",
+      "type": "attack",
+      "tags": ["melee", "aoe", "physical"],
+      "mana_cost": 7,
+      "base_damage": {"min": 12, "max": 18, "type": "physical"},
+      "cooldown": 0,
+      "attack_speed_multiplier": 1.0
+    },
+    {
+      "id": "lightning_bolt",
+      "name": "Lightning Bolt",
+      "description": "Fires a bolt of lightning that chains to nearby enemies.",
+      "type": "spell",
+      "tags": ["lightning", "projectile", "chain"],
+      "mana_cost": 10,
+      "base_damage": {"min": 8, "max": 20, "type": "lightning"},
+      "cooldown": 0,
+      "cast_time": 0.6,
+      "chain_count": 2
+    },
+    {
+      "id": "ice_nova",
+      "name": "Ice Nova",
+      "description": "Unleashes a ring of ice that chills and damages enemies.",
+      "type": "spell",
+      "tags": ["cold", "aoe", "chill"],
+      "mana_cost": 12,
+      "base_damage": {"min": 15, "max": 25, "type": "cold"},
+      "cooldown": 2.0,
+      "cast_time": 0.7,
+      "chill_duration": 3.0
+    },
+    {
+      "id": "puncture",
+      "name": "Puncture",
+      "description": "Stabs an enemy, causing them to bleed over time.",
+      "type": "attack",
+      "tags": ["melee", "physical", "dot", "bleed"],
+      "mana_cost": 6,
+      "base_damage": {"min": 10, "max": 15, "type": "physical"},
+      "cooldown": 0,
+      "attack_speed_multiplier": 1.0,
+      "bleed_duration": 5.0,
+      "bleed_damage_multiplier": 0.5
+    },
+    {
+      "id": "flame_dash",
+      "name": "Flame Dash",
+      "description": "Dashes a short distance, leaving a trail of fire.",
+      "type": "spell",
+      "tags": ["fire", "movement", "utility"],
+      "mana_cost": 15,
+      "cooldown": 3.0,
+      "cast_time": 0.2,
+      "distance": 200
+    },
+    {
+      "id": "summon_skeleton",
+      "name": "Summon Skeleton",
+      "description": "Summons a temporary skeleton minion to fight for you.",
+      "type": "spell",
+      "tags": ["minion", "summon"],
+      "mana_cost": 20,
+      "cooldown": 5.0,
+      "cast_time": 1.0,
+      "minion_duration": 10.0,
+      "minion_count": 1
+    },
+    {
+      "id": "molten_shell",
+      "name": "Molten Shell",
+      "description": "Creates a fiery shield that absorbs damage and explodes when broken.",
+      "type": "spell",
+      "tags": ["fire", "guard", "utility"],
+      "mana_cost": 18,
+      "cooldown": 4.0,
+      "cast_time": 0.5,
+      "damage_absorption": 0.7,
+      "max_damage_absorbed": 100
+    },
+    {
+      "id": "frenzy",
+      "name": "Frenzy",
+      "description": "A quick attack that grants a Frenzy Charge on hit.",
+      "type": "attack",
+      "tags": ["melee", "attack", "charge"],
+      "mana_cost": 5,
+      "base_damage": {"min": 8, "max": 12, "type": "physical"},
+      "cooldown": 0,
+      "attack_speed_multiplier": 1.1
+    },
+    {
+      "id": "arc",
+      "name": "Arc",
+      "description": "A bolt of lightning that repeatedly chains to enemies.",
+      "type": "spell",
+      "tags": ["lightning", "chain", "aoe"],
+      "mana_cost": 15,
+      "base_damage": {"min": 10, "max": 25, "type": "lightning"},
+      "cooldown": 0,
+      "cast_time": 0.7,
+      "chain_count": 4
+    }
+  ],
+  "support_gems": [
+    {
+      "id": "lesser_multiple_projectiles",
+      "name": "Lesser Multiple Projectiles Support",
+      "description": "Supports projectile skills, causing them to fire additional projectiles.",
+      "tags": ["projectile"],
+      "mana_multiplier": 1.2,
+      "effect": {"add_projectiles": 2}
+    },
+    {
+      "id": "melee_physical_damage",
+      "name": "Melee Physical Damage Support",
+      "description": "Supports melee attack skills, granting them more physical damage.",
+      "tags": ["attack", "melee", "physical"],
+      "mana_multiplier": 1.3,
+      "effect": {"more_physical_damage": 0.3}
+    },
+    {
+      "id": "elemental_focus",
+      "name": "Elemental Focus Support",
+      "description": "Supports elemental skills, preventing them from applying elemental ailments but granting more elemental damage.",
+      "tags": ["elemental", "spell", "attack"],
+      "mana_multiplier": 1.4,
+      "effect": {"more_elemental_damage": 0.2, "prevent_ailments": ["ignite", "chill", "shock", "freeze"]}
+    },
+    {
+      "id": "faster_casting",
+      "name": "Faster Casting Support",
+      "description": "Supports spell skills, causing them to cast faster.",
+      "tags": ["spell"],
+      "mana_multiplier": 1.1,
+      "effect": {"cast_speed": 0.2}
+    },
+    {
+      "id": "added_cold_damage",
+      "name": "Added Cold Damage Support",
+      "description": "Supports attack and spell skills, adding cold damage.",
+      "tags": ["cold", "attack", "spell"],
+      "mana_multiplier": 1.2,
+      "effect": {"add_cold_damage": {"min": 5, "max": 10}}
+    },
+    {
+      "id": "increased_area_of_effect",
+      "name": "Increased Area of Effect Support",
+      "description": "Supports skills with an area of effect, increasing their radius.",
+      "tags": ["aoe"],
+      "mana_multiplier": 1.15,
+      "effect": {"area_of_effect_radius": 0.2}
+    },
+    {
+      "id": "minion_damage",
+      "name": "Minion Damage Support",
+      "description": "Supports minion skills, granting minions more damage.",
+      "tags": ["minion"],
+      "mana_multiplier": 1.3,
+      "effect": {"minion_damage": 0.3}
+    },
+    {
+      "id": "chance_to_bleed",
+      "name": "Chance to Bleed Support",
+      "description": "Supports attack skills, granting a chance to cause bleeding.",
+      "tags": ["attack", "bleed"],
+      "mana_multiplier": 1.1,
+      "effect": {"chance_to_bleed": 0.25}
+    },
+    {
+      "id": "ancestral_call",
+      "name": "Ancestral Call Support",
+      "description": "Supports attack skills, causing them to strike additional nearby enemies.",
+      "tags": ["attack", "aoe"],
+      "mana_multiplier": 1.25,
+      "effect": {"strike_additional_targets": 2}
+    },
+    {
+      "id": "controlled_blaze",
+      "name": "Controlled Blaze Support",
+      "description": "Supports fire skills, granting more fire damage but reducing ignite chance.",
+      "tags": ["fire", "spell", "attack"],
+      "mana_multiplier": 1.35,
+      "effect": {"more_fire_damage": 0.25, "ignite_chance_reduction": 0.5}
+    }
+  ]
+}

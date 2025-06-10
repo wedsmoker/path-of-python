@@ -1,0 +1,47 @@
+{
+  "zones": {
+    "spawn_town": {
+      "name": "Spawn Town",
+      "description": "The starting town for new adventurers.",
+      "tile_set": "default_tileset",
+      "initial_player_position": [550, 400]
+    },
+    "swamp_cave_dungeon": {
+      "name": "Swamp Cave Dungeon",
+      "description": "A dark and murky cave system.",
+      "tile_set": "swamp_cave_tileset",
+      "initial_player_position": [50, 50]
+    }
+  },
+  "tile_sets": {
+    "default_tileset": {
+      "grass": "graphics/dc-dngn/floor/grass0.png",
+      "sand": "graphics/dc-dngn/floor/sandstone_floor0.png",
+      "water": "graphics/dc-dngn/water/dngn_deep_water.png",
+      "forest": "graphics/dc-dngn/floor/dirt0.png",
+      "building": "graphics/dc-dngn/floor/marble_floor1.png",
+      "street": "graphics/dc-dngn/floor/cobble_blood1.png",
+      "rubble": "graphics/dc-dngn/floor/rough_red0.png",
+      "path": "graphics/dc-dngn/floor/floor_sand_stone0.png",
+      "cobblestone": "graphics/dc-dngn/floor/cobble_blood4.png",
+      "mountain": "graphics/dc-dngn/wall/stone_wall0.png",
+      "market": "graphics/dc-dngn/floor/marble_floor4.png",
+      "house": "graphics/dc-dngn/floor/marble_floor2.png",
+      "shop": "graphics/dc-dngn/floor/marble_floor3.png",
+      "garden": "graphics/dc-dngn/floor/grass_flowers_blue1.png",
+      "well": "graphics/dc-dngn/floor/floor_vines0.png"
+    },
+    "swamp_cave_tileset": {
+      "floor_swamp": "graphics/dc-dngn/floor/swamp0.png",
+      "floor_bog": "graphics/dc-dngn/floor/bog_green0.png",
+      "wall_stone_dark": "graphics/dc-dngn/wall/stone_dark0.png",
+      "wall_vines": "graphics/dc-dngn/wall/wall_vines0.png",
+      "water_murky": "graphics/dc-dngn/water/dngn_shallow_water_murky.png"
+    }
+  },
+  "assets": {
+    "portals": {
+      "dungeon_portal": "graphics/UNUSED/features/dngn_exit.png"
+    }
+  }
+}

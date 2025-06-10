@@ -1,0 +1,126 @@
+{
+  "armor": [
+    { "id": "helmet_c_001", "name": "Scavenger's Hood", "type": "helmet", "base_defense": 10, "implicit": {"energy_shield": 5}, "rarity": "common", "affixes": [] },
+    { "id": "helmet_c_002", "name": "Wasteland Helm", "type": "helmet", "base_defense": 12, "implicit": {"armor": 8}, "rarity": "common", "affixes": [] },
+    { "id": "helmet_c_003", "name": "Tech-Scrap Visor", "type": "helmet", "base_defense": 8, "implicit": {"evasion": 10}, "rarity": "common", "affixes": [] },
+    { "id": "helmet_c_004", "name": "Reinforced Cap", "type": "helmet", "base_defense": 15, "implicit": {"armor": 10}, "rarity": "common", "affixes": [] },
+    { "id": "helmet_c_005", "name": "Makeshift Helmet", "type": "helmet", "base_defense": 9, "implicit": {"evasion": 12}, "rarity": "common", "affixes": [] },
+    { "id": "helmet_c_006", "name": "Crude Headguard", "type": "helmet", "base_defense": 13, "implicit": {"armor": 9}, "rarity": "common", "affixes": [] },
+    { "id": "helmet_c_007", "name": "Survivor's Hood", "type": "helmet", "base_defense": 10, "implicit": {"energy_shield": 6}, "rarity": "common", "affixes": [] },
+    { "id": "helmet_c_008", "name": "Dust-Worn Visor", "type": "helmet", "base_defense": 7, "implicit": {"evasion": 8}, "rarity": "common", "affixes": [] },
+    { "id": "helmet_c_009", "name": "Rusty Bucket Helm", "type": "helmet", "base_defense": 11, "implicit": {"armor": 7}, "rarity": "common", "affixes": [] },
+    { "id": "helmet_c_010", "name": "Tattered Hood", "type": "helmet", "base_defense": 6, "implicit": {"energy_shield": 4}, "rarity": "common", "affixes": [] },
+
+    { "id": "helmet_cl_001", "name": "Bio-Hazard Mask", "type": "helmet", "base_defense": 18, "implicit": {"energy_shield": 10}, "rarity": "cool", "affixes": [{"type": "life", "value": 20}] },
+    { "id": "helmet_cl_002", "name": "Sentinel's Visor", "type": "helmet", "base_defense": 20, "implicit": {"armor": 15}, "rarity": "cool", "affixes": [{"type": "res_fire", "value": 10}] },
+    { "id": "helmet_cl_003", "name": "Ghostweave Hood", "type": "helmet", "base_defense": 16, "implicit": {"evasion": 18}, "rarity": "cool", "affixes": [{"type": "movement_speed", "value": 5}] },
+    { "id": "helmet_cl_004", "name": "Mechanist's Helm", "type": "helmet", "base_defense": 22, "implicit": {"armor": 17}, "rarity": "cool", "affixes": [{"type": "mana", "value": 15}] },
+    { "id": "helmet_cl_005", "name": "Psionic Circlet", "type": "helmet", "base_defense": 17, "implicit": {"energy_shield": 13}, "rarity": "cool", "affixes": [{"type": "res_cold", "value": 10}] },
+
+    { "id": "helmet_e_001", "name": "Apex Predator's Visage", "type": "helmet", "base_defense": 25, "implicit": {"armor": 20, "evasion": 15}, "rarity": "epic", "affixes": [{"type": "life", "value": 40}, {"type": "res_all", "value": 15}] },
+    { "id": "helmet_e_002", "name": "Void-Forged Helm", "type": "helmet", "base_defense": 23, "implicit": {"energy_shield": 20}, "rarity": "epic", "affixes": [{"type": "mana", "value": 30}, {"type": "spell_damage", "value": 10}] },
+    { "id": "helmet_e_003", "name": "Chrono-Shift Hood", "type": "helmet", "base_defense": 20, "implicit": {"evasion": 25}, "rarity": "epic", "affixes": [{"type": "attack_speed", "value": 8}, {"type": "movement_speed", "value": 10}] },
+
+    { "id": "helmet_u_001", "name": "Crown of the AI Overlord", "type": "helmet", "base_defense": 30, "implicit": {"armor": 25, "energy_shield": 25, "evasion": 25}, "rarity": "unreal", "affixes": [{"type": "life", "value": 60}, {"type": "mana", "value": 50}, {"type": "res_all", "value": 25}, {"type": "global_damage", "value": 15}] },
+
+    { "id": "body_c_001", "name": "Ragged Tunic", "type": "body_armour", "base_defense": 20, "implicit": {"evasion": 15}, "rarity": "common", "affixes": [] },
+    { "id": "body_c_002", "name": "Plated Vest", "type": "body_armour", "base_defense": 25, "implicit": {"armor": 18}, "rarity": "common", "affixes": [] },
+    { "id": "body_c_003", "name": "Energy Weave Robe", "type": "body_armour", "base_defense": 18, "implicit": {"energy_shield": 12}, "rarity": "common", "affixes": [] },
+    { "id": "body_c_004", "name": "Reinforced Jacket", "type": "body_armour", "base_defense": 30, "implicit": {"armor": 20}, "rarity": "common", "affixes": [] },
+    { "id": "body_c_005", "name": "Stealth Suit", "type": "body_armour", "base_defense": 22, "implicit": {"evasion": 20}, "rarity": "common", "affixes": [] },
+    { "id": "body_c_006", "name": "Acolyte's Robe", "type": "body_armour", "base_defense": 19, "implicit": {"energy_shield": 15}, "rarity": "common", "affixes": [] },
+    { "id": "body_c_007", "name": "Heavy Duty Vest", "type": "body_armour", "base_defense": 28, "implicit": {"armor": 22}, "rarity": "common", "affixes": [] },
+    { "id": "body_c_008", "name": "Nomad's Coat", "type": "body_armour", "base_defense": 21, "implicit": {"evasion": 18}, "rarity": "common", "affixes": [] },
+    { "id": "body_c_009", "name": "Scrap Metal Chestguard", "type": "body_armour", "base_defense": 26, "implicit": {"armor": 19}, "rarity": "common", "affixes": [] },
+    { "id": "body_c_010", "name": "Makeshift Cloak", "type": "body_armour", "base_defense": 17, "implicit": {"evasion": 16}, "rarity": "common", "affixes": [] },
+
+    { "id": "body_cl_001", "name": "Warden's Cuirass", "type": "body_armour", "base_defense": 40, "implicit": {"armor": 30}, "rarity": "cool", "affixes": [{"type": "life", "value": 30}, {"type": "res_lightning", "value": 12}] },
+    { "id": "body_cl_002", "name": "Cybernetic Weave", "type": "body_armour", "base_defense": 35, "implicit": {"energy_shield": 25}, "rarity": "cool", "affixes": [{"type": "mana", "value": 25}, {"type": "spell_crit_chance", "value": 3}] },
+    { "id": "body_cl_003", "name": "Shadow Stalker's Garb", "type": "body_armour", "base_defense": 30, "implicit": {"evasion": 30}, "rarity": "cool", "affixes": [{"type": "movement_speed", "value": 8}, {"type": "attack_speed", "value": 5}] },
+    { "id": "body_cl_004", "name": "Exoskeleton Plate", "type": "body_armour", "base_defense": 45, "implicit": {"armor": 35}, "rarity": "cool", "affixes": [{"type": "strength", "value": 10}, {"type": "res_chaos", "value": 8}] },
+    { "id": "body_cl_005", "name": "Aether-Infused Robe", "type": "body_armour", "base_defense": 32, "implicit": {"energy_shield": 28}, "rarity": "cool", "affixes": [{"type": "intelligence", "value": 10}, {"type": "energy_shield_recharge_rate", "value": 10}] },
+
+    { "id": "body_e_001", "name": "Oblivion's Embrace", "type": "body_armour", "base_defense": 55, "implicit": {"armor": 40, "energy_shield": 30}, "rarity": "epic", "affixes": [{"type": "life", "value": 60}, {"type": "res_all", "value": 20}, {"type": "physical_damage_reduction", "value": 5}] },
+    { "id": "body_e_002", "name": "Quantum Shroud", "type": "body_armour", "base_defense": 50, "implicit": {"evasion": 45, "energy_shield": 25}, "rarity": "epic", "affixes": [{"type": "mana", "value": 40}, {"type": "global_crit_chance", "value": 5}, {"type": "projectile_speed", "value": 15}] },
+
+    { "id": "body_u_001", "name": "Shell of the Singularity", "type": "body_armour", "base_defense": 70, "implicit": {"armor": 50, "energy_shield": 40, "evasion": 30}, "rarity": "unreal", "affixes": [{"type": "life", "value": 80}, {"type": "mana", "value": 60}, {"type": "res_all", "value": 30}, {"type": "damage_conversion_physical_to_chaos", "value": 10}] },
+
+    { "id": "gloves_c_001", "name": "Worn Gloves", "type": "gloves", "base_defense": 5, "implicit": {"armor": 3}, "rarity": "common", "affixes": [] },
+    { "id": "gloves_c_002", "name": "Tactical Gauntlets", "type": "gloves", "base_defense": 7, "implicit": {"evasion": 4}, "rarity": "common", "affixes": [] },
+    { "id": "gloves_c_003", "name": "Conduit Wraps", "type": "gloves", "base_defense": 4, "implicit": {"energy_shield": 3}, "rarity": "common", "affixes": [] },
+    { "id": "gloves_c_004", "name": "Reinforced Gloves", "type": "gloves", "base_defense": 8, "implicit": {"armor": 5}, "rarity": "common", "affixes": [] },
+    { "id": "gloves_c_005", "name": "Quickdraw Gloves", "type": "gloves", "base_defense": 6, "implicit": {"evasion": 5}, "rarity": "common", "affixes": [] },
+    { "id": "gloves_c_006", "name": "Arcane Handwraps", "type": "gloves", "base_defense": 5, "implicit": {"energy_shield": 4}, "rarity": "common", "affixes": [] },
+    { "id": "gloves_c_007", "name": "Brawler's Mitts", "type": "gloves", "base_defense": 9, "implicit": {"armor": 6}, "rarity": "common", "affixes": [] },
+    { "id": "gloves_c_008", "name": "Scout's Grips", "type": "gloves", "base_defense": 7, "implicit": {"evasion": 6}, "rarity": "common", "affixes": [] },
+    { "id": "gloves_c_009", "name": "Makeshift Gauntlets", "type": "gloves", "base_defense": 6, "implicit": {"armor": 4}, "rarity": "common", "affixes": [] },
+    { "id": "gloves_c_010", "name": "Ragged Wraps", "type": "gloves", "base_defense": 3, "implicit": {"evasion": 3}, "rarity": "common", "affixes": [] },
+
+    { "id": "gloves_cl_001", "name": "Assault Gauntlets", "type": "gloves", "base_defense": 12, "implicit": {"armor": 8}, "rarity": "cool", "affixes": [{"type": "attack_speed", "value": 5}] },
+    { "id": "gloves_cl_002", "name": "Nimble Grips", "type": "gloves", "base_defense": 10, "implicit": {"evasion": 10}, "rarity": "cool", "affixes": [{"type": "dexterity", "value": 8}] },
+    { "id": "gloves_cl_003", "name": "Warlock's Cuffs", "type": "gloves", "base_defense": 9, "implicit": {"energy_shield": 8}, "rarity": "cool", "affixes": [{"type": "spell_damage", "value": 5}] },
+    { "id": "gloves_cl_004", "name": "Heavy Duty Gauntlets", "type": "gloves", "base_defense": 14, "implicit": {"armor": 10}, "rarity": "cool", "affixes": [{"type": "strength", "value": 8}] },
+    { "id": "gloves_cl_005", "name": "Shadow Dancer's Gloves", "type": "gloves", "base_defense": 11, "implicit": {"evasion": 12}, "rarity": "cool", "affixes": [{"type": "movement_speed", "value": 3}] },
+
+    { "id": "gloves_e_001", "name": "Fists of the Machine", "type": "gloves", "base_defense": 18, "implicit": {"armor": 15, "energy_shield": 10}, "rarity": "epic", "affixes": [{"type": "life", "value": 25}, {"type": "attack_damage", "value": 10}] },
+    { "id": "gloves_e_002", "name": "Gloves of the Arcane Conduit", "type": "gloves", "base_defense": 16, "implicit": {"energy_shield": 15, "evasion": 10}, "rarity": "epic", "affixes": [{"type": "mana", "value": 20}, {"type": "cast_speed", "value": 8}] },
+
+    { "id": "gloves_u_001", "name": "Grasps of Annihilation", "type": "gloves", "base_defense": 25, "implicit": {"armor": 20, "energy_shield": 20, "evasion": 20}, "rarity": "unreal", "affixes": [{"type": "global_damage", "value": 10}, {"type": "crit_multiplier", "value": 20}] },
+
+    { "id": "boots_c_001", "name": "Tattered Boots", "type": "boots", "base_defense": 6, "implicit": {"evasion": 5}, "rarity": "common", "affixes": [] },
+    { "id": "boots_c_002", "name": "Steel-Toed Boots", "type": "boots", "base_defense": 8, "implicit": {"armor": 6}, "rarity": "common", "affixes": [] },
+    { "id": "boots_c_003", "name": "Energy Soles", "type": "boots", "base_defense": 5, "implicit": {"energy_shield": 4}, "rarity": "common", "affixes": [] },
+    { "id": "boots_c_004", "name": "Reinforced Boots", "type": "boots", "base_defense": 9, "implicit": {"armor": 7}, "rarity": "common", "affixes": [] },
+    { "id": "boots_c_005", "name": "Lightweight Striders", "type": "boots", "base_defense": 7, "implicit": {"evasion": 6}, "rarity": "common", "affixes": [] },
+    { "id": "boots_c_006", "name": "Warp Boots", "type": "boots", "base_defense": 6, "implicit": {"energy_shield": 5}, "rarity": "common", "affixes": [] },
+    { "id": "boots_c_007", "name": "Guardian's Greaves", "type": "boots", "base_defense": 10, "implicit": {"armor": 8}, "rarity": "common", "affixes": [] },
+    { "id": "boots_c_008", "name": "Nimble Footwear", "type": "boots", "base_defense": 8, "implicit": {"evasion": 7}, "rarity": "common", "affixes": [] },
+    { "id": "boots_c_009", "name": "Makeshift Footwraps", "type": "boots", "base_defense": 5, "implicit": {"evasion": 4}, "rarity": "common", "affixes": [] },
+    { "id": "boots_c_010", "name": "Scrap Metal Boots", "type": "boots", "base_defense": 7, "implicit": {"armor": 5}, "rarity": "common", "affixes": [] },
+
+    { "id": "boots_cl_001", "name": "Assault Boots", "type": "boots", "base_defense": 15, "implicit": {"armor": 10}, "rarity": "cool", "affixes": [{"type": "movement_speed", "value": 8}] },
+    { "id": "boots_cl_002", "name": "Swift Striders", "type": "boots", "base_defense": 13, "implicit": {"evasion": 12}, "rarity": "cool", "affixes": [{"type": "dexterity", "value": 10}] },
+    { "id": "boots_cl_003", "name": "Aetherwalk Boots", "type": "boots", "base_defense": 12, "implicit": {"energy_shield": 10}, "rarity": "cool", "affixes": [{"type": "mana_regen", "value": 1}] },
+    { "id": "boots_cl_004", "name": "Juggernaut's Stompers", "type": "boots", "base_defense": 18, "implicit": {"armor": 15}, "rarity": "cool", "affixes": [{"type": "strength", "value": 10}] },
+    { "id": "boots_cl_005", "name": "Ghost Step Boots", "type": "boots", "base_defense": 14, "implicit": {"evasion": 15}, "rarity": "cool", "affixes": [{"type": "movement_speed", "value": 10}] },
+
+    { "id": "boots_e_001", "name": "Boots of the Chrononaut", "type": "boots", "base_defense": 22, "implicit": {"evasion": 20, "energy_shield": 15}, "rarity": "epic", "affixes": [{"type": "movement_speed", "value": 15}, {"type": "cooldown_recovery", "value": 5}] },
+    { "id": "boots_e_002", "name": "Terra-Forged Greaves", "type": "boots", "base_defense": 25, "implicit": {"armor": 20, "life": 20}, "rarity": "epic", "affixes": [{"type": "res_all", "value": 10}, {"type": "stun_recovery", "value": 10}] },
+
+    { "id": "boots_u_001", "name": "Footfalls of the Apocalypse", "type": "boots", "base_defense": 30, "implicit": {"armor": 25, "energy_shield": 25, "evasion": 25}, "rarity": "unreal", "affixes": [{"type": "movement_speed", "value": 20}, {"type": "phasing_on_kill", "value": 1}] },
+
+    { "id": "shield_c_001", "name": "Makeshift Shield", "type": "shield", "base_defense": 15, "implicit": {"block_chance": 5}, "rarity": "common", "affixes": [] },
+    { "id": "shield_c_002", "name": "Reinforced Buckler", "type": "shield", "base_defense": 18, "implicit": {"block_chance": 7}, "rarity": "common", "affixes": [] },
+    { "id": "shield_c_003", "name": "Energy Barrier", "type": "shield", "base_defense": 12, "implicit": {"energy_shield": 10}, "rarity": "common", "affixes": [] },
+    { "id": "shield_c_004", "name": "Tower Shield", "type": "shield", "base_defense": 22, "implicit": {"block_chance": 10}, "rarity": "common", "affixes": [] },
+    { "id": "shield_c_005", "name": "Deflector Plate", "type": "shield", "base_defense": 16, "implicit": {"evasion": 8}, "rarity": "common", "affixes": [] },
+    { "id": "shield_c_006", "name": "Aegis of the Fallen", "type": "shield", "base_defense": 20, "implicit": {"energy_shield": 15}, "rarity": "common", "affixes": [] },
+    { "id": "shield_c_007", "name": "Spiked Shield", "type": "shield", "base_defense": 17, "implicit": {"block_chance": 8}, "rarity": "common", "affixes": [] },
+    { "id": "shield_c_008", "name": "Reflective Shield", "type": "shield", "base_defense": 14, "implicit": {"energy_shield": 12}, "rarity": "common", "affixes": [] },
+    { "id": "shield_c_009", "name": "Scrap Shield", "type": "shield", "base_defense": 13, "implicit": {"block_chance": 4}, "rarity": "common", "affixes": [] },
+    { "id": "shield_c_010", "name": "Makeshift Kite Shield", "type": "shield", "base_defense": 19, "implicit": {"armor": 10}, "rarity": "common", "affixes": [] },
+
+    { "id": "shield_cl_001", "name": "Guardian's Bulwark", "type": "shield", "base_defense": 25, "implicit": {"block_chance": 12}, "rarity": "cool", "affixes": [{"type": "life", "value": 20}, {"type": "res_physical", "value": 5}] },
+    { "id": "shield_cl_002", "name": "Aetheric Ward", "type": "shield", "base_defense": 20, "implicit": {"energy_shield": 18}, "rarity": "cool", "affixes": [{"type": "mana", "value": 15}, {"type": "spell_block_chance", "value": 5}] },
+    { "id": "shield_cl_003", "name": "Vanguard's Aegis", "type": "shield", "base_defense": 28, "implicit": {"block_chance": 15}, "rarity": "cool", "affixes": [{"type": "armor", "value": 15}, {"type": "res_cold", "value": 10}] },
+    { "id": "shield_cl_004", "name": "Chrono-Deflector", "type": "shield", "base_defense": 23, "implicit": {"energy_shield": 20}, "rarity": "cool", "affixes": [{"type": "energy_shield_recharge_rate", "value": 15}, {"type": "intelligence", "value": 8}] },
+    { "id": "shield_cl_005", "name": "Shadow Veil Shield", "type": "shield", "base_defense": 21, "implicit": {"evasion": 15}, "rarity": "cool", "affixes": [{"type": "movement_speed", "value": 3}, {"type": "res_chaos", "value": 5}] },
+
+    { "id": "shield_e_001", "name": "Bulwark of the Ancients", "type": "shield", "base_defense": 35, "implicit": {"block_chance": 20, "armor": 20}, "rarity": "epic", "affixes": [{"type": "life", "value": 40}, {"type": "res_all", "value": 15}, {"type": "physical_damage_reduction", "value": 8}] },
+    { "id": "shield_e_002", "name": "Prismatic Barrier", "type": "shield", "base_defense": 30, "implicit": {"energy_shield": 25, "evasion": 15}, "rarity": "epic", "affixes": [{"type": "mana", "value": 30}, {"type": "spell_damage", "value": 10}, {"type": "res_all", "value": 10}] },
+
+    { "id": "shield_u_001", "name": "Bastion of Humanity", "type": "shield", "base_defense": 45, "implicit": {"block_chance": 25, "armor": 30, "energy_shield": 30}, "rarity": "unreal", "affixes": [{"type": "life", "value": 70}, {"type": "res_all", "value": 25}, {"type": "damage_reflect", "value": 10}] }
+  ],
+  "weapons": [
+    { "id": "weapon_c_001", "name": "Rusty Pipe", "type": "one_hand_mace", "base_damage": "5-10", "implicit": {}, "rarity": "common", "affixes": [] },
+    { "id": "weapon_c_002", "name": "Makeshift Blade", "type": "one_hand_sword", "base_damage": "6-12", "implicit": {}, "rarity": "common", "affixes": [] },
+    { "id": "weapon_c_003", "name": "Scrap Bow", "type": "bow", "base_damage": "4-15", "implicit": {}, "rarity": "common", "affixes": [] },
+    { "id": "weapon_c_004", "name": "Crude Wand", "type": "wand", "base_damage": "3-8", "implicit": {"spell_damage": 5}, "rarity": "common", "affixes": [] }
+  ],
+  "gems": [
+    { "id": "gem_active_001", "name": "Fireball", "type": "active", "tags": ["spell", "fire", "projectile"], "mana_cost": 8, "base_damage": "10-15", "rarity": "common" },
+    { "id": "gem_active_002", "name": "Cleave", "type": "active", "tags": ["attack", "melee", "aoe"], "mana_cost": 7, "base_damage": "12-18", "rarity": "common" },
+    { "id": "gem_support_001", "name": "Lesser Multiple Projectiles", "type": "support", "tags": ["projectile"], "mana_multiplier": 1.2, "effect": {"add_projectiles": 2}, "rarity": "common" },
+    { "id": "gem_support_002", "name": "Melee Physical Damage", "type": "support", "tags": ["attack", "melee"], "mana_multiplier": 1.3, "effect": {"add_physical_damage_to_attacks": "5-10"}, "rarity": "common" }
+  ]
+}

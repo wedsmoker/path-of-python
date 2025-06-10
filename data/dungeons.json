@@ -1,0 +1,63 @@
+{
+  "dungeons": {
+    "swamp_cave": {
+      "name": "Swampy Depths",
+      "map_settings": {
+        "width": 100,
+        "height": 100,
+        "theme": "swamp_cave"
+      },
+      "allowed_enemies": [
+        "leech",
+        "giant_lizard",
+        "grey_snake",
+        "yellow_snake"
+      ],
+      "enemy_details": {
+        "leech": {
+          "name": "Giant Leech",
+          "sprite_path": "graphics/UNUSED/monsters/giant_leech.png",
+          "health": 30,
+          "damage": 5,
+          "speed": 50
+        },
+        "giant_lizard": {
+          "name": "Giant Lizard",
+          "sprite_path": "graphics/UNUSED/monsters/giant_lizard.png",
+          "health": 40,
+          "damage": 8,
+          "speed": 60
+        },
+        "grey_snake": {
+          "name": "Grey Snake",
+          "sprite_path": "graphics/UNUSED/monsters/grey_snake.png",
+          "health": 25,
+          "damage": 7,
+          "speed": 70,
+          "abilities": ["poison"]
+        },
+        "yellow_snake": {
+          "name": "Yellow Snake",
+          "sprite_path": "graphics/UNUSED/monsters/yellow_snake.png",
+          "health": 20,
+          "damage": 10,
+          "speed": 80,
+          "abilities": ["poison"]
+        }
+      },
+      "dialogue": [
+        {
+          "id": "swamp_cave_entrance",
+          "text": "You feel a damp, heavy air as you enter the Swampy Depths. The ground is slick and the shadows seem to writhe."
+        }
+      ],
+      "portals": [
+        {
+          "type": "exit",
+          "target_scene": "SpawnTown",
+          "location": [50, 50]
+        }
+      ]
+    }
+  }
+}

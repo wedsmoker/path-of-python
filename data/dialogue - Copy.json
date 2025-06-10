@@ -1,0 +1,345 @@
+{
+  "dialogues": {
+    "old_scavenger_intro": {
+      "start_node": "node_1",
+      "nodes": {
+        "node_1": {
+          "text": "Well, well, look what the cat dragged in. Another lost soul?",
+          "options": [
+            {"text": "Who are you?", "next_node": "node_2"},
+            {"text": "Where am I?", "next_node": "node_3"},
+            {"text": "I'm not lost.", "next_node": "node_4"}
+          ]
+        },
+        "node_2": {
+          "text": "Just an old scavenger, trying to make a living in these ruins. Name's Silas. And you?",
+          "options": [
+            {"text": "I'm [Player Name].", "next_node": "node_5"},
+            {"text": "That's none of your business.", "next_node": "node_6"}
+          ]
+        },
+        "node_3": {
+          "text": "You're in what's left of SpawnTown. Not much left, is there? The AI took everything.",
+          "options": [
+            {"text": "The AI?", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"},
+            {"text": "What happened here?", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"}
+          ]
+        },
+        "node_4": {
+          "text": "Hmph. Suit yourself. You'll be lost soon enough if you don't know what you're doing out here.",
+          "options": [
+            {"text": "Tell me what I need to know.", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"},
+            {"text": "Goodbye.", "next_node": "end_dialogue"}
+          ]
+        },
+        "node_5": {
+          "text": "A pleasure, [Player Name]. Though 'pleasure' is a strong word these days. What brings you to this desolate place?",
+          "options": [
+            {"text": "I woke up here.", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"},
+            {"text": "I'm looking for answers.", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"}
+          ]
+        },
+        "node_6": {
+          "text": "Feisty, aren't we? Fine. Don't tell me. But don't come crying when you run into trouble.",
+          "options": [
+            {"text": "I won't.", "next_node": "end_dialogue"}
+          ]
+        },
+        "node_7": {
+          "text": "The AI... it was supposed to be our salvation. Instead, it became our doom. The 'Golden Age' ended in the 'Great Silence'.",
+          "options": [
+            {"text": "Is there a resistance?", "next_node": "node_8"},
+            {"text": "What can I do?", "next_node": "node_9"}
+          ]
+        },
+        "node_8": {
+          "text": "Whispers. Always whispers. But no one's seen them in years. Most gave up hope. But if you're looking for answers, try the old data archives. They might hold something.",
+          "options": [
+            {"text": "Where are the archives?", "next_node": "node_10"},
+            {"text": "Thank you.", "next_node": "end_dialogue"}
+          ]
+        },
+        "node_9": {
+          "text": "Survive. That's all any of us can do. And maybe, just maybe, find a way to fight back. The old data archives might have clues.",
+          "options": [
+            {"text": "Where are the archives?", "next_node": "node_10"},
+            {"text": "Thank you.", "next_node": "end_dialogue"}
+          ]
+        },
+        "node_10": {
+          "text": "They're deep within the ruins, heavily guarded. Not a place for the faint of heart. But if you're determined, follow the old street signs. They'll lead you there.",
+          "options": [
+            {"text": "I'll find them.", "next_node": "end_dialogue"},
+            {"text": "Goodbye.", "next_node": "end_dialogue"}
+          ]
+        },
+        "end_dialogue": {
+          "text": "Farewell, traveler. May your path be clear.",
+          "options": []
+        }
+      }
+    },
+    "bob_dialogue": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "Hello there! I'm Bob. Nice to meet you.",
+          "options": [
+            {"text": "Hi Bob!", "next_node": "ask_about_town"},
+            {"text": "Who are you?", "next_node": "introduce_self"},
+            {"text": "Goodbye.", "next_node": "end_dialogue"}
+          ]
+        },
+        "ask_about_town": {
+          "text": "SpawnTown? It's quiet these days. Not much going on since... well, you know.",
+          "options": [
+            {"text": "What happened?", "next_node": "explain_past"},
+            {"text": "Is it safe here?", "next_node": "discuss_safety"},
+            {"text": "Okay, thanks.", "next_node": "end_dialogue"}
+          ]
+        },
+        "introduce_self": {
+          "text": "I'm just a resident. Been here a while. Trying to keep things together.",
+          "options": [
+            {"text": "What do you do?", "next_node": "discuss_job"},
+            {"text": "Must be tough.", "next_node": "acknowledge_toughness"},
+            {"text": "Goodbye.", "next_node": "end_dialogue"}
+          ]
+        },
+        "explain_past": {
+          "text": "The AI... it changed everything. Most people left. Those who stayed... well, we adapt.",
+          "options": [
+            {"text": "Is there any hope?", "next_node": "discuss_hope"},
+            {"text": "That sounds bad.", "next_node": "acknowledge_bad"},
+            {"text": "Goodbye.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_safety": {
+          "text": "Safer than outside, but you still need to be careful. Stick to the main paths.",
+          "options": [
+            {"text": "What are the dangers?", "next_node": "discuss_dangers"},
+            {"text": "Good to know.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_job": {
+          "text": "I scavenge for supplies. Anything useful that the AI didn't take.",
+          "options": [
+            {"text": "Find anything interesting?", "next_node": "discuss_finds"},
+            {"text": "Be careful out there.", "next_node": "end_dialogue"}
+          ]
+        },
+        "acknowledge_toughness": {
+          "text": "It is. But we manage. You learn to appreciate the small things.",
+          "options": [
+            {"text": "Like what?", "next_node": "discuss_small_things"},
+            {"text": "I understand.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_hope": {
+          "text": "Hope is a dangerous thing out here. But some still believe in the old stories.",
+          "options": [
+            {"text": "What old stories?", "next_node": "discuss_stories"},
+            {"text": "I see.", "next_node": "end_dialogue"}
+          ]
+        },
+        "acknowledge_bad": {
+          "text": "It was. But we survived. That's what matters.",
+          "options": [
+            {"text": "How did you survive?", "next_node": "discuss_survival"},
+            {"text": "Right.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_dangers": {
+          "text": "Automated patrols, wild machines... and sometimes, other survivors who aren't friendly.",
+          "options": [
+            {"text": "Other survivors?", "next_node": "discuss_other_survivors"},
+            {"text": "Sounds rough.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_finds": {
+          "text": "Mostly scrap. Sometimes old tech, but it's usually broken. Found a working radio once, but it only played static.",
+          "options": [
+            {"text": "That's too bad.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_small_things": {
+          "text": "A warm meal, a dry place to sleep... simple things you take for granted before.",
+          "options": [
+            {"text": "I can imagine.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_stories": {
+          "text": "Stories of a place untouched by the AI. A sanctuary. Probably just myths.",
+          "options": [
+            {"text": "Maybe not.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_survival": {
+          "text": "Luck, mostly. And knowing when to run.",
+          "options": [
+            {"text": "Good advice.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_other_survivors": {
+          "text": "Yeah. Not everyone out here is looking to help. Some are desperate.",
+          "options": [
+            {"text": "I'll be careful.", "next_node": "end_dialogue"}
+          ]
+        },
+        "end_dialogue": {
+          "text": "See you around!",
+          "options": []
+        }
+      }
+    },
+    "alice_dialogue": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "Greetings. I am Alice. How can I assist you?",
+          "options": [
+            {"text": "Just saying hi.", "next_node": "offer_help"},
+            {"text": "What do you do here?", "next_node": "explain_role"},
+            {"text": "Goodbye.", "next_node": "end_dialogue"}
+          ]
+        },
+        "offer_help": {
+          "text": "Very well. If you require anything, do not hesitate to ask.",
+          "options": [
+            {"text": "What kind of things?", "next_node": "explain_services"},
+            {"text": "Thank you.", "next_node": "end_dialogue"}
+          ]
+        },
+        "explain_role": {
+          "text": "I maintain what little infrastructure remains. Keeping the lights on, the water flowing... simple tasks, but necessary.",
+          "options": [
+            {"text": "That sounds important.", "next_node": "acknowledge_importance"},
+            {"text": "How do you do it?", "next_node": "explain_process"},
+            {"text": "Goodbye.", "next_node": "end_dialogue"}
+          ]
+        },
+        "explain_services": {
+          "text": "Information, minor repairs if I have the parts, guidance on navigating the ruins.",
+          "options": [
+            {"text": "Tell me about the ruins.", "next_node": "discuss_ruins"},
+            {"text": "Good to know.", "next_node": "end_dialogue"}
+          ]
+        },
+        "acknowledge_importance": {
+          "text": "Someone must. Without it, this place would be truly uninhabitable.",
+          "options": [
+            {"text": "You're doing good work.", "next_node": "end_dialogue"}
+          ]
+        },
+        "explain_process": {
+          "text": "Scavenging for parts, mostly. The old systems are resilient, but they require constant attention.",
+          "options": [
+            {"text": "Where do you find parts?", "next_node": "discuss_parts_location"},
+            {"text": "Fascinating.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_ruins": {
+          "text": "Dangerous, but full of resources for those brave enough to venture in. Be prepared.",
+          "options": [
+            {"text": "What kind of dangers?", "next_node": "discuss_ruin_dangers"},
+            {"text": "I understand.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_parts_location": {
+          "text": "The deeper sections of the city. Abandoned factories, data centers... places the AI hasn't completely stripped bare.",
+          "options": [
+            {"text": "Sounds risky.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_ruin_dangers": {
+          "text": "Automated defenses are still active in some areas. And the creatures... mutated by the fallout.",
+          "options": [
+            {"text": "Mutated creatures?", "next_node": "discuss_creatures"},
+            {"text": "I'll be careful.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_creatures": {
+          "text": "Twisted by the old world's mistakes. Avoid them if possible. They are unpredictable.",
+          "options": [
+            {"text": "Noted.", "next_node": "end_dialogue"}
+          ]
+        },
+        "end_dialogue": {
+          "text": "Understood. Farewell.",
+          "options": []
+        }
+      }
+    },
+    "charlie_dialogue": {
+      "start_node": "start",
+      "nodes": {
+        "start": {
+          "text": "Hey! Charlie here. What's up?",
+          "options": [
+            {"text": "Not much, Charlie.", "next_node": "ask_about_vibe"},
+            {"text": "What do you do around here?", "next_node": "explain_hustle"},
+            {"text": "Later.", "next_node": "end_dialogue"}
+          ]
+        },
+        "ask_about_vibe": {
+          "text": "Just chilling, you know? Trying to keep the mood light. This place can be a drag.",
+          "options": [
+            {"text": "It does seem a bit grim.", "next_node": "agree_grim"},
+            {"text": "Someone has to do it.", "next_node": "acknowledge_role"},
+            {"text": "Alright.", "next_node": "end_dialogue"}
+          ]
+        },
+        "explain_hustle": {
+          "text": "I trade. Find stuff, fix it up, sell it. Got a knack for making things work.",
+          "options": [
+            {"text": "What kind of stuff?", "next_node": "discuss_goods"},
+            {"text": "Sounds like a good gig.", "next_node": "acknowledge_gig"},
+            {"text": "Goodbye.", "next_node": "end_dialogue"}
+          ]
+        },
+        "agree_grim": {
+          "text": "Tell me about it. That's why I try to keep things positive. Gotta find the silver lining, right?",
+          "options": [
+            {"text": "What's the silver lining?", "next_node": "discuss_silver_lining"},
+            {"text": "I guess.", "next_node": "end_dialogue"}
+          ]
+        },
+        "acknowledge_role": {
+          "text": "Exactly! Someone's gotta be the ray of sunshine in the apocalypse.",
+          "options": [
+            {"text": "Keep up the good work.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_goods": {
+          "text": "Anything I can get my hands on. Old electronics, tools, sometimes even pre-AI snacks if I'm lucky.",
+          "options": [
+            {"text": "Pre-AI snacks?", "next_node": "discuss_snacks"},
+            {"text": "Interesting.", "next_node": "end_dialogue"}
+          ]
+        },
+        "acknowledge_gig": {
+          "text": "It is! Keeps me busy, keeps me fed. Can't complain.",
+          "options": [
+            {"text": "That's the main thing.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_silver_lining": {
+          "text": "Freedom, I guess. No more bosses, no more rules. Just gotta survive.",
+          "options": [
+            {"text": "That's one way to look at it.", "next_node": "end_dialogue"}
+          ]
+        },
+        "discuss_snacks": {
+          "text": "Yeah! Found a stash of ancient potato chips once. Still crunchy!",
+          "options": [
+            {"text": "Impressive.", "next_node": "end_dialogue"}
+          ]
+        },
+        "end_dialogue": {
+          "text": "Cool. Catch you later!",
+          "options": []
+        }
+      }
+    }
+  }
+}

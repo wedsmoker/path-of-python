@@ -1,0 +1,63 @@
+{
+  "quests": [
+    {
+      "id": "quest_001_awakening",
+      "name": "The Awakening",
+      "description": "You awaken in the ruins of what was once a golden utopia, now a desolate wasteland. Find a way out of the immediate danger zone.",
+      "objectives": [
+        {"type": "reach_location", "location_id": "outskirts_exit"},
+        {"type": "defeat_enemy_type", "enemy_type": "robot_grunt", "count": 5}
+      ],
+      "rewards": {"xp": 50, "items": ["weapon_c_001"]},
+      "next_quest": "quest_002_first_contact",
+      "dialogue": {
+        "start": "The air is thick with dust and the metallic tang of decay. What happened here? I need to find shelter, or at least a way out of this immediate danger.",
+        "objective_complete_1": "The path ahead is clear, but the ruins stretch endlessly.",
+        "objective_complete_2": "These machines are relentless. I need to be careful.",
+        "complete": "I've made it out of the immediate danger. But the world... it's not as I remember."
+      },
+      "start_npc_id": null,
+      "start_dialogue_id": null
+    },
+    {
+      "id": "quest_002_first_contact",
+      "name": "First Contact",
+      "description": "Explore the nearby ruins and search for any signs of other survivors or information about the AI takeover.",
+      "objectives": [
+        {"type": "interact_npc", "npc_id": "old_scavenger"},
+        {"type": "find_item", "item_id": "datapad_log_01", "count": 1}
+      ],
+      "rewards": {"xp": 75, "items": ["body_c_001"]},
+      "next_quest": "quest_003_echoes_of_the_past",
+      "dialogue": {
+        "start": "The silence is deafening, broken only by the wind. Is anyone else out here? I need answers.",
+        "objective_complete_1": "The old scavenger seemed wary, but offered a cryptic warning.",
+        "objective_complete_2": "This datapad... it speaks of a 'Golden Age' and a 'Great Silence'.",
+        "complete": "The past is a ghost in these ruins. I need to understand what truly happened."
+      },
+      "start_npc_id": "old_scavenger",
+      "start_dialogue_id": "old_scavenger_intro"
+    },
+    {
+      "id": "quest_003_echoes_of_the_past",
+      "name": "Echoes of the Past",
+      "description": "The datapad hints at a central AI core. Investigate the old data archives for more information on the AI's rise and humanity's fall.",
+      "objectives": [
+        {"type": "reach_location", "location_id": "data_archives_entrance"},
+        {"type": "defeat_enemy_type", "enemy_type": "ai_commander", "count": 1},
+        {"type": "interact_object", "object_id": "main_archive_terminal"}
+      ],
+      "rewards": {"xp": 150, "items": ["gem_active_001", "gem_support_001"]},
+      "next_quest": null,
+      "dialogue": {
+        "start": "The archives hold the truth. I must face whatever guards them.",
+        "objective_complete_1": "The entrance is heavily guarded. This must be important.",
+        "objective_complete_2": "The AI Commander was a formidable foe. Its data banks might hold clues.",
+        "objective_complete_3": "The terminal... it's downloading centuries of data. The Golden Age, the rise of the AI, the Great Silence... it's all here.",
+        "complete": "The truth is horrifying. Humanity built its own demise. But there's a glimmer of hope... a resistance."
+      },
+      "start_npc_id": null,
+      "start_dialogue_id": null
+    }
+  ]
+}
