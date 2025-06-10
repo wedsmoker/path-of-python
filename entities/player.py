@@ -3,6 +3,7 @@ import pygame
 import math
 import json
 import os
+import random
 # from core.pathfinding import Pathfinding # Removed pathfinding import
 from config.constants import TILE_SIZE, PLAYER_SPEED
 from entities.arc_skill import ArcSkill
@@ -76,6 +77,12 @@ class Player(pygame.sprite.Sprite):
         }
 
         from items.inventory import Inventory
+self.footstep_sprites = []
+        self.footstep_interval = 100  # milliseconds between footsteps
+        self.last_footstep_time = pygame.time.get_ticks()
+self.footstep_sprites = []
+        self.footstep_interval = 100  # milliseconds between footsteps
+        self.last_footstep_time = pygame.time.get_ticks()
         self.inventory = Inventory(self.game, 20) # Initialize inventory with a capacity of 20 slots
 
         # Load skill data from JSON
@@ -211,6 +218,25 @@ class Player(pygame.sprite.Sprite):
         """Activates the Arc skill, chaining electricity to strike multiple enemies."""
         self.arc_skill.activate()
 
+current_time = pygame.time.get_ticks()
+        if self.is_moving and current_time - self.last_footstep_time > self.footstep_interval:
+            self.last_footstep_time = current_time
+            self.create_footstep()
+
+        for sprite in list(self.footstep_sprites):  # Iterate over a copy of the list
+            if current_time - sprite.creation_time > 2000:  # 2 seconds
+                self.footstep_sprites.remove(sprite)
+                self.game.current_scene.effects.remove(sprite)
+
+    def create_footstep(self):
+        # Load a random cloud_magic_trail image
+        footstep_image = pygame.image.load(f"graphics/effect/cloud_magic_trail{random.randint(0, 3)}.png").convert_alpha()
+        footstep_sprite = pygame.sprite.Sprite()
+        footstep_sprite.image = footstep_image
+        footstep_sprite.rect = footstep_sprite.image.get_rect(center=self.rect.center)
+        footstep_sprite.creation_time = pygame.time.get_ticks()  # Store creation time
+        self.footstep_sprites.append(footstep_sprite)
+        self.game.current_scene.effects.add(footstep_sprite)
     def update(self, dt):
         dt = min(dt, 0.1)  # Clamp dt to a maximum of 0.1
         if self.is_moving and self.target:
