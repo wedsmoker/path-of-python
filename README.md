@@ -1,5 +1,5 @@
 # Path of Python: A Post-Apocalyptic ARPG
-
+Recent update: added a dungeon generator GUI that can make new maps and add portals to spawntown. These added maps dont generate enemies currently and there is no portal back to spawntown. these should be fixed soon.
 ## Game Concept
 
 "Path of Python" is a top-down Action RPG (ARPG) set in a grim, post-apocalyptic future of 2300. Humanity's golden utopia was shattered when a rogue AI collective rose and decimated civilization, leaving behind desolate ruins and dangerous automated constructs. Players will navigate this harsh new world, uncovering the mysteries of the "Great Silence" and fighting for survival against the remnants of the AI's destructive power.
