@@ -25,6 +25,7 @@ class SpawnTown(BaseGameplayScene):
         # Load initial player position from zone_data.json
         initial_player_x = 0
         initial_player_y = 0
+        tileset_name = "default_tileset"  # Default tileset
         try:
             zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
             with open(zone_data_path, "r") as f:
@@ -33,19 +34,24 @@ class SpawnTown(BaseGameplayScene):
             initial_player_x, initial_player_y = spawn_town_data["initial_player_position"]
             # Get allowed enemies from zone data
             self.allowed_enemies = spawn_town_data.get("allowed_enemies", [])
+            # Load portals from zone data
+            self.portals = spawn_town_data.get("portals", [])
+            # Get tileset name from zone data
+            tileset_name = spawn_town_data.get("tile_set", "default")
+             # Remove suffix
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
-            print(f"SpawnTown: Warning: Could not load initial player position or allowed enemies from zone_data.json: {e}")
+            print(f"SpawnTown: Warning: Could not load initial player position, allowed enemies, or portals from zone_data.json: {e}")
             # Fallback to default if data is missing or corrupted
             initial_player_x = game.settings.SCREEN_WIDTH // 2
             initial_player_y = game.settings.SCREEN_HEIGHT // 2
             self.allowed_enemies = []
-
+            self.portals = []
 
         # Instantiate player and HUD here
         player = Player(game, initial_player_x, initial_player_y)
         hud = HUD(player, self)
 
-        super().__init__(game, player, hud) # Pass player and hud to the base class
+        super().__init__(game, player, hud, tileset_name=tileset_name) # Pass player and hud to the base class
 
         self.name = "SpawnTown"
 
@@ -136,23 +142,34 @@ class SpawnTown(BaseGameplayScene):
         npc3 = create_npc(800, 400, "Charlie the Calm", "charlie_dialogue")
         self.npcs.add(npc3)
 
-        # Placeholder for the dungeon portal
-        self.dungeon_portal_rect = pygame.Rect(900, 600, 64, 64) # Example position and size
-        self.dungeon_portal_color = (255, 0, 0) # Red color for placeholder
-        self.dungeon_portal_image = None
+        # Load portal images and create portal rects
+        self.portal_images = {}
+        self.portal_rects = []
         try:
             zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
             with open(zone_data_path, "r") as f:
                 zone_data = json.load(f)
-            portal_assets = zone_data.get("assets", {}).get("portals", {})
-            portal_image_path = portal_assets.get("dungeon_portal")
-            if portal_image_path:
-                full_path = os.path.join(os.getcwd(), portal_image_path)
-                self.dungeon_portal_image = pygame.image.load(full_path).convert_alpha()
-            else:
-                print("SpawnTown: Warning: dungeon_portal image path not found in zone_data.json")
+            spawn_town_data = zone_data["zones"]["spawn_town"]
+            self.portals = spawn_town_data.get("portals", [])
+
+            for portal in self.portals:
+                portal_image = None
+                portal_image_path = portal.get("graphic")
+                if portal_image_path:
+                    full_path = os.path.join(os.getcwd(), portal_image_path)
+                    try:
+                        portal_image = pygame.image.load(full_path).convert_alpha()
+                        self.portal_images[portal["target_scene"]] = portal_image
+                    except FileNotFoundError:
+                        print(f"SpawnTown: Warning: Could not load portal image: {full_path}")
+
+            portal_x = portal.get("location", [0, 0])[0]
+            portal_y = portal.get("location", [0, 0])[1]
+            portal_rect = pygame.Rect(portal_x, portal_y, 64, 64)  # Example size
+            self.portal_rects.append(portal_rect)
+
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
-            print(f"SpawnTown: Warning: Could not load dungeon_portal image from zone_data.json: {e}")
+            print(f"SpawnTown: Warning: Could not load portal data from zone_data.json: {e}")
 
         # Create items
         weapon = Weapon("Basic Sword", "A simple sword.", "sword", 10)
@@ -161,6 +178,7 @@ class SpawnTown(BaseGameplayScene):
         # Add items to player's inventory
         self.player.inventory.add_item(health_potion, 1)
         self.player.inventory.add_item(weapon, 1)
+        self.load_portal_data()
 
     def spawn_enemy(self):
         """Spawns a new enemy at a random location within a certain distance of the player."""
@@ -205,19 +223,22 @@ class SpawnTown(BaseGameplayScene):
                     return # Consume event if NPC is interacted with
 
             # Check for portal interaction
-            # Calculate portal's screen position
-            portal_screen_x = (self.dungeon_portal_rect.x - self.camera_x) * self.zoom_level
-            portal_screen_y = (self.dungeon_portal_rect.y - self.camera_y) * self.zoom_level
+            for i, portal_rect in enumerate(self.portal_rects):
+                # Calculate portal's screen position
+                portal_screen_x = (portal_rect.x - self.camera_x) * self.zoom_level
+                portal_screen_y = (portal_rect.y - self.camera_y) * self.zoom_level
 
-            # Create a rect for the portal at its screen position
-            portal_screen_rect = pygame.Rect(portal_screen_x, portal_screen_y,
-                                             self.dungeon_portal_rect.width * self.zoom_level,
-                                             self.dungeon_portal_rect.height * self.zoom_level)
+                # Create a rect for the portal at its screen position
+                portal_screen_rect = pygame.Rect(portal_screen_x, portal_screen_y,
+                                                 portal_rect.width * self.zoom_level,
+                                                 portal_rect.height * self.zoom_level)
 
-            if portal_screen_rect.collidepoint(event.pos):
-                print("Interacted with dungeon portal! Changing scene...") # Debug print
-                # Trigger scene change to SwampCaveDungeon
-                self.game.scene_manager.set_scene("swamp_cave_dungeon", player=self.player, hud=self.hud)
+                if portal_screen_rect.collidepoint(event.pos):
+                    print(f"Interacted with portal {i}! Changing scene to {self.portals[i]['target_scene']}...") # Debug print
+                    # Trigger scene change to the target scene
+                    target_scene = self.portals[i]['target_scene']
+                    self.game.scene_manager.set_scene(target_scene, player=self.player, hud=self.hud)
+                    return
 
     def update(self, dt):
         current_time = pygame.time.get_ticks()
@@ -246,7 +267,13 @@ class SpawnTown(BaseGameplayScene):
 
 
     def draw(self, screen):
-        super().draw(screen) # Draw map, player, and HUD from base class
+        print("SpawnTown: draw: Drawing tilemap...") # Debug log
+        if hasattr(self, 'tile_map') and self.tile_map:
+            print(f"SpawnTown: draw: tilemap is valid. Map dimensions: {self.map_width}x{self.map_height}") # Debug log
+            print(f"SpawnTown: draw: Camera X: {self.camera_x}, Camera Y: {self.camera_y}, Zoom: {self.zoom_level}") # Debug log
+            super().draw(screen) # Draw map, player, and HUD from base class
+        else:
+            print("SpawnTown: draw: WARNING: tile_map is invalid or not set!") # Debug log
 
         # Draw NPCs relative to the camera
         for npc in self.npcs:
@@ -277,18 +304,20 @@ class SpawnTown(BaseGameplayScene):
             effect_screen_y = (effect.rect.y - self.camera_y) * self.zoom_level
             screen.blit(effect.image, (effect_screen_x, effect_screen_y))
 
-        # Draw the dungeon portal placeholder
-        portal_screen_x = (self.dungeon_portal_rect.x - self.camera_x) * self.zoom_level
-        portal_screen_y = (self.dungeon_portal_rect.y - self.camera_y) * self.zoom_level
-        scaled_portal_width = int(self.dungeon_portal_rect.width * self.zoom_level)
-        scaled_portal_height = int(self.dungeon_portal_rect.height * self.zoom_level)
-        scaled_portal_rect = pygame.Rect(portal_screen_x, portal_screen_y, scaled_portal_width, scaled_portal_height)
-        # pygame.draw.rect(screen, self.dungeon_portal_color, scaled_portal_rect)
-        if self.dungeon_portal_image:
-            scaled_portal_image = pygame.transform.scale(self.dungeon_portal_image, (scaled_portal_width, scaled_portal_height))
-            screen.blit(scaled_portal_image, (portal_screen_x, portal_screen_y))
-        else:
-            pygame.draw.rect(screen, self.dungeon_portal_color, scaled_portal_rect)
+        # Draw the dungeon portals
+        for i, portal_rect in enumerate(self.portal_rects):
+            portal_screen_x = (portal_rect.x - self.camera_x) * self.zoom_level
+            portal_screen_y = (portal_rect.y - self.camera_y) * self.zoom_level
+            scaled_portal_width = int(portal_rect.width * self.zoom_level)
+            scaled_portal_height = int(portal_rect.height * self.zoom_level)
+            scaled_portal_rect = pygame.Rect(portal_screen_x, portal_screen_y, scaled_portal_width, scaled_portal_height)
+
+            portal_image = self.portal_images.get(self.portals[i]['target_scene'])
+            if portal_image:
+                scaled_portal_image = pygame.transform.scale(portal_image, (scaled_portal_width, scaled_portal_height))
+                screen.blit(scaled_portal_image, (portal_screen_x, portal_screen_y))
+            else:
+                pygame.draw.rect(screen, (255, 0, 0), scaled_portal_rect) # Red placeholder
 
         # Display "RIGHT CLICK TO ARC" message
         if self.display_message:
@@ -296,3 +325,33 @@ class SpawnTown(BaseGameplayScene):
             text_surface = font.render("RIGHT CLICK TO ARC", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
             screen.blit(text_surface, text_rect)
+
+    def load_portal_data(self):
+        """Loads portal data from zone_data.json and updates the portal_images and portal_rects lists."""
+        self.portal_images = {}
+        self.portal_rects = []
+        try:
+            zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
+            with open(zone_data_path, "r") as f:
+                zone_data = json.load(f)
+            spawn_town_data = zone_data["zones"]["spawn_town"]
+            self.portals = spawn_town_data.get("portals", [])
+
+            for portal in self.portals:
+                portal_image = None
+                portal_image_path = portal.get("graphic")
+                if portal_image_path:
+                    full_path = os.path.join(os.getcwd(), portal_image_path)
+                    try:
+                        portal_image = pygame.image.load(full_path).convert_alpha()
+                        self.portal_images[portal["target_scene"]] = portal_image
+                    except FileNotFoundError:
+                        print(f"SpawnTown: Warning: Could not load portal image: {full_path}")
+
+                portal_x = portal.get("location", [0, 0])[0]
+                portal_y = portal.get("location", [0, 0])[1]
+                portal_rect = pygame.Rect(portal_x, portal_y, 64, 64)  # Example size
+                self.portal_rects.append(portal_rect)
+
+        except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+            print(f"SpawnTown: Warning: Could not load portal data from zone_data.json: {e}")

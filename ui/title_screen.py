@@ -19,11 +19,25 @@ class TitleScreen(BaseScene):
             SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 120, 200, 50,
             "Info", lambda: self.game.scene_manager.set_scene("info_screen")
         )
+        self.dungeon_maker_button = Button(
+            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 190, 200, 50,
+            "Dungeon Maker", self.open_dungeon_generator
+        )
         self.animation_frame = 0
         self.image_index = 0
         self.alpha = 0
         self.alpha_direction = 1
         self.x_offset = 0
+
+    def open_dungeon_generator(self):
+        try:
+            from ui.dungeon_generator_gui import DungeonGeneratorGUI
+            dungeon_generator = DungeonGeneratorGUI(self.game)
+            dungeon_generator.run()
+        except ImportError as e:
+            self.game.logger.error(f"Failed to open dungeon generator: {e}")
+        except Exception as e:
+            self.game.logger.error(f"Error in dungeon generator: {e}")
 
     def enter(self):
         self.game.logger.info("Entering Title Screen.")
@@ -34,6 +48,7 @@ class TitleScreen(BaseScene):
     def handle_event(self, event):
         self.start_button.handle_event(event)
         self.info_button.handle_event(event)
+        self.dungeon_maker_button.handle_event(event)
 
     def update(self, dt):
         self.animation_frame += 0.001
@@ -89,6 +104,7 @@ class TitleScreen(BaseScene):
 
         self.start_button.draw(screen)
         self.info_button.draw(screen)
+        self.dungeon_maker_button.draw(screen)
 
 class InfoScreen(BaseScene):
     def __init__(self, game):

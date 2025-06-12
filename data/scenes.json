@@ -1,0 +1,56 @@
+{
+    "scenes": [
+        {
+            "name": "title_screen",
+            "class": "ui.title_screen.TitleScreen"
+        },
+        {
+            "name": "info_screen",
+            "class": "ui.title_screen.InfoScreen"
+        },
+        {
+            "name": "spawn_town",
+            "class": "core.spawn_town.SpawnTown"
+        },
+        {
+            "name": "settings_menu",
+            "class": "ui.menus.SettingsMenu"
+        },
+        {
+            "name": "inventory",
+            "class": "ui.inventory_screen.InventoryScreen"
+        },
+        {
+            "name": "skill_tree",
+            "class": "ui.skill_tree_ui.SkillTreeUI"
+        },
+        {
+            "name": "swamp_cave_dungeon",
+            "class": "core.swamp_cave_dungeon.SwampCaveDungeon"
+        },
+        {
+            "name": "gameplay",
+            "class": "world.zone.GameplayScene"
+        },
+        {
+            "name": "pause_menu",
+            "class": "ui.menus.PauseMenu"
+        },
+        {
+            "name": "fort6",
+            "class": "core.dungeons.fort6.fort6"
+        },
+        {
+            "name": "rtrt",
+            "class": "core.dungeons.rtrt.rtrt"
+        },
+        {
+            "name": "hell5",
+            "class": "core.dungeons.hell5.hell5"
+        },
+        {
+            "name": "88",
+            "class": "core.dungeons.88._88"
+        }
+    ]
+}

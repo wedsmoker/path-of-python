@@ -1,0 +1,16 @@
+{
+    "goblin": {
+        "name": "Goblin",
+        "health": 30,
+        "damage": 5,
+        "speed": 60,
+        "sprite_path": "graphics/dc-mon/goblin.png"
+    },
+    "phantom": {
+        "name": "Phantom",
+        "health": 40,
+        "damage": 8,
+        "speed": 50,
+        "sprite_path": "graphics/dc-mon/undead/phantom.png"
+    }
+}

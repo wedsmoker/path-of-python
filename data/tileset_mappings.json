@@ -1,0 +1,14 @@
+{
+    "default": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    },
+    "swamp_cave": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    }
+}

@@ -30,6 +30,7 @@ SHOW_PATHFINDING = False
 SHOW_PLAYER_COORDS = True # New debug flag
 SHOW_SCENE_NAME = True # New debug flag
 SHOW_DELTA_TIME = True # New debug flag
+SHOW_PLAYER_TILE_COORDS = True # New debug flag
 
 # Colors (RGB) - Common
 WHITE = (255, 255, 255)

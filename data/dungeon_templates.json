@@ -1,0 +1,12 @@
+{
+    "dungeons": [
+        {
+            "name": "Example Dungeon",
+            "width": 50,
+            "height": 50,
+            "tileset": "graphics/dc-dngn/floor",
+            "enemy_types": ["Goblin", "Skeleton"],
+            "portal_graphic": "graphics/dc-dngn/gateways/dngn_enter_abyss.png"
+        }
+    ]
+}

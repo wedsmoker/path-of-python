@@ -23,6 +23,7 @@ class GameplayScene(BaseGameplayScene):
         self.enemy_spawn_cooldown = ENEMY_SPAWN_COOLDOWN
         self.tile_size = TILE_SIZE
         zone_data = load_zone_data()
+        self.effects = pygame.sprite.Group() # Add effects group
         if zone_data:
             self.tilemap_path = zone_data.get("tilemap_path")
             self.music_path = zone_data.get("music_path")

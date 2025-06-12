@@ -14,10 +14,11 @@ import math # Import math for distance calculation
 
 
 class BaseGameplayScene(BaseScene):
-    def __init__(self, game, player=None, hud=None):
+    def __init__(self, game, player=None, hud=None, tileset_name="default"):  # Added tileset_name parameter
         super().__init__(game)
         self.player = player  # Player is now passed in or remains None
         self.hud = hud  # HUD is now passed in or remains None
+        self.tileset_name = tileset_name  # Store the tileset name
         self.projectiles = pygame.sprite.Group()
 
         # Camera settings
@@ -42,37 +43,65 @@ class BaseGameplayScene(BaseScene):
 
 
     def _load_tile_images(self):
-        """Loads tile images based on zone_data.json."""
+        """Loads tile images based on the dungeon's tileset."""
         try:
-            # Use os.path.join for cross-platform path compatibility
             zone_data_path = os.path.join(os.getcwd(), "data", "zone_data.json")
             with open(zone_data_path, "r") as f:
                 zone_data = json.load(f)
 
-            # Assuming 'default_tileset' is always used for now
-            tileset_paths = zone_data["tile_sets"]["default_tileset"]
-            for tile_type, path in tileset_paths.items():
-                try:
-                    full_path = os.path.join(os.getcwd(), path)
-                    if not os.path.exists(full_path):
-                        print(f"BaseGameplayScene: Error: Tile image file not found: {full_path}")
-                        self.tile_images[tile_type] = pygame.Surface((self.tile_size, self.tile_size))
-                        self.tile_images[tile_type].fill((255, 0, 255))  # Magenta placeholder
-                        continue
+            tile_sets = zone_data.get("tile_sets", {})
+            tileset_data = tile_sets.get(self.tileset_name)
 
-                    image = pygame.image.load(full_path).convert_alpha()
-                    self.tile_images[tile_type] = image
-                    # print(f"BaseGameplayScene: Loaded tile image: {tile_type} from {full_path}")  # Added logging
-                except pygame.error as e:
-                    print(f"BaseGameplayScene: Warning: Could not load tile image {full_path}: {e}")
-                    self.tile_images[tile_type] = pygame.Surface((self.tile_size, self.tile_size))
-                    self.tile_images[tile_type].fill((255, 0, 255))  # Magenta placeholder
+            print(f"BaseGameplayScene: _load_tile_images: self.tileset_name = {self.tileset_name}")  # Added logging
+            print(f"BaseGameplayScene: _load_tile_images: tileset_data = {tileset_data}")  # Added logging
+
+            if tileset_data:
+                # Load tile images from zone_data.json
+                for tile_name, tile_path in tileset_data.items():
+                    try:
+                        full_path = os.path.join(os.getcwd(), tile_path)
+                        if not os.path.exists(full_path):
+                            print(f"BaseGameplayScene: Error: Tile image file not found: {full_path}")
+                            self.tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size))
+                            self.tile_images[tile_name].fill((255, 0, 255))  # Magenta placeholder
+                            continue
+
+                        image = pygame.image.load(full_path).convert_alpha()
+                        self.tile_images[tile_name] = image
+                        # print(f"BaseGameplayScene: Loaded tile image: {tile_name} from {full_path}")  # Added logging
+                    except pygame.error as e:
+                        print(f"BaseGameplayScene: Warning: Could not load tile image {full_path}: {e}")
+                        self.tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size))
+                        self.tile_images[tile_name].fill((255, 0, 255))  # Magenta placeholder
+            else:
+                # Load tile images from a separate JSON file
+                tileset_path = os.path.join(os.getcwd(), "data", "tilesets", f"{self.tileset_name}_tileset.json")
+                with open(tileset_path, "r") as f:
+                    tileset_data = json.load(f)
+
+                for tile_name, tile_path in tileset_data.items():
+                    try:
+                        full_path = os.path.join(os.getcwd(), tile_path)
+                        if not os.path.exists(full_path):
+                            print(f"BaseGameplayScene: Error: Tile image file not found: {full_path}")
+                            self.tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size))
+                            self.tile_images[tile_name].fill((255, 0, 255))  # Magenta placeholder
+                            continue
+
+                        image = pygame.image.load(full_path).convert_alpha()
+                        self.tile_images[tile_name] = image
+                        # print(f"BaseGameplayScene: Loaded tile image: {tile_name} from {full_path}")  # Added logging
+                    except pygame.error as e:
+                        print(f"BaseGameplayScene: Warning: Could not load tile image {full_path}: {e}")
+                        self.tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size))
+                        self.tile_images[tile_name].fill((255, 0, 255))  # Magenta placeholder
+
         except FileNotFoundError:
-            print("BaseGameplayScene: Error: data/zone_data.json not found. Cannot load tile images.")
+            print(f"BaseGameplayScene: Error: data/zone_data.json or tileset file not found. Cannot load tile images.")
         except json.JSONDecodeError:
-            print("BaseGameplayScene: Error: Could not decode data/zone_data.json. Check JSON format.")
+            print(f"BaseGameplayScene: Error: Could not decode data/zone_data.json or tileset file. Check JSON format.")
         except KeyError as e:
-            print(f"BaseGameplayScene: Error: Missing key in zone_data.json: {e}")
+            print(f"BaseGameplayScene: Error: Missing key in tileset data: {e}")
 
     def debug_log(self):
         if self.frame_count % 60 == 0:  # Log every second (assuming 60 FPS)
@@ -268,10 +297,13 @@ class BaseGameplayScene(BaseScene):
                                     color = (255, 0, 255)  # Magenta for missing textures
                                     pygame.draw.rect(screen, color, (tile_x, tile_y, self.tile_size * self.zoom_level, self.tile_size * self.zoom_level))
                                     if self.frame_count % 60 == 0:
-                                        # print(f"BaseGameplayScene: WARNING: No image for tile type '{tile_type_value}' at ({x},{y}). Drawing magenta.")
-                                        # print(f"BaseGameplayScene: tile_x: {tile_x}, tile_y: {tile_y}, screen_width: {screen_width}, screen_height: {screen_height}")  # Added logging
+                                        print(f"BaseGameplayScene: WARNING: No image for tile type '{tile_type_value}' at ({x},{y}). Drawing magenta.")
+                                        print(f"BaseGameplayScene: tile_x: {tile_x}, tile_y: {tile_y}, screen_width: {screen_width}, screen_height: {screen_height}")  # Added logging
+                                        print(f"BaseGameplayScene: tile_images: {self.tile_images}")
+                                        print(f"BaseGameplayScene: tile_type_value: {tile_type_value}")
                                         pass
                             else:
+                                # print(f"BaseGameplayScene: draw: Tile at ({{x}}, {{y}}) is off-screen. Screen pos: ({{tile_x:.2f}}, {{tile_y:.2f}})") # Debug log
                                 if self.frame_count % 60 == 0:
                                     # print(f"BaseGameplayScene: Tile at ({{x}},{{y}}) is off-screen. Screen pos: ({{tile_x:.2f}}, {{tile_y:.2f}})") # Added logging
                                     pass

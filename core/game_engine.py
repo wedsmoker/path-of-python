@@ -17,6 +17,7 @@ import sys
 import logging # Import logging module
 import traceback # Import traceback module
 from core.swamp_cave_dungeon import SwampCaveDungeon # Import SwampCaveDungeon
+import json
 
 class GameEngine:
     """Manages the main game loop, scenes, and core systems."""
@@ -46,48 +47,47 @@ class GameEngine:
 
         self.scene_manager = SceneManager(self) # Pass self (GameEngine instance) to SceneManager
 
-        # Import scenes to avoid circular dependency issues and for cleaner structure
-        from ui.menus import PauseMenu, SettingsMenu
-        from ui.inventory_screen import InventoryScreen
-        from ui.skill_tree_ui import SkillTreeUI
-        from world.zone import GameplayScene
-        from ui.title_screen import TitleScreen
-        self.title_screen = TitleScreen(self)
+        # Load scenes from data/scenes.json
+        self.load_scenes()
 
-        self.scene_manager.add_scene(STATE_TITLE_SCREEN, self.title_screen)
-        self.scene_manager.add_scene(STATE_PAUSE_MENU, PauseMenu(self))
-        from ui.title_screen import InfoScreen
-        self.info_screen = InfoScreen(self)
-        self.scene_manager.add_scene("info_screen", self.info_screen)
-        from core.spawn_town import SpawnTown
-        self.spawn_town = SpawnTown(self) # SpawnTown will now create the player and HUD
-        self.scene_manager.add_scene("spawn_town", self.spawn_town)
-        self.scene_manager.add_scene(STATE_SETTINGS_MENU, SettingsMenu(self))
-        self.scene_manager.add_scene(STATE_INVENTORY, InventoryScreen(self))
-        self.scene_manager.add_scene(STATE_SKILL_TREE, SkillTreeUI(self))
-
-        # Add the SwampCaveDungeon scene
-        # The player and HUD instances are created in SpawnTown and need to be passed to other gameplay scenes
-        # We'll need to access the player and HUD from the active gameplay scene (SpawnTown initially)
-        # A better approach might be to manage player and HUD at the GameEngine level or pass them explicitly
-        # For now, let's assume we can access them from the current gameplay scene if it's SpawnTown
-        # TODO: Refactor player/HUD management for better scene transitions
-
-        # Temporarily instantiate player and HUD here for dungeon scene creation
-        # This is a workaround and should be refactored
-        temp_player = self.spawn_town.player # Access player from SpawnTown instance
-        temp_hud = self.spawn_town.hud # Access HUD from SpawnTown instance
-        self.swamp_cave_dungeon = SwampCaveDungeon(self, temp_player, temp_hud)
-        self.scene_manager.add_scene("swamp_cave_dungeon", self.swamp_cave_dungeon)
-
-
-        self.scene_manager.add_scene(STATE_GAMEPLAY, GameplayScene(self))
-
-        # self.scene_manager.set_scene("spawn_town", self.player) # REMOVED
         self.scene_manager.set_scene(STATE_TITLE_SCREEN)
-        # For testing, you could set the scene directly to the dungeon:
-        # self.scene_manager.set_scene("swamp_cave_dungeon")
 
+
+    def load_scenes(self):
+        """Loads scenes from data/scenes.json."""
+        import json
+        with open('data/scenes.json', 'r') as f:
+            scenes_data = json.load(f)
+
+        self.scenes = {}
+        for scene_data in scenes_data['scenes']:
+            name = scene_data['name']
+            class_path = scene_data['class']
+            module_name, class_name = class_path.rsplit(".", 1)
+            module = __import__(module_name, fromlist=[class_name])
+            scene_class = getattr(module, class_name)
+            # Pass the game engine instance, player, and HUD to the scene constructor
+            if name == "spawn_town":
+                from core.spawn_town import SpawnTown
+                scene = scene_class(self)
+                self.spawn_town = scene
+            elif hasattr(scene_class, '__init__') and callable(scene_class.__init__) and hasattr(scene_class.__init__, '__code__') and 'player' in scene_class.__init__.__code__.co_varnames and 'hud' in scene_class.__init__.__code__.co_varnames:
+                # Access player and HUD from SpawnTown instance
+                try:
+                    temp_player = self.spawn_town.player # Access player from SpawnTown instance
+                    temp_hud = self.spawn_town.hud # Access HUD from SpawnTown instance
+                    scene = scene_class(self, temp_player, temp_hud)
+                except AttributeError:
+                    print("AttributeError: Player or HUD not initialized in SpawnTown.  Consider initializing SpawnTown first.")
+                    import inspect
+                    sig = inspect.signature(scene_class.__init__)
+                    kwargs = {}
+                    if 'game' in sig.parameters:
+                        kwargs['game'] = self
+                    scene = scene_class(**kwargs)
+            else:
+                scene = scene_class(self)
+            self.scene_manager.add_scene(name, scene)
 
     def run(self):
         """Runs the main game loop."""
@@ -126,6 +126,15 @@ class GameEngine:
                     if self.settings.SHOW_DELTA_TIME:
                         dt_text = f"DT: {dt:.4f}s"
                         draw_text(self.screen, dt_text, 18, (255, 255, 0), 10, debug_y_offset)
+                        debug_y_offset += 20
+                    if self.settings.SHOW_PLAYER_TILE_COORDS:
+                        if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'player'):
+                            player = self.scene_manager.current_scene.player
+                            tile_x = int(player.rect.x / 32)
+                            tile_y = int(player.rect.y / 32)
+                            player_coords_text = f"Player Tile: ({tile_x}, {tile_y})"
+                            draw_text(self.screen, player_coords_text, 18, (255, 255, 0), 10, debug_y_offset)
+                            debug_y_offset += 20
 
                 pygame.display.flip()
 
