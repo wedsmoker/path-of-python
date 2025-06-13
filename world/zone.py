@@ -1,6 +1,7 @@
 import pygame
 import random
 import json
+import os # Added import os
 from core.scene_manager import BaseScene
 from core.utils import load_image, calculate_distance, direction_to_target, load_zone_data
 from entities.enemy import Enemy
@@ -33,6 +34,18 @@ class GameplayScene(BaseGameplayScene):
             self.allowed_enemies = []
             self.tilemap_path = None
         self.load_tilemap()
+        self.enemy_data = self._load_enemy_data("data/enemy_data.json") # Load enemy data
+
+    def _load_enemy_data(self, json_path):
+        """Loads enemy data from a JSON file."""
+        try:
+            full_path = os.path.join(os.getcwd(), json_path)
+            with open(full_path, "r") as f:
+                data = json.load(f)
+            return data # Directly return the loaded data, as it's already a dictionary of enemies
+        except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+            print(f"Error loading enemy data from {json_path}: {e}")
+            return {}
 
     def load_tilemap(self):
         try:
@@ -62,7 +75,7 @@ class GameplayScene(BaseGameplayScene):
 
         # Update Enemies
         for enemy in self.enemies.copy():  # Iterate over a copy for safe removal
-            enemy.update(dt, self.player)
+            enemy.update(dt, self.player, self.tile_map, self.tile_size) # Pass tile_map and tile_size
             if calculate_distance(self.player.rect.center, enemy.rect.center) > ENEMY_DESPAWN_DISTANCE:
                 self.enemies.remove(enemy)
                 print("Enemy despawned (too far).")
@@ -100,7 +113,7 @@ class GameplayScene(BaseGameplayScene):
 
         # Draw Enemies
         for enemy in self.enemies:
-            enemy.draw(screen)
+            enemy.draw(screen, self.camera_x, self.camera_y, self.zoom_level) # Pass camera and zoom
 
         # Draw Projectiles
         for projectile in self.projectiles:
@@ -111,13 +124,36 @@ class GameplayScene(BaseGameplayScene):
         if not self.allowed_enemies:
             print("No allowed enemies defined for this zone.")
             return
+        if not self.enemy_data:
+            print("Enemy data not loaded. Cannot spawn enemies.")
+            return
 
-        enemy_type = random.choice(self.allowed_enemies)
+        enemy_id = random.choice(self.allowed_enemies)
+        enemy_info = self.enemy_data.get(enemy_id)
+        print(f"Enemy info for '{enemy_id}': {enemy_info}") # Debug print
+
+        if not enemy_info:
+            print(f"Enemy data for '{enemy_id}' not found.")
+            return
+
         angle = random.uniform(0, 2 * pygame.pi)  # Random angle in radians
         x = self.player.rect.centerx + ENEMY_SPAWN_DISTANCE * pygame.Vector2(1, 0).rotate_rad(angle).x
-        y = self.player.rect.centery + ENEMY_SPAWN_DISTANCE * pygame.Vector2(1, 0).rotate_rad(angle).y
+        y = self.player.centery + ENEMY_SPAWN_DISTANCE * pygame.Vector2(1, 0).rotate_rad(angle).y
 
-        # Create an instance of the chosen enemy type
-        new_enemy = Enemy(self.game, x, y, {"name": enemy_type, "health": 50, "damage": 5, "speed": 50, "sprite_path": None}) # Updated Enemy constructor
-        self.enemies.add(new_enemy) # Changed from append to add
-        print(f"Spawned a {enemy_type}!")
+        new_enemy = Enemy(
+            self.game,
+            x, y,
+            name=enemy_info.get("name", "Unknown Enemy"),
+            health=enemy_info.get("health", 1), # Directly access health
+            damage=enemy_info.get("damage", 1), # Directly access damage
+            speed=enemy_info.get("speed", 50), # Directly access speed
+            sprite_path=enemy_info.get("sprite_path"), # Use the sprite_path from JSON
+            attack_range=enemy_info.get("attack_range", 0),
+            attack_cooldown=enemy_info.get("attack_cooldown", 1000),
+            projectile_sprite_path=enemy_info.get("projectile_sprite_path"),
+            ranged_attack_pattern=enemy_info.get("ranged_attack_pattern", "single"),
+            level=enemy_info.get("level", 1),
+            xp_value=enemy_info.get("xp_value", 0)
+        )
+        self.enemies.add(new_enemy)
+        print(f"Spawned a {enemy_info.get('name')} (Level {new_enemy.level}, XP {new_enemy.xp_value})!")

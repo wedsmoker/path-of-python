@@ -83,7 +83,17 @@ def load_zone_data():
     try:
         with open("data/zone_data.json", "r") as file:
             zone_data = json.load(file)
-            current_zone = zone_data.get("zones", [])[0]  # Load the first zone as default
+            # Access the 'zones' dictionary and then a specific zone, e.g., "spawn_town"
+            # Assuming "spawn_town" is the default or initial zone
+            current_zone = zone_data.get("zones", {}).get("spawn_town") 
+            if not current_zone:
+                print("ERROR: 'spawn_town' zone data not found in zone_data.json!")
+                return {
+                    "tilemap_path": "graphics/tilesets/placeholder.txt",
+                    "music_path": None,
+                    "allowed_enemies": []
+                }
+
             tilemap_path = current_zone.get("tilemap", "graphics/tilesets/placeholder.txt")
             music_path = current_zone.get("music", None)
             allowed_enemies = current_zone.get("enemies", [])

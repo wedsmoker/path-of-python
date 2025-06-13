@@ -21,6 +21,9 @@ class DeveloperInventoryScreen(BaseScene):
         self.available_items = self.load_available_items()
         self.filtered_items = list(self.available_items.keys())
         self.selected_item_index = 0
+        self.stat_input_active = False
+        self.active_stat_key = None
+        self.stat_input_text = ""
 
     def load_available_items(self):
         items_data = {}
@@ -76,6 +79,9 @@ class DeveloperInventoryScreen(BaseScene):
         self.input_text = ""
         self.filtered_items = list(self.available_items.keys())
         self.selected_item_index = 0
+        self.stat_input_active = False
+        self.active_stat_key = None
+        self.stat_input_text = ""
 
     def exit(self):
         self.game.logger.info("Exiting Developer Inventory Screen.")
@@ -88,27 +94,40 @@ class DeveloperInventoryScreen(BaseScene):
                 if self.input_box_active:
                     self.filter_items(self.input_text)
                     self.input_box_active = False
+                elif self.stat_input_active:
+                    self.update_player_stat()
+                    self.stat_input_active = False
+                    self.active_stat_key = None
+                    self.stat_input_text = ""
                 else:
                     self.add_selected_item()
             elif event.key == pygame.K_BACKSPACE:
                 if self.input_box_active:
                     self.input_text = self.input_text[:-1]
                     self.filter_items(self.input_text)
+                elif self.stat_input_active:
+                    self.stat_input_text = self.stat_input_text[:-1]
             elif event.key == pygame.K_UP:
-                if not self.input_box_active:
+                if not self.input_box_active and not self.stat_input_active:
                     self.selected_item_index = (self.selected_item_index - 1) % len(self.filtered_items)
             elif event.key == pygame.K_DOWN:
-                if not self.input_box_active:
+                if not self.input_box_active and not self.stat_input_active:
                     self.selected_item_index = (self.selected_item_index + 1) % len(self.filtered_items)
             else:
                 if self.input_box_active:
                     self.input_text += event.unicode
                     self.filter_items(self.input_text)
+                elif self.stat_input_active:
+                    self.stat_input_text += event.unicode
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if self.get_input_box_rect().collidepoint(event.pos):
                 self.input_box_active = True
+                self.stat_input_active = False # Deactivate stat input if item input is clicked
             else:
                 self.input_box_active = False
+                self.stat_input_active = False
+                self.active_stat_key = None
+                self.stat_input_text = ""
             
             # Check for clicks on "Add" and "Remove" buttons
             add_button_rect = self.get_add_button_rect()
@@ -118,6 +137,21 @@ class DeveloperInventoryScreen(BaseScene):
                 self.add_selected_item()
             elif remove_button_rect.collidepoint(event.pos):
                 self.remove_selected_item()
+
+            # Check for clicks on player stats
+            player = self.game.player
+            if player:
+                stat_display_x = settings.SCREEN_WIDTH - 300
+                stat_display_y = 200
+                for key, value in player.stats.items():
+                    stat_rect = pygame.Rect(stat_display_x, stat_display_y, 250, 25)
+                    if stat_rect.collidepoint(event.pos):
+                        self.stat_input_active = True
+                        self.active_stat_key = key
+                        self.stat_input_text = str(value)
+                        self.input_box_active = False # Deactivate item input if stat input is clicked
+                        break
+                    stat_display_y += 30
 
     def update(self, dt):
         pass
@@ -129,7 +163,7 @@ class DeveloperInventoryScreen(BaseScene):
         draw_text(screen, f"Press '{pygame.key.name(KEY_DEV_INVENTORY).upper()}' to return to game", settings.UI_FONT_SIZE_SMALL, settings.UI_SECONDARY_COLOR,
                   settings.SCREEN_WIDTH // 2, 90, align="center")
 
-        # Draw input box
+        # Draw input box for items
         input_box_rect = self.get_input_box_rect()
         pygame.draw.rect(screen, settings.WHITE if self.input_box_active else settings.UI_SECONDARY_COLOR, input_box_rect, 2)
         input_surface = self.text_font.render(self.input_text, True, settings.WHITE)
@@ -164,6 +198,27 @@ class DeveloperInventoryScreen(BaseScene):
                 draw_text(screen, f"{item_instance.name}: {quantity}", settings.UI_FONT_SIZE_SMALL, settings.WHITE,
                           100, inventory_y, align="left")
                 inventory_y += 25
+
+        # Display player stats
+        if player:
+            draw_text(screen, "Player Stats:", settings.UI_FONT_SIZE_DEFAULT, settings.UI_PRIMARY_COLOR,
+                      settings.SCREEN_WIDTH - 300, 170, align="left")
+            stat_display_y = 200
+            for key, value in player.stats.items():
+                display_value = self.stat_input_text if self.stat_input_active and self.active_stat_key == key else str(value)
+                color = settings.UI_ACCENT_COLOR if self.stat_input_active and self.active_stat_key == key else settings.WHITE
+                
+                draw_text(screen, f"{key}: {display_value}", settings.UI_FONT_SIZE_SMALL, color,
+                          settings.SCREEN_WIDTH - 300, stat_display_y, align="left")
+                
+                # Draw input box for active stat
+                if self.stat_input_active and self.active_stat_key == key:
+                    stat_input_box_rect = pygame.Rect(settings.SCREEN_WIDTH - 300 + self.text_font.size(f"{key}: ")[0], stat_display_y, 150, 25)
+                    pygame.draw.rect(screen, settings.WHITE, stat_input_box_rect, 1)
+                    stat_input_surface = self.text_font.render(self.stat_input_text, True, settings.WHITE)
+                    screen.blit(stat_input_surface, (stat_input_box_rect.x + 5, stat_input_box_rect.y + 2))
+                
+                stat_display_y += 30
 
     def get_input_box_rect(self):
         input_box_width = 400
@@ -200,9 +255,25 @@ class DeveloperInventoryScreen(BaseScene):
             self.game.player.inventory.add_item(item_instance, 1)
             self.game.logger.info(f"Added {selected_item_name} to player inventory.")
 
-    def remove_selected_item(self):
+    def remove_selected_item(self,):
         if self.filtered_items:
             selected_item_name = self.filtered_items[self.selected_item_index]
             item_instance = self.available_items[selected_item_name]
             self.game.player.inventory.remove_item(item_instance, 1)
             self.game.logger.info(f"Removed {selected_item_name} from player inventory.")
+
+    def update_player_stat(self):
+        if self.active_stat_key and self.stat_input_text:
+            try:
+                new_value = float(self.stat_input_text)
+                # Handle specific stats that should be integers
+                if self.active_stat_key in ["base_strength", "base_dexterity", "base_intelligence", "base_vitality",
+                                            "current_life", "max_life", "current_energy_shield", "max_energy_shield",
+                                            "current_mana", "max_mana"]:
+                    new_value = int(new_value)
+
+                # Call the new method in Player to update the stat
+                self.game.player.update_stat_from_dev_screen(self.active_stat_key, new_value)
+                self.game.logger.info(f"Updated player stat {self.active_stat_key} to {new_value}")
+            except ValueError:
+                self.game.logger.error(f"Invalid input for stat {self.active_stat_key}: {self.stat_input_text}")

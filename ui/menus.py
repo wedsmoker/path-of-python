@@ -17,8 +17,12 @@ class PauseMenu(BaseScene):
         spacing = 60
 
         self.buttons.append(Button(
+            50, 50, button_width, button_height,
+            "Return to Spawntown", lambda: self.game.scene_manager.set_scene("spawn_town", self.game.spawn_town.player)
+        ))
+        self.buttons.append(Button(
             SCREEN_WIDTH // 2 - button_width // 2, start_y, button_width, button_height,
-            "Resume Game", lambda: self.game.scene_manager.set_scene("spawn_town", self.game.spawn_town.player)
+            "Resume Game", lambda: self.game.scene_manager.set_scene(self.game.scene_manager.previous_scene_name, self.game.player, self.game.hud)
         ))
         self.buttons.append(Button(
             SCREEN_WIDTH // 2 - button_width // 2, start_y + spacing, button_width, button_height,

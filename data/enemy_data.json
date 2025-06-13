@@ -8,7 +8,8 @@
         "attack_range": 250,
         "attack_cooldown": 2000,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
-        "ranged_attack_pattern": "spiral"
+        "ranged_attack_pattern": "spiral",
+        "xp_value": 15
     },
     "bat": {
         "name": "Bat",
@@ -19,7 +20,8 @@
         "attack_range": 150,
         "attack_cooldown": 1000,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
-        "ranged_attack_pattern": "spread"
+        "ranged_attack_pattern": "spread",
+        "xp_value": 5
     },
     "snake": {
         "name": "Snake",
@@ -30,7 +32,8 @@
         "attack_range": 180,
         "attack_cooldown": 1200,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
-        "ranged_attack_pattern": "circle"
+        "ranged_attack_pattern": "circle",
+        "xp_value": 8
     },
     "imp": {
         "name": "Imp",
@@ -41,7 +44,8 @@
         "attack_range": 200,
         "attack_cooldown": 1500,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
-        "ranged_attack_pattern": "burst"
+        "ranged_attack_pattern": "burst",
+        "xp_value": 10
     },
     "demon_small": {
         "name": "Small Demon",
@@ -52,7 +56,8 @@
         "attack_range": 220,
         "attack_cooldown": 1700,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/skull.png",
-        "ranged_attack_pattern": "spread"
+        "ranged_attack_pattern": "spread",
+        "xp_value": 12
     },
     "draconian_red": {
         "name": "Red Draconian",
@@ -63,7 +68,8 @@
         "attack_range": 300,
         "attack_cooldown": 2000,
         "projectile_sprite_path": "graphics/UNUSED/spells/orb_of_destruction_small.png",
-        "ranged_attack_pattern": "spread"
+        "ranged_attack_pattern": "spread",
+        "xp_value": 25
     },
     "fungus": {
         "name": "Fungus",
@@ -74,7 +80,8 @@
         "attack_range": 100,
         "attack_cooldown": 2500,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/stone.png",
-        "ranged_attack_pattern": "single"
+        "ranged_attack_pattern": "single",
+        "xp_value": 7
     },
     "angel": {
         "name": "Angel",
@@ -85,7 +92,8 @@
         "attack_range": 280,
         "attack_cooldown": 1800,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/snowflake.png",
-        "ranged_attack_pattern": "circle"
+        "ranged_attack_pattern": "circle",
+        "xp_value": 30
     },
     "gargoyle": {
         "name": "Gargoyle",
@@ -96,7 +104,8 @@
         "attack_range": 250,
         "attack_cooldown": 2000,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/stone_cracked.png",
-        "ranged_attack_pattern": "burst"
+        "ranged_attack_pattern": "burst",
+        "xp_value": 20
     },
     "spriggan": {
         "name": "Spriggan",
@@ -107,7 +116,8 @@
         "attack_range": 120,
         "attack_cooldown": 800,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
-        "ranged_attack_pattern": "spread"
+        "ranged_attack_pattern": "spread",
+        "xp_value": 10
     },
     "training_dummy": {
         "name": "Training Dummy",
@@ -118,7 +128,8 @@
         "attack_range": 0,
         "attack_cooldown": 0,
         "projectile_sprite_path": null,
-        "ranged_attack_pattern": "single"
+        "ranged_attack_pattern": "single",
+        "xp_value": 0
     },
     "ghoul": {
         "name": "Ghoul",
@@ -129,7 +140,8 @@
         "attack_range": 200,
         "attack_cooldown": 1500,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/hand1.png",
-        "ranged_attack_pattern": "spiral"
+        "ranged_attack_pattern": "spiral",
+        "xp_value": 18
     },
     "skeletal_warrior": {
         "name": "Skeletal Warrior",
@@ -140,7 +152,8 @@
         "attack_range": 200,
         "attack_cooldown": 1500,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/sword.png",
-        "ranged_attack_pattern": "burst"
+        "ranged_attack_pattern": "burst",
+        "xp_value": 20
     },
     "blork_the_orc": {
         "name": "Blork the Orc",
@@ -151,7 +164,8 @@
         "attack_range": 250,
         "attack_cooldown": 2000,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
-        "ranged_attack_pattern": "spread"
+        "ranged_attack_pattern": "spread",
+        "xp_value": 50
     },
     "grum": {
         "name": "Grum",
@@ -162,7 +176,8 @@
         "attack_range": 250,
         "attack_cooldown": 2000,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/horn.png",
-        "ranged_attack_pattern": "circle"
+        "ranged_attack_pattern": "circle",
+        "xp_value": 45
     },
     "sigmund": {
         "name": "Sigmund",
@@ -173,7 +188,8 @@
         "attack_range": 250,
         "attack_cooldown": 2000,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/eye.png",
-        "ranged_attack_pattern": "spiral"
+        "ranged_attack_pattern": "spiral",
+        "xp_value": 60
     },
     "royal_jelly": {
         "name": "Royal Jelly",
@@ -184,7 +200,8 @@
         "attack_range": 100,
         "attack_cooldown": 3000,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/corpse.png",
-        "ranged_attack_pattern": "burst"
+        "ranged_attack_pattern": "burst",
+        "xp_value": 75
     },
     "lernaean_hydra": {
         "name": "Lernaean Hydra",
@@ -195,7 +212,8 @@
         "attack_range": 300,
         "attack_cooldown": 2500,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/dragon.png",
-        "ranged_attack_pattern": "spread"
+        "ranged_attack_pattern": "spread",
+        "xp_value": 100
     },
     "titan": {
         "name": "Titan",
@@ -206,7 +224,8 @@
         "attack_range": 350,
         "attack_cooldown": 3000,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/pentagram_horizontal.png",
-        "ranged_attack_pattern": "circle"
+        "ranged_attack_pattern": "circle",
+        "xp_value": 125
     },
     "storm_dragon": {
         "name": "Storm Dragon",
@@ -217,7 +236,8 @@
         "attack_range": 400,
         "attack_cooldown": 3000,
         "projectile_sprite_path": "graphics/UNUSED/spells/orb_of_destruction_big.png",
-        "ranged_attack_pattern": "burst"
+        "ranged_attack_pattern": "burst",
+        "xp_value": 90
     },
     "troll": {
         "name": "Troll",
@@ -228,7 +248,8 @@
         "attack_range": 200,
         "attack_cooldown": 1500,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/stone.png",
-        "ranged_attack_pattern": "spread"
+        "ranged_attack_pattern": "spread",
+        "xp_value": 25
     },
     "goblin": {
         "name": "Goblin",
@@ -239,6 +260,7 @@
         "attack_range": 150,
         "attack_cooldown": 1000,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
-        "ranged_attack_pattern": "burst"
+        "ranged_attack_pattern": "burst",
+        "xp_value": 10
     }
 }

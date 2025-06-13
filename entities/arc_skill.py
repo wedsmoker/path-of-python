@@ -2,6 +2,7 @@ import pygame
 import math
 import os
 import random
+import json
 from config.constants import TILE_SIZE
 from entities.projectile import Projectile
 from entities.enemy import Enemy # Import Enemy class
@@ -10,24 +11,61 @@ class ArcSkill:
     def __init__(self, player):
         self.player = player
         self.arc_chain_lightning_image_path = "graphics/spells/air/chain_lightning.png" # Store path instead of loaded image
-        self.max_chain_length = 15  # Increased max chain length for more chaining bounces
-        self.chain_range = 250  # Distance within which lightning can chain to the next enemy
+        self.chain_range = 500  # Increased distance within which lightning can chain to the next enemy
         self.arc_speed = 300  # Speed of the visual lightning projectile
-        self.cooldown = 1000  # Cooldown in milliseconds
         self.last_used = 0
-        self.base_damage = 15
         self.damage_variation = 5
         self.stun_chance = 0.15
-        self.mana_cost = 10
         self.arc_width = TILE_SIZE // 2
         self.lightning_color = (173, 216, 230) # Light blue
         self.lightning_glow_color = (100, 149, 237) # Cornflower blue
         self.max_initial_branches = 2 # Max number of new chains that can originate from the player
         self.max_branches_per_hit = 2 # Max number of new chains that can originate from one hit target
 
+        # Load skill data from JSON
+        self._load_skill_data()
+
         # This set will track all enemies that have been damaged in the current skill activation
         # It's reset each time activate() is called.
         self.enemies_damaged_in_current_cast = set()
+
+    def _load_skill_data(self):
+        """Loads Arc skill data from skills.json."""
+        skills_file_path = os.path.join(os.getcwd(), "data", "skills.json")
+        try:
+            with open(skills_file_path, 'r') as f:
+                skills_data = json.load(f)
+            
+            arc_skill_data = None
+            for skill in skills_data.get("active_skills", []):
+                if skill.get("id") == "arc":
+                    arc_skill_data = skill
+                    break
+            
+            if arc_skill_data:
+                self.max_chain_length = arc_skill_data.get("chain_count", 4) # Default to 4 if not found
+                self.base_damage = arc_skill_data.get("base_damage", {}).get("min", 10) # Using min as base
+                self.mana_cost = arc_skill_data.get("mana_cost", 15)
+                self.cooldown = arc_skill_data.get("cooldown", 0.7) * 1000 # Convert to milliseconds
+                print(f"Arc skill data loaded: max_chain_length={self.max_chain_length}, base_damage={self.base_damage}, mana_cost={self.mana_cost}, cooldown={self.cooldown}")
+            else:
+                print("Arc skill data not found in skills.json. Using default values.")
+                self.max_chain_length = 4
+                self.base_damage = 15
+                self.mana_cost = 15
+                self.cooldown = 700 # Default to 0.7 seconds
+        except FileNotFoundError:
+            print(f"Error: skills.json not found at {skills_file_path}. Using default Arc skill values.")
+            self.max_chain_length = 4
+            self.base_damage = 15
+            self.mana_cost = 15
+            self.cooldown = 700 # Default to 0.7 seconds
+        except json.JSONDecodeError:
+            print(f"Error decoding skills.json at {skills_file_path}. Using default Arc skill values.")
+            self.max_chain_length = 4
+            self.base_damage = 15
+            self.mana_cost = 15
+            self.cooldown = 700 # Default to 0.7 seconds
 
     def load_arc_image(self, path):
         """Loads and scales the arc image."""
@@ -159,7 +197,7 @@ class ArcProjectile(Projectile):
         self.arc_skill = arc_skill
         self.current_target = None # Store the actual target enemy object
         self.start_pos = start_pos if start_pos is not None else (x, y) # Store the starting position for drawing the line
-        self.lifetime = 150 # Reduced lifetime for visual effect, as it's a chaining projectile
+        self.lifetime = 2000 # Increased lifetime for visual effect, as it's a chaining projectile
         self.chain_count = chain_count # Track how many times this specific chain has linked
         self.previous_target = previous_target # The entity this projectile chained *from*
 
@@ -215,38 +253,48 @@ class ArcProjectile(Projectile):
         end_screen_x = (self.rect.centerx - camera_x) * zoom_level
         end_screen_y = (self.rect.centery - camera_y) * zoom_level
 
-        line_width = int(self.arc_skill.arc_width * zoom_level)
-        num_segments = 10 # Number of segments for the jagged lightning effect
-        jaggedness = 10 * zoom_level # How much the segments can deviate
+        # Get screen dimensions
+        screen_width, screen_height = screen.get_size()
 
-        # Draw the lightning line with jagged effect and glow
-        points = []
-        points.append((start_screen_x, start_screen_y))
+        # Check if any part of the line is within the screen bounds
+        # This is a simplified check; a more robust check would involve line-segment-rectangle intersection
+        if not (max(start_screen_x, end_screen_x) < 0 or 
+                min(start_screen_x, end_screen_x) > screen_width or
+                max(start_screen_y, end_screen_y) < 0 or
+                min(start_screen_y, end_screen_y) > screen_height):
 
-        for i in range(1, num_segments):
-            # Calculate a point along the straight line
-            t = i / num_segments
-            target_segment_x = start_screen_x + (end_screen_x - start_screen_x) * t
-            target_segment_y = start_screen_y + (end_screen_y - start_screen_y) * t
+            line_width = int(self.arc_skill.arc_width * zoom_level)
+            num_segments = 10 # Number of segments for the jagged lightning effect
+            jaggedness = 10 * zoom_level # How much the segments can deviate
 
-            # Add random offset for jaggedness, perpendicular to the line
-            angle = math.atan2(end_screen_y - start_screen_y, end_screen_x - start_screen_x)
-            perp_angle = angle + math.pi / 2 # Perpendicular angle
-            offset = random.uniform(-jaggedness, jaggedness)
-            offset_x = math.cos(perp_angle) * offset
-            offset_y = math.sin(perp_angle) * offset
+            # Draw the lightning line with jagged effect and glow
+            points = []
+            points.append((start_screen_x, start_screen_y))
+
+            for i in range(1, num_segments):
+                # Calculate a point along the straight line
+                t = i / num_segments
+                target_segment_x = start_screen_x + (end_screen_x - start_screen_x) * t
+                target_segment_y = start_screen_y + (end_screen_y - start_screen_y) * t
+
+                # Add random offset for jaggedness, perpendicular to the line
+                angle = math.atan2(end_screen_y - start_screen_y, end_screen_x - start_screen_x)
+                perp_angle = angle + math.pi / 2 # Perpendicular angle
+                offset = random.uniform(-jaggedness, jaggedness)
+                offset_x = math.cos(perp_angle) * offset
+                offset_y = math.sin(perp_angle) * offset
+                
+                points.append((target_segment_x + offset_x, target_segment_y + offset_y))
             
-            points.append((target_segment_x + offset_x, target_segment_y + offset_y))
-        
-        points.append((end_screen_x, end_screen_y))
+            points.append((end_screen_x, end_screen_y))
 
-        if len(points) > 1:
-            # Draw glow effect
-            pygame.draw.lines(screen, self.arc_skill.lightning_glow_color, False, points, line_width + 4)
-            # Draw main lightning line
-            pygame.draw.lines(screen, self.arc_skill.lightning_color, False, points, line_width)
+            if len(points) > 1:
+                # Draw glow effect
+                pygame.draw.lines(screen, self.arc_skill.lightning_glow_color, False, points, line_width + 4)
+                # Draw main lightning line
+                pygame.draw.lines(screen, self.arc_skill.lightning_color, False, points, line_width)
 
-        # Optionally draw a small spark image at the current projectile's position
-        if self.image:
-            scaled_image = pygame.transform.scale(self.image, (int(self.rect.width * zoom_level), int(self.rect.height * zoom_level)))
-            screen.blit(scaled_image, (end_screen_x - scaled_image.get_width() / 2, end_screen_y - scaled_image.get_height() / 2))
+            # Optionally draw a small spark image at the current projectile's position
+            if self.image:
+                scaled_image = pygame.transform.scale(self.image, (int(self.rect.width * zoom_level), int(self.rect.height * zoom_level)))
+                screen.blit(scaled_image, (end_screen_x - scaled_image.get_width() / 2, end_screen_y - scaled_image.get_height() / 2))

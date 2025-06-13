@@ -53,6 +53,8 @@ class HUD:
 
         # Draw Minimap
         self.minimap.draw(screen)
+        # Draw Level/Experience Gauge
+        self._draw_experience_gauge(screen)
 
     def _draw_bar(self, screen, x, y, width, height, current_value, max_value, color, label):
         # Background bar
@@ -105,3 +107,28 @@ class HUD:
             potion_keys = [KEY_POTION_1, KEY_POTION_2, KEY_POTION_3, KEY_POTION_4]
             key_name = pygame.key.name(potion_keys[i]).upper()
             draw_text(screen, key_name, UI_FONT_SIZE_DEFAULT - 8, UI_PRIMARY_COLOR, slot_rect.centerx, slot_rect.centery, align="center")
+
+    def _draw_experience_gauge(self, screen):
+        gauge_x = SCREEN_WIDTH // 2 - 150 # Centered at the top
+        gauge_y = 10
+        gauge_width = 300
+        gauge_height = 25
+
+        # Background bar
+        pygame.draw.rect(screen, UI_BACKGROUND_COLOR, (gauge_x, gauge_y, gauge_width, gauge_height))
+
+        # Calculate XP for next level
+        xp_for_next_level = self.player.level * 100
+        
+        # Foreground bar
+        if xp_for_next_level > 0:
+            fill_width = (self.player.experience / xp_for_next_level) * gauge_width
+            pygame.draw.rect(screen, (0, 200, 255), (gauge_x, gauge_y, fill_width, gauge_height)) # Light blue for XP
+
+        # Border
+        pygame.draw.rect(screen, UI_PRIMARY_COLOR, (gauge_x, gauge_y, gauge_width, gauge_height), 2)
+
+        # Text: Level and XP
+        xp_remaining = xp_for_next_level - self.player.experience
+        text = f"Level: {self.player.level} | XP: {int(self.player.experience)}/{int(xp_for_next_level)} ({int(xp_remaining)} left)"
+        draw_text(screen, text, UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, gauge_x + gauge_width // 2, gauge_y + gauge_height // 2, align="center")

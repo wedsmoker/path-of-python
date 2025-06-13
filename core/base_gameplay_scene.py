@@ -138,6 +138,7 @@ class BaseGameplayScene(BaseScene):
             attack_cooldown = enemy_info.get('attack_cooldown', config.get('attack_cooldown', 0))
             projectile_sprite_path = enemy_info.get('projectile_sprite_path', config.get('projectile_sprite_path'))
             ranged_attack_pattern = enemy_info.get('ranged_attack_pattern', config.get('ranged_attack_pattern', 'single'))
+            xp_value = config.get('xp_value', 0)
 
             enemy = Enemy(
                 self.game,
@@ -151,8 +152,10 @@ class BaseGameplayScene(BaseScene):
                 attack_range,
                 attack_cooldown,
                 projectile_sprite_path,
-                ranged_attack_pattern
+                ranged_attack_pattern,
+                xp_value
             )
+            print(f"DEBUG: Instantiating Enemy {enemy_type} with xp_value: {xp_value}")
             self.enemies.add(enemy)
             print(f"BaseGameplayScene: Added enemy: {enemy_type} at ({enemy_info['x']}, {enemy_info['y']})") # Debug print
         print(f"BaseGameplayScene: Loaded {len(self.enemies)} enemies.")

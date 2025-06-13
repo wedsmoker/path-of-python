@@ -64,6 +64,12 @@ class Player(pygame.sprite.Sprite):
         self.evasion = 0.0
         self.stealth = 0.0
 
+        # Energy Shield Recharge attributes
+        self.energy_shield_recharge_delay = 3000 # 3 seconds cooldown before recharge starts
+        self.last_energy_shield_hit_time = 0
+        self.energy_shield_recharge_rate = 0.10 # 10% of max_energy_shield per second
+        self.mana_recharge_rate = 0.1 # 10% of max_mana per second
+
         # New stats dictionary
         self.stats = {
             "item_find_chance": self.item_find_chance,
@@ -197,11 +203,28 @@ class Player(pygame.sprite.Sprite):
             self.target = None
     
     def take_damage(self, damage):
-        """Reduces the player's current life by the specified damage amount and triggers a screen pulse."""
-        self.current_life -= damage
-        if self.current_life < 0:
-            self.current_life = 0
-        print(f"Player took {damage} damage. Current life: {self.current_life}")
+        """Reduces the player's current energy shield first, then life, and triggers a screen pulse."""
+        remaining_damage = damage
+
+        # Apply damage to energy shield first
+        if self.current_energy_shield > 0:
+            self.last_energy_shield_hit_time = pygame.time.get_ticks() # Reset recharge timer
+            if remaining_damage >= self.current_energy_shield:
+                remaining_damage -= self.current_energy_shield
+                self.current_energy_shield = 0
+                print(f"Energy shield depleted. Remaining damage: {remaining_damage}")
+            else:
+                self.current_energy_shield -= remaining_damage
+                remaining_damage = 0
+                print(f"Energy shield took {damage} damage. Current energy shield: {self.current_energy_shield}")
+
+        # Apply any remaining damage to life
+        if remaining_damage > 0:
+            self.current_life -= remaining_damage
+            if self.current_life < 0:
+                self.current_life = 0
+            print(f"Player took {remaining_damage} damage to life. Current life: {self.current_life}")
+
         if self.current_life <= 0:
             self.current_life = 0
             print("Player died!")
@@ -213,12 +236,58 @@ class Player(pygame.sprite.Sprite):
         self.is_taking_damage = True
         self.damage_start_time = pygame.time.get_ticks()
 
+    def gain_experience(self, amount):
+        """
+        Awards experience to the player based on the given amount.
+        Checks for level-ups and calls the level_up method if enough experience is gained.
+        """
+        print(f"Player.gain_experience called with amount: {amount}") # Debug print
+        self.experience += amount
+        print(f"Gained {amount} experience. Total experience: {self.experience}")
+
+        # Check for level up
+        xp_for_next_level = self.level * 100 # Example: 100 XP per level
+        if self.experience >= xp_for_next_level:
+            self.level_up()
+
+    def level_up(self):
+        """
+        Increases player level and boosts all base stats, max life, mana, and energy shield.
+        """
+        self.level += 1
+        self.experience = 0 # Reset experience for the new level
+        print(f"Player leveled up to level {self.level}!")
+
+        # Increase base stats
+        self.base_strength += 2
+        self.base_dexterity += 2
+        self.base_intelligence += 2
+        self.base_vitality += 2
+
+        # Increase max life, mana, and energy shield
+        self.max_life += 50
+        self.current_life = self.max_life # Fully heal on level up
+        self.max_mana += 50
+        self.current_mana = self.max_mana # Fully restore mana on level up
+        self.max_energy_shield += 30
+        self.current_energy_shield = self.max_energy_shield # Fully restore energy shield on level up
+
+        # Update stats dictionary
+        self.stats["base_strength"] = self.base_strength
+        self.stats["base_dexterity"] = self.base_dexterity
+        self.stats["base_intelligence"] = self.base_intelligence
+        self.stats["base_vitality"] = self.base_vitality
+        self.stats["max_life"] = self.max_life
+        self.stats["max_mana"] = self.max_mana
+        self.stats["max_energy_shield"] = self.max_energy_shield
     def activate_arc(self):
         """Activates the Arc skill, chaining electricity to strike multiple enemies."""
         self.arc_skill.activate()
 
     def update(self, dt):
         dt = min(dt, 0.1)  # Clamp dt to a maximum of 0.1
+        current_time = pygame.time.get_ticks()
+
         if self.is_moving and self.target:
             # Move the player
             self.rect.x += self.velocity.x * dt
@@ -253,8 +322,18 @@ class Player(pygame.sprite.Sprite):
                     self.is_moving = False
                     self.target = None
 
+        # Energy Shield Recharge Logic
+        if self.current_energy_shield < self.max_energy_shield:
+            if current_time - self.last_energy_shield_hit_time > self.energy_shield_recharge_delay:
+                recharge_amount = self.max_energy_shield * self.energy_shield_recharge_rate * dt * 10 # Scale by 10 for faster recharge
+                self.current_energy_shield = min(self.max_energy_shield, self.current_energy_shield + recharge_amount)
+                # print(f"Energy shield recharging. Current ES: {self.current_energy_shield}")
+        # Mana Recharge Logic
+        if self.current_mana < self.max_mana:
+            recharge_amount = self.max_mana * self.mana_recharge_rate * dt
+            self.current_mana = min(self.max_mana, self.current_mana + recharge_amount)
+
         # Footstep logic
-        current_time = pygame.time.get_ticks()
         if self.is_moving and current_time - self.last_footstep_time > self.footstep_interval:
             self.last_footstep_time = current_time
             self.create_footstep()
@@ -296,3 +375,23 @@ class Player(pygame.sprite.Sprite):
 
         # Blit the red surface to the screen
             screen.blit(red_surface, (0, 0))
+
+    def update_stat_from_dev_screen(self, stat_key, new_value):
+        """
+        Updates a player stat from the developer screen.
+        This method is called by the DeveloperInventoryScreen.
+        """
+        if hasattr(self, stat_key):
+            setattr(self, stat_key, new_value)
+            self.stats[stat_key] = new_value
+            # Special handling for current_life, max_life, current_mana, max_mana, etc.
+            if stat_key == "max_life":
+                self.current_life = min(self.current_life, self.max_life)
+            elif stat_key == "max_mana":
+                self.current_mana = min(self.current_mana, self.max_mana)
+            elif stat_key == "max_energy_shield":
+                self.current_energy_shield = min(self.current_energy_shield, self.max_energy_shield)
+            # Add more special handling for other stats if needed
+            print(f"Player stat '{stat_key}' updated to {new_value}")
+        else:
+            print(f"Warning: Player does not have stat '{stat_key}'.")
