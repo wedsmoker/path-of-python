@@ -1,5 +1,5 @@
 # Path of Python: A Post-Apocalyptic ARPG
-Major update: added a dungeon generator GUI that can make new maps and add portals to spawntown. These added maps dont have a portal portal back to spawntown. this should be fixed soon.
+Major update: added a dungeon generator GUI that can make new maps and add portals to them in spawntown.
 ![til](./example.gif)
 ## Game Concept
 
