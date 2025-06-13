@@ -114,6 +114,45 @@ def add_decorations(tile_map, decorations):
         decoration_x, decoration_y = random.choice(floor_tiles)
         tile_map[decoration_y][decoration_x] = 'decoration'
     return tile_map
+def place_enemies(tile_map, enemy_types, enemy_data, num_enemies):
+    """Places enemies on random floor tiles."""
+    floor_tiles = []
+    for row_index, row in enumerate(tile_map):
+        for col_index, tile in enumerate(row):
+            if tile == 'floor':
+                floor_tiles.append((col_index, row_index))
+
+    if not floor_tiles:
+        print("No floor tiles found to place enemies.")
+        return []
+
+    placed_enemies = []
+    for _ in range(num_enemies):
+        if not floor_tiles:
+            break # No more floor tiles to place enemies
+
+        enemy_x, enemy_y = random.choice(floor_tiles)
+        floor_tiles.remove((enemy_x, enemy_y)) # Ensure enemies don't spawn on the same tile
+
+        # Choose a random enemy type from the allowed types for this dungeon
+        chosen_enemy_type = random.choice(enemy_types)
+        
+        # Get enemy details from enemy_data.json
+        enemy_details = enemy_data.get(chosen_enemy_type)
+        if enemy_details:
+            placed_enemies.append({
+                'type': chosen_enemy_type,
+                'x': enemy_x,
+                'y': enemy_y,
+                'health': enemy_details['health'],
+                'damage': enemy_details['damage'],
+                'speed': enemy_details['speed'],
+                'sprite_path': enemy_details['sprite_path']
+            })
+        else:
+            print(f"Warning: Enemy type '{chosen_enemy_type}' not found in enemy_data.json")
+
+    return placed_enemies
 
 def generate_new_dungeon(params):
     """Generates a new dungeon based on the given parameters."""
@@ -156,6 +195,11 @@ def generate_new_dungeon(params):
     tile_map = add_decorations(tile_map, decorations)
 
     # Create dungeon data
+    # Place enemies
+    num_enemies = params.get('num_enemies', 5) # Default to 5 enemies if not specified
+    enemies = place_enemies(tile_map, enemy_types, enemy_data, num_enemies)
+
+    # Create dungeon data
     dungeon_data = {
         'width': width,
         'height': height,
@@ -168,7 +212,8 @@ def generate_new_dungeon(params):
         'portal_placement': portal_placement,
         'portal_x': portal_x,
         'portal_y': portal_y,
-        'decorations': decorations
+        'decorations': decorations,
+        'enemies': enemies
     }
 
     return dungeon_data

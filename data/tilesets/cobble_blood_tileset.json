@@ -1,0 +1,7 @@
+{
+  "floor": "graphics/dc-dngn/floor/cobble_blood1.png",
+  "wall": "graphics/dc-dngn/wall/stone_black_marked0.png",
+  "portal": "graphics/UNUSED/spells/death_channel.png",
+  "decoration": "graphics/UNUSED/other/xom_sparkles_blue.png",
+  "unknown": "graphics/UNUSED/other/magic_lamp.png"
+}

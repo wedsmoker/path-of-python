@@ -1,0 +1,7 @@
+{
+  "floor": "graphics/dc-dngn/floor/ice0.png",
+  "wall": "graphics/dc-dngn/wall/stone_gray0.png",
+  "portal": "graphics/spells/disciplines/ice.png",
+  "decoration": "graphics/UNUSED/spells/components/snowflake.png",
+  "unknown": "graphics/UNUSED/other/wand_silver.png"
+}

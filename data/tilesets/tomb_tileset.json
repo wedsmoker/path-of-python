@@ -1,0 +1,7 @@
+{
+  "floor": "graphics/dc-dngn/floor/tomb0.png",
+  "wall": "graphics/dc-dngn/wall/tomb0.png",
+  "portal": "graphics/UNUSED/spells/tomb_of_doroklohe.png",
+  "decoration": "graphics/UNUSED/other/chest.png",
+  "unknown": "graphics/UNUSED/other/mirror.png"
+}

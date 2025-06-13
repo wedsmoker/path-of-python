@@ -10,5 +10,59 @@
         "wall": "wall",
         "portal": "portal",
         "decoration": "decoration"
+    },
+    "crystal_cave": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    },
+    "volcanic": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    },
+    "sandstone": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    },
+    "ice_cave": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    },
+    "hive": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    },
+    "tomb": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    },
+    "nerves": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    },
+    "grassland": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
+    },
+    "cobble_blood": {
+        "floor": "floor",
+        "wall": "wall",
+        "portal": "portal",
+        "decoration": "decoration"
     }
 }

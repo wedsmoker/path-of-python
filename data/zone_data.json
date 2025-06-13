@@ -18,28 +18,36 @@
                     "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_labyrinth.png"
                 },
                 {
-                    "target_scene": "rtrt",
+                    "target_scene": "grass",
                     "location": [
-                        3360,
-                        3136
+                        1248,
+                        544
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_exit_abyss.png"
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_tartarus.png"
                 },
                 {
-                    "target_scene": "hell5",
+                    "target_scene": "gg",
                     "location": [
-                        800,
-                        736
+                        1248,
+                        928
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter.png"
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_cocytus.png"
                 },
                 {
-                    "target_scene": "88",
+                    "target_scene": "yt",
                     "location": [
-                        928,
-                        160
+                        96,
+                        1472
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_portal_rotated.png"
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_stone_arch.png"
+                },
+                {
+                    "target_scene": "ll",
+                    "location": [
+                        992,
+                        1280
+                    ],
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_pandemonium.png"
                 }
             ],
             "map_width": 50,

@@ -7,7 +7,7 @@ class fort6(BaseGameplayScene):
     def __init__(self, game, player, hud):
         dungeon_data = self.load_dungeon_data("fort6")
         tileset_name = dungeon_data.get("tileset", "default")  # Extract tileset name
-        super().__init__(game, player, hud, tileset_name=tileset_name)  # Pass tileset_name
+        super().__init__(game, player, hud, tileset_name=tileset_name, dungeon_data=dungeon_data)  # Pass tileset_name
         self.name = "fort6"
         self.dungeon_data = dungeon_data
         self.tile_map = self.dungeon_data["tile_map"]

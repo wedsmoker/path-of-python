@@ -31,9 +31,18 @@ class TitleScreen(BaseScene):
 
     def open_dungeon_generator(self):
         try:
+            import importlib
+            from ui import dungeon_generator_gui
             from ui.dungeon_generator_gui import DungeonGeneratorGUI
+            original_fullscreen = self.game.settings.FULLSCREEN
+            self.game.settings.FULLSCREEN = False
+            self.game.apply_display_settings()
             dungeon_generator = DungeonGeneratorGUI(self.game)
+            
             dungeon_generator.run()
+            self.game.settings.FULLSCREEN = original_fullscreen
+            self.game.apply_display_settings()
+            self.game.logger.info("Dungeon Generator opened.")
         except ImportError as e:
             self.game.logger.error(f"Failed to open dungeon generator: {e}")
         except Exception as e:

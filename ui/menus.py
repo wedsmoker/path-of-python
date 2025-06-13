@@ -83,6 +83,10 @@ class SettingsMenu(BaseScene):
         ))
         self.buttons.append(Button(
             SCREEN_WIDTH // 2 - button_width // 2, start_y + 2 * spacing, button_width, button_height,
+            "Volume Settings", lambda: self.game.scene_manager.set_scene("volume_settings", self.game.spawn_town.player)
+        ))
+        self.buttons.append(Button(
+            SCREEN_WIDTH // 2 - button_width // 2, start_y + 3 * spacing, button_width, button_height,
             "Back to Pause Menu", lambda: self.game.scene_manager.set_scene("pause_menu", self.game.spawn_town.player)
         ))
 
@@ -114,6 +118,47 @@ class SettingsMenu(BaseScene):
         draw_text(screen, "SETTINGS", UI_FONT_SIZE_LARGE, UI_PRIMARY_COLOR, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4, align="center")
         for button in self.buttons:
             button.draw(screen)
+
+class VolumeSettingsMenu(BaseScene):
+    def __init__(self, game):
+        super().__init__(game)
+        self.volume = pygame.mixer.music.get_volume()
+        self.slider_x = SCREEN_WIDTH // 2 - 100
+        self.slider_y = SCREEN_HEIGHT // 2
+        self.slider_width = 200
+        self.slider_height = 20
+        self.slider_rect = pygame.Rect(self.slider_x, self.slider_y, self.slider_width, self.slider_height)
+        self.thumb_width = 10
+        self.dragging = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.slider_rect.collidepoint(event.pos):
+                self.dragging = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.dragging = False
+        elif event.type == pygame.MOUSEMOTION:
+            if self.dragging:
+                mouse_x = event.pos[0]
+                self.volume = (mouse_x - self.slider_x) / self.slider_width
+                self.volume = max(0, min(1, self.volume))
+                pygame.mixer.music.set_volume(self.volume)
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            self.game.scene_manager.set_scene(STATE_SETTINGS_MENU, self.game.spawn_town.player)
+
+    def update(self, dt):
+        pass
+
+    def draw(self, screen):
+        screen.fill(UI_BACKGROUND_COLOR)
+        draw_text(screen, "Volume Settings", UI_FONT_SIZE_LARGE, UI_PRIMARY_COLOR, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4, align="center")
+
+        # Draw slider
+        pygame.draw.rect(screen, UI_SECONDARY_COLOR, self.slider_rect)
+        # Draw thumb
+        thumb_x = self.slider_x + int(self.volume * self.slider_width)
+        thumb_rect = pygame.Rect(thumb_x - self.thumb_width // 2, self.slider_y, self.thumb_width, self.slider_height)
+        pygame.draw.rect(screen, UI_ACCENT_COLOR, thumb_rect)
 
 class CharacterStatsMenu(BaseScene):
     def __init__(self, game):

@@ -8,7 +8,7 @@ from entities.projectile import Projectile
 class ArcSkill:
     def __init__(self, player):
         self.player = player
-        self.arc_chain_lightning_image = self.load_arc_image("graphics/spells/air/chain_lightning.png")
+        self.arc_chain_lightning_image_path = "graphics/spells/air/chain_lightning.png" # Store path instead of loaded image
         self.max_chain_length = 5  # Increased max chain length
         self.chain_range = 250  # Increased chain range
         self.arc_speed = 300  # Increased arc speed
@@ -63,7 +63,8 @@ class ArcSkill:
         # Create arc projectile
         end_x, end_y = target_enemy.rect.center
         damage = self.calculate_damage()
-        arc_projectile = ArcProjectile(start_x, start_y, end_x, end_y, self.arc_speed, damage, (255, 255, 0), self, image=self.arc_chain_lightning_image)  # Yellow color
+        # Pass game object and sprite_path to ArcProjectile
+        arc_projectile = ArcProjectile(self.player.game, start_x, start_y, end_x, end_y, self.arc_speed, damage, self.arc_chain_lightning_image_path, self)
         self.player.game.current_scene.projectiles.add(arc_projectile)
 
     def calculate_damage(self):
@@ -87,9 +88,11 @@ class ArcSkill:
         return nearest_enemy
 
 class ArcProjectile(Projectile):
-    def __init__(self, x, y, target_x, target_y, speed, damage, color, arc_skill, image, radius=5):
-        super().__init__(x, y, target_x, target_y, speed, damage, color, image=image, radius=radius)
+    # Modified __init__ to match Projectile's signature and add arc_skill
+    def __init__(self, game, x, y, target_x, target_y, speed, damage, sprite_path, arc_skill):
+        super().__init__(game, x, y, target_x, target_y, speed, damage, sprite_path)
         self.arc_skill = arc_skill
+        # ArcProjectile specific attributes can be added here if needed, e.g., self.color = color
 
     def hit(self, target):
         super().hit(target)

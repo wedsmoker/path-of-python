@@ -12,14 +12,18 @@ from config.constants import (
 )
 import math # Import math for distance calculation
 
+from entities.enemy import Enemy # Import the Enemy class
+from entities.projectile import Projectile # Import the Projectile class
 
 class BaseGameplayScene(BaseScene):
-    def __init__(self, game, player=None, hud=None, tileset_name="default"):  # Added tileset_name parameter
+    def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None):  # Added tileset_name and dungeon_data parameter
         super().__init__(game)
         self.player = player  # Player is now passed in or remains None
         self.hud = hud  # HUD is now passed in or remains None
         self.tileset_name = tileset_name  # Store the tileset name
         self.projectiles = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group() # Group to hold enemy sprites
+        self.dungeon_data = dungeon_data # Store dungeon data
 
         # Camera settings
         self.camera_x = 0
@@ -40,6 +44,11 @@ class BaseGameplayScene(BaseScene):
         self.npcs = [
             {"name": "Old Scavenger", "tile_x": 10, "tile_y": 10, "dialogue_id": "old_scavenger_intro"}
         ]
+
+        # If dungeon_data is provided, load enemies
+        print(f"BaseGameplayScene: __init__ received dungeon_data: {self.dungeon_data is not None}, enemies key present: {'enemies' in self.dungeon_data if self.dungeon_data else 'N/A'}")
+        if self.dungeon_data and 'enemies' in self.dungeon_data:
+            self.load_enemies(self.dungeon_data['enemies'])
 
 
     def _load_tile_images(self):
@@ -102,6 +111,50 @@ class BaseGameplayScene(BaseScene):
             print(f"BaseGameplayScene: Error: Could not decode data/zone_data.json or tileset file. Check JSON format.")
         except KeyError as e:
             print(f"BaseGameplayScene: Error: Missing key in tileset data: {e}")
+
+    def load_enemies(self, enemies_data):
+        """Loads enemies from the dungeon data."""
+        self.enemies.empty() # Clear existing enemies
+        print(f"BaseGameplayScene: Attempting to load {len(enemies_data)} enemies.") # Debug print
+        # Load enemy data from enemy_data.json
+        enemy_config_path = os.path.join(os.getcwd(), "data", "enemy_data.json")
+        try:
+            with open(enemy_config_path, "r") as f:
+                all_enemy_configs = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error loading enemy configuration from {enemy_config_path}: {e}")
+            all_enemy_configs = {}
+
+        for enemy_info in enemies_data:
+            enemy_type = enemy_info.get('type')
+            config = all_enemy_configs.get(enemy_type, {})
+
+            # Use config values, falling back to enemy_info if config doesn't have it
+            health = enemy_info.get('health', config.get('health', 10))
+            damage = enemy_info.get('damage', config.get('damage', 1))
+            speed = enemy_info.get('speed', config.get('speed', 50))
+            sprite_path = enemy_info.get('sprite_path', config.get('sprite_path', 'graphics/dc-mon/misc/demon_small.png'))
+            attack_range = enemy_info.get('attack_range', config.get('attack_range', 0))
+            attack_cooldown = enemy_info.get('attack_cooldown', config.get('attack_cooldown', 0))
+            projectile_sprite_path = enemy_info.get('projectile_sprite_path', config.get('projectile_sprite_path'))
+            ranged_attack_pattern = enemy_info.get('ranged_attack_pattern', config.get('ranged_attack_pattern', 'single'))
+
+            enemy = Enemy(
+                self.game,
+                enemy_info['x'] * self.tile_size,
+                enemy_info['y'] * self.tile_size,
+                health,
+                damage,
+                speed,
+                sprite_path,
+                attack_range,
+                attack_cooldown,
+                projectile_sprite_path,
+                ranged_attack_pattern
+            )
+            self.enemies.add(enemy)
+            print(f"BaseGameplayScene: Added enemy: {enemy_type} at ({enemy_info['x']}, {enemy_info['y']})") # Debug print
+        print(f"BaseGameplayScene: Loaded {len(self.enemies)} enemies.")
 
     def debug_log(self):
         if self.frame_count % 60 == 0:  # Log every second (assuming 60 FPS)
@@ -181,6 +234,17 @@ class BaseGameplayScene(BaseScene):
                             # Start dialogue with this NPC
                             self.game.dialogue_manager.start_dialogue(npc["dialogue_id"])
                             break # Interact with only one NPC at a time
+                    # Check for interaction with Portals
+                    if hasattr(self, 'dungeon_data') and 'portals' in self.dungeon_data:
+                        for portal in self.dungeon_data['portals']:
+                            portal_world_x = portal["location"][0]
+                            portal_world_y = portal["location"][1]
+
+                            distance = math.hypot(player_world_x - portal_world_x, player_world_y - portal_world_y)
+
+                            if distance < interaction_distance:
+                                self.game.scene_manager.set_scene(portal["target_scene"], self.player, self.hud)
+                                break # Interact with only one portal at a time
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Left-click
             # Get the mouse position in world coordinates
@@ -202,6 +266,12 @@ class BaseGameplayScene(BaseScene):
         self.debug_log()
         self.frame_count += 1
 
+        # Update enemies
+        self.enemies.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
+
+        # Update projectiles
+        self.projectiles.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
+
         # Get map dimensions and tile size from the current scene (e.g., SpawnTown)
         if hasattr(self.game, 'current_scene') and isinstance(self.game.current_scene, BaseGameplayScene):
             # Ensure we are getting the map dimensions from the actual scene instance, not the base class placeholder
@@ -215,6 +285,7 @@ class BaseGameplayScene(BaseScene):
                 self.map_height = 30
         # Removed the else block that set map_width/height to 50/30,
         # as it was causing restricted movement when the actual map was larger.
+
 
         if hasattr(self, 'display_death_message') and self.display_death_message:
             current_time = pygame.time.get_ticks()
@@ -311,6 +382,14 @@ class BaseGameplayScene(BaseScene):
             # Draw the player (centered on screen)
             if self.player:  # Only draw player if player exists
                 self.player.draw(screen)
+
+            # Draw enemies
+            for enemy in self.enemies:
+                enemy.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
+
+            # Draw projectiles
+            for projectile in self.projectiles:
+                projectile.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
 
             # Draw the HUD (unaffected by camera)
             if self.hud:  # Only draw HUD if HUD exists

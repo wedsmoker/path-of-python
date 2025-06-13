@@ -1,4 +1,6 @@
 import inspect
+import json # Import json module
+import os # Import os module
 
 class SceneManager:
     def __init__(self, game):
@@ -16,20 +18,23 @@ class SceneManager:
     def add_scene(self, name, scene):
         """Adds a scene to the manager."""
         self.scenes[name] = scene
-        print(f"Added scene {name} of type {type(scene).__name__}")
+        self.game.logger.info(f"Added scene {name} of type {type(scene).__name__}")
 
-    def set_scene(self, scene_class, player=None, hud=None):
+    def set_scene(self, scene_name, player=None, hud=None): # Changed scene_class to scene_name, removed dungeon_data parameter
         """Sets the current active scene."""
         if self.current_scene:
             self.current_scene.exit()  # Call exit method on current scene
         self.previous_scene_name = self.current_scene_name
         print(f"Scenes keys: {self.scenes.keys()}")
-        scene = self.scenes[scene_class]
-        self.game.logger.info(f"Attempting to switch to scene: {scene_class}")
+        
+        # Get the scene object from the scenes dictionary
+        scene = self.scenes[scene_name]
+        self.game.logger.info(f"Attempting to switch to scene: {scene_name}")
         self.current_scene = scene
         self.game.current_scene = scene # Set the current scene on the game object
+        
         if hasattr(self.current_scene, '__init__'):
-            print(f"scene_class: {scene_class}")
+            print(f"scene_name: {scene_name}")
             sig = inspect.signature(self.current_scene.__init__)
             kwargs = {}
             if 'game' in sig.parameters:
@@ -38,6 +43,21 @@ class SceneManager:
                 kwargs['player'] = player
             if 'hud' in sig.parameters and hud is not None:
                 kwargs['hud'] = hud
+            
+            # Load dungeon_data if path is specified in self.game.scenes_data
+            scene_data_from_game_engine = next((s for s in self.game.scenes_data['scenes'] if s['name'] == scene_name), None)
+            if scene_data_from_game_engine and "dungeon_data_path" in scene_data_from_game_engine:
+                dungeon_data_path = scene_data_from_game_engine["dungeon_data_path"]
+                try:
+                    with open(dungeon_data_path, "r") as df:
+                        dungeon_data = json.load(df)
+                    kwargs['dungeon_data'] = dungeon_data
+                except (FileNotFoundError, json.JSONDecodeError) as e:
+                    self.game.logger.error(f"Error loading dungeon data for scene {scene_name} from {dungeon_data_path}: {e}")
+                    kwargs['dungeon_data'] = None # Ensure dungeon_data is None on error
+            elif 'dungeon_data' in sig.parameters: # If constructor expects dungeon_data but no path is found
+                kwargs['dungeon_data'] = None # Explicitly pass None
+
             self.current_scene.__init__(**kwargs)
         if hasattr(self.current_scene, 'enter'):
             self.current_scene.enter()  # Call enter method on new scene

@@ -4,20 +4,23 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pygame
 import json
 import tkinter as tk
+import math
 from tkinter import ttk, filedialog, simpledialog, messagebox
 
 from PIL import Image, ImageTk
 
-from core.new_dungeon_generator import generate_new_dungeon, save_dungeon_data, translate_tile_type
+from core.new_dungeon_generator import generate_new_dungeon, save_dungeon_data, translate_tile_type, load_enemy_data
 from ui.dungeon_gui_scene_generator import generate_scene_file, add_scene_to_game_engine, add_portal_to_spawntown, remove_scene_from_scenes_json, remove_portal_from_spawntown
 from ui.dungeon_display import display_dungeon
 
 class DungeonGeneratorGUI:
-    def __init__(self):
-        pygame.init()
-        pygame.display.set_mode((1, 1))  # Initialize pygame display (size doesn't matter here)
-
+    def __init__(self, game):
+        # Removed pygame.init() and pygame.display.set_mode((1, 1)) to avoid conflicts with main Pygame loop
+        self.game = game
+        self.game.logger.info("DungeonGeneratorGUI initialized.")
         self.root = tk.Tk()
+        self.root.after(100, self.update_tkinter)
+
         self.root.title("Dungeon Generator")
 
         self.width_label = ttk.Label(self.root, text="Width:")
@@ -34,79 +37,95 @@ class DungeonGeneratorGUI:
 
         self.tileset_label = ttk.Label(self.root, text="Tileset:")
         self.tileset_label.grid(row=2, column=0)
-        self.tileset_options = ["default", "swamp_cave"]  # Add more tilesets here
+        with open('data/tileset_mappings.json', 'r') as f:
+            tileset_data = json.load(f)
+        self.tileset_options = list(tileset_data.keys())
         self.tileset_combo = ttk.Combobox(self.root, values=self.tileset_options)
         self.tileset_combo.set("default")
         self.tileset_combo.grid(row=2, column=1)
 
         self.enemy_types_label = ttk.Label(self.root, text="Enemy Types:")
-        self.enemy_types_label.grid(row=3, column=0)
-        self.enemy_types_options = ["goblin", "phantom"]  # Add more enemy types here
+        # Load enemy types dynamically from enemy_data.json
+        enemy_data = load_enemy_data('data/enemy_data.json')
+        self.enemy_types_options = list(enemy_data.keys())
         self.enemy_types_vars = {}
+        current_row = 3 # Checkboxes start at row 3
+        num_columns = 2 # Number of columns for enemy checkboxes
+        num_enemy_types = len(self.enemy_types_options)
+        num_enemy_rows = math.ceil(num_enemy_types / num_columns) # Calculate rows needed for enemies
+
         for i, enemy_type in enumerate(self.enemy_types_options):
             var = tk.BooleanVar()
             self.enemy_types_vars[enemy_type] = var
             checkbox = tk.Checkbutton(self.root, text=enemy_type, variable=var)
-            checkbox.grid(row=3 + i, column=1, sticky=tk.W)
+            checkbox.grid(row=current_row + (i // num_columns), column=1 + (i % num_columns), sticky=tk.W)
+        
+        # Adjust row for num_enemies_label based on number of enemy types
+        self.num_enemies_label = ttk.Label(self.root, text="Number of Enemies:")
+        self.num_enemies_label.grid(row=current_row + num_enemy_rows, column=0)
+        self.num_enemies_entry = ttk.Entry(self.root)
+        self.num_enemies_entry.insert(0, "5") # Default to 5 enemies
+        self.num_enemies_entry.grid(row=current_row + num_enemy_rows, column=1)
+
 
         self.dungeon_name_label = ttk.Label(self.root, text="Dungeon Name:")
-        self.dungeon_name_label.grid(row=5, column=0)
+        self.dungeon_name_label.grid(row=5 + num_enemy_rows, column=0) # Adjusted row
         self.dungeon_name_entry = ttk.Entry(self.root)
         self.dungeon_name_entry.insert(0, "New Dungeon")
-        self.dungeon_name_entry.grid(row=5, column=1)
+        self.dungeon_name_entry.grid(row=5 + num_enemy_rows, column=1) # Adjusted row
 
         self.portal_graphic_label = ttk.Label(self.root, text="Portal Graphic:")
-        self.portal_graphic_label.grid(row=6, column=0)
+        self.portal_graphic_label.grid(row=6 + num_enemy_rows, column=0) # Adjusted row
         self.portal_graphic_button = ttk.Button(self.root, text="Browse", command=self.browse_portal_graphic)
-        self.portal_graphic_button.grid(row=6, column=1)
+        self.portal_graphic_button.grid(row=6 + num_enemy_rows, column=1) # Adjusted row
         self.portal_graphic_path = tk.StringVar()
 
         self.map_algorithm_label = ttk.Label(self.root, text="Map Algorithm:")
-        self.map_algorithm_label.grid(row=7, column=0)
+        self.map_algorithm_label.grid(row=7 + num_enemy_rows, column=0) # Adjusted row
         self.map_algorithm_options = ["perlin_noise", "room_based"]
         self.map_algorithm_combo = ttk.Combobox(self.root, values=self.map_algorithm_options)
         self.map_algorithm_combo.set("perlin_noise")
-        self.map_algorithm_combo.grid(row=7, column=1)
+        self.map_algorithm_combo.grid(row=7 + num_enemy_rows, column=1) # Adjusted row
 
         self.portal_placement_label = ttk.Label(self.root, text="Portal Placement:")
-        self.portal_placement_label.grid(row=8, column=0)
+        self.portal_placement_label.grid(row=8 + num_enemy_rows, column=0) # Adjusted row
         self.portal_placement_options = ["random", "specific"]
         self.portal_placement_combo = ttk.Combobox(self.root, values=self.portal_placement_options)
         self.portal_placement_combo.set("random")
-        self.portal_placement_combo.grid(row=8, column=1)
+        self.portal_placement_combo.grid(row=8 + num_enemy_rows, column=1) # Adjusted row
         self.portal_placement_combo.bind("<<ComboboxSelected>>", self.update_portal_coordinates)
 
         self.portal_x_label = ttk.Label(self.root, text="Portal X:")
-        self.portal_x_label.grid(row=9, column=0)
+        self.portal_x_label.grid(row=9 + num_enemy_rows, column=0) # Adjusted row
         self.portal_x_entry = ttk.Entry(self.root)
-        self.portal_x_entry.grid(row=9, column=1)
+        self.portal_x_entry.grid(row=9 + num_enemy_rows, column=1) # Adjusted row
         self.portal_y_label = ttk.Label(self.root, text="Portal Y:")
-        self.portal_y_label.grid(row=10, column=0)
+        self.portal_y_label.grid(row=10 + num_enemy_rows, column=0) # Adjusted row
         self.portal_y_entry = ttk.Entry(self.root)
-        self.portal_y_entry.grid(row=10, column=1)
+        self.portal_y_entry.grid(row=10 + num_enemy_rows, column=1) # Adjusted row
         self.update_portal_coordinates()
 
         self.decorations_label = ttk.Label(self.root, text="Decorations:")
-        self.decorations_label.grid(row=11, column=0)
+        self.decorations_label.grid(row=11 + num_enemy_rows, column=0) # Adjusted row
         self.decorations_options = ["graphics/dc-dngn/dngn_sparkling_fountain", "graphics/dc-dngn/dngn_orcish_idol"]  # Add more decorations here
         self.decorations_vars = {}
         for i, decoration in enumerate(self.decorations_options):
             var = tk.BooleanVar()
             self.decorations_vars[decoration] = var
             checkbox = tk.Checkbutton(self.root, text=decoration, variable=var)
-            checkbox.grid(row=11 + i, column=1, sticky=tk.W)
+            checkbox.grid(row=11 + num_enemy_rows + i, column=1, sticky=tk.W) # Adjusted row offset
 
         self.perlin_noise_threshold_label = ttk.Label(self.root, text="Perlin Noise Threshold:")
-        self.perlin_noise_threshold_label.grid(row=12, column=0)
+        self.perlin_noise_threshold_label.grid(row=13 + num_enemy_rows, column=0) # Adjusted row
         self.perlin_noise_threshold_entry = ttk.Entry(self.root)
         self.perlin_noise_threshold_entry.insert(0, "0.0")
-        self.perlin_noise_threshold_entry.grid(row=12, column=1)
+        self.perlin_noise_threshold_entry.grid(row=13 + num_enemy_rows, column=1) # Adjusted row
 
         self.generate_button = ttk.Button(self.root, text="Generate Dungeon", command=self.generate_dungeon)
-        self.generate_button.grid(row=13, column=0, columnspan=2)
+        self.generate_button.grid(row=14 + num_enemy_rows, column=0, columnspan=2) # Adjusted row
 
         self.dungeon_frame = ttk.Frame(self.root)
-        self.dungeon_frame.grid(row=0, column=2, rowspan=14)
+        self.dungeon_frame.grid(row=0, column=2, rowspan=15 + num_enemy_rows) # Adjusted rowspan
 
         self.canvas = tk.Canvas(self.dungeon_frame, width=600, height=400)
         self.canvas.pack()
@@ -117,7 +136,7 @@ class DungeonGeneratorGUI:
         self.canvas.bind("<Button-1>", self.place_object)
 
         self.toolbar_frame = ttk.Frame(self.root)
-        self.toolbar_frame.grid(row=0, column=3, rowspan=14, sticky=tk.NS)
+        self.toolbar_frame.grid(row=0, column=3, rowspan=15 + num_enemy_rows, sticky=tk.NS) # Adjusted rowspan
 
         self.portal_button = ttk.Button(self.toolbar_frame, text="Place Portal", command=self.select_portal)
         self.portal_button.pack(pady=5)
@@ -163,8 +182,9 @@ class DungeonGeneratorGUI:
             width = int(self.width_entry.get())
             height = int(self.height_entry.get())
             perlin_noise_threshold = float(self.perlin_noise_threshold_entry.get())
+            num_enemies = int(self.num_enemies_entry.get()) # Get number of enemies
         except ValueError:
-            messagebox.showerror("Error", "Width, height, and Perlin noise threshold must be numbers.")
+            messagebox.showerror("Error", "Width, height, Perlin noise threshold, and number of enemies must be numbers.")
             return
 
         dungeon_params = {
@@ -172,6 +192,7 @@ class DungeonGeneratorGUI:
             'height': height,
             'tileset': self.tileset_combo.get(),
             'enemy_types': [enemy_type for enemy_type, var in self.enemy_types_vars.items() if var.get()],
+            'num_enemies': num_enemies, # Add num_enemies to params
             'name': self.dungeon_name_entry.get(),
             'portal_graphic': self.portal_graphic_path.get(),
             'map_algorithm': self.map_algorithm_combo.get(),
@@ -185,7 +206,7 @@ class DungeonGeneratorGUI:
                 dungeon_params['portal_y'] = int(self.portal_y_entry.get())
             except ValueError:
                 messagebox.showerror("Error", "Portal X and Y must be integers.")
-            return
+                return # Added return here to prevent further execution if error occurs
 
         dungeon_params['decorations'] = [decoration for decoration, var in self.decorations_vars.items() if var.get()]
 
@@ -264,6 +285,7 @@ class DungeonGeneratorGUI:
         add_scene_to_game_engine(filename)
         # Add portal to spawntown in zone_data.json
         add_portal_to_spawntown(filename, dungeon_data.get('portal_graphic', "graphics/UNUSED/features/dngn_exit.png"), self.find_portal_location, dungeon_data)
+        self.game.scene_manager.load_scenes() # Reload scenes after adding a new one
     
     def open_remove_dungeon_dialog(self):
         """Opens a dialog box to remove a dungeon."""
@@ -323,9 +345,23 @@ class DungeonGeneratorGUI:
             return 0, 0
         return 10, 10
 
+    def update_tkinter(self):
+        self.root.update_idletasks()
+        self.root.update()
+        self.root.after(100, self.update_tkinter)
+
     def run(self):
         self.root.mainloop()
 
 if __name__ == "__main__":
-    gui = DungeonGeneratorGUI()
+    # When running as a standalone script, a dummy game object is needed
+    class DummyGame:
+        def __init__(self):
+            self.settings = type('Settings', (object,), {'FULLSCREEN': False})()
+            self.logger = type('Logger', (object,), {'info': print, 'error': print})()
+            self.scene_manager = type('SceneManager', (object,), {'set_scene': print})()
+        def apply_display_settings(self):
+            pass
+
+    gui = DungeonGeneratorGUI(DummyGame())
     gui.run()

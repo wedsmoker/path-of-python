@@ -22,10 +22,8 @@ import os
 from core.base_gameplay_scene import BaseGameplayScene
 
 class {class_name}(BaseGameplayScene):
-    def __init__(self, game, player, hud):
-        dungeon_data = self.load_dungeon_data("{dungeon_name}")
-        tileset_name = dungeon_data.get("tileset", "default")  # Extract tileset name
-        super().__init__(game, player, hud, tileset_name=tileset_name)  # Pass tileset_name
+    def __init__(self, game, player, hud, dungeon_data=None):
+        super().__init__(game, player, hud, tileset_name=dungeon_data.get("tileset", "default"), dungeon_data=dungeon_data)
         self.name = "{dungeon_name}"
         self.dungeon_data = dungeon_data
         self.tile_map = self.dungeon_data["tile_map"]
@@ -35,6 +33,8 @@ class {class_name}(BaseGameplayScene):
         self.effects = pygame.sprite.Group()  # Initialize the effects group
 
     def load_dungeon_data(self, dungeon_name):
+        # This method is no longer strictly needed if dungeon_data is passed directly,
+        # but kept for compatibility or if other parts of the code rely on it.
         dungeon_data_path = os.path.abspath(os.path.join(os.getcwd(), "data", "dungeons", f'{{dungeon_name}}.json'))
         try:
             with open(dungeon_data_path, "r") as f:
@@ -80,7 +80,8 @@ def add_scene_to_game_engine(dungeon_name):
         # Add the new scene to the scene list
         new_scene = {
             "name": dungeon_name,
-            "class": f"core.dungeons.{dungeon_name}.{class_name}"
+            "class": f"core.dungeons.{dungeon_name}.{class_name}",
+            "dungeon_data_path": f"data/dungeons/{dungeon_name}.json" # Added this line
         }
         scenes_data['scenes'].append(new_scene)
 

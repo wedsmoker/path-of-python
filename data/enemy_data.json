@@ -1,16 +1,161 @@
 {
-    "goblin": {
-        "name": "Goblin",
-        "health": 30,
-        "damage": 5,
-        "speed": 60,
-        "sprite_path": "graphics/dc-mon/goblin.png"
-    },
     "phantom": {
         "name": "Phantom",
         "health": 40,
         "damage": 8,
         "speed": 50,
         "sprite_path": "graphics/dc-mon/undead/phantom.png"
+    },
+    "bat": {
+        "name": "Bat",
+        "health": 10,
+        "damage": 2,
+        "speed": 80,
+        "sprite_path": "graphics/dc-mon/animals/giant_bat.png"
+    },
+    "snake": {
+        "name": "Snake",
+        "health": 15,
+        "damage": 3,
+        "speed": 70,
+        "sprite_path": "graphics/dc-mon/animals/snake.png"
+    },
+    "imp": {
+        "name": "Imp",
+        "health": 25,
+        "damage": 6,
+        "speed": 65,
+        "sprite_path": "graphics/dc-mon/demons/imp.png",
+        "attack_range": 200,
+        "attack_cooldown": 1500,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
+        "ranged_attack_pattern": "single"
+    },
+    "demon_small": {
+        "name": "Small Demon",
+        "health": 35,
+        "damage": 7,
+        "speed": 55,
+        "sprite_path": "graphics/UNUSED/monsters/quasit.png"
+    },
+    "draconian_red": {
+        "name": "Red Draconian",
+        "health": 70,
+        "damage": 15,
+        "speed": 40,
+        "sprite_path": "graphics/dc-mon/draco/draco-base-red.png",
+        "attack_range": 300,
+        "attack_cooldown": 2000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/orb_of_destruction_small.png",
+        "ranged_attack_pattern": "spread"
+    },
+    "fungus": {
+        "name": "Fungus",
+        "health": 20,
+        "damage": 4,
+        "speed": 20,
+        "sprite_path": "graphics/dc-mon/fungi_plants/wandering_mushroom.png"
+    },
+    "angel": {
+        "name": "Angel",
+        "health": 80,
+        "damage": 20,
+        "speed": 45,
+        "sprite_path": "graphics/UNUSED/monsters/angel.png"
+    },
+    "gargoyle": {
+        "name": "Gargoyle",
+        "health": 60,
+        "damage": 12,
+        "speed": 35,
+        "sprite_path": "graphics/dc-mon/nonliving/gargoyle.png"
+    },
+    "spriggan": {
+        "name": "Spriggan",
+        "health": 20,
+        "damage": 5,
+        "speed": 90,
+        "sprite_path": "graphics/dc-mon/spriggan/spriggan.png"
+    },
+    "training_dummy": {
+        "name": "Training Dummy",
+        "health": 1,
+        "damage": 0,
+        "speed": 0,
+        "sprite_path": "graphics/dc-mon/statues/training_dummy.png"
+    },
+    "ghoul": {
+        "name": "Ghoul",
+        "health": 45,
+        "damage": 9,
+        "speed": 48,
+        "sprite_path": "graphics/dc-mon/undead/ghoul.png"
+    },
+    "skeletal_warrior": {
+        "name": "Skeletal Warrior",
+        "health": 50,
+        "damage": 10,
+        "speed": 45,
+        "sprite_path": "graphics/dc-mon/undead/skeletal_warrior.png"
+    },
+    "blork_the_orc": {
+        "name": "Blork the Orc",
+        "health": 100,
+        "damage": 25,
+        "speed": 30,
+        "sprite_path": "graphics/dc-mon/unique/blork_the_orc.png"
+    },
+    "grum": {
+        "name": "Grum",
+        "health": 90,
+        "damage": 22,
+        "speed": 32,
+        "sprite_path": "graphics/dc-mon/unique/grum.png"
+    },
+    "sigmund": {
+        "name": "Sigmund",
+        "health": 120,
+        "damage": 30,
+        "speed": 28,
+        "sprite_path": "graphics/dc-mon/unique/sigmund.png"
+    },
+    "royal_jelly": {
+        "name": "Royal Jelly",
+        "health": 150,
+        "damage": 10,
+        "speed": 15,
+        "sprite_path": "graphics/dc-mon/unique/royal_jelly.png"
+    },
+    "lernaean_hydra": {
+        "name": "Lernaean Hydra",
+        "health": 200,
+        "damage": 35,
+        "speed": 25,
+        "sprite_path": "graphics/dc-mon/unique/lernaean_hydra.png"
+    },
+    "titan": {
+        "name": "Titan",
+        "health": 250,
+        "damage": 40,
+        "speed": 20,
+        "sprite_path": "graphics/dc-mon/titan.png"
+    },
+    "storm_dragon": {
+        "name": "Storm Dragon",
+        "health": 180,
+        "damage": 30,
+        "speed": 35,
+        "sprite_path": "graphics/dc-mon/storm_dragon.png",
+        "attack_range": 400,
+        "attack_cooldown": 3000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/orb_of_destruction_big.png",
+        "ranged_attack_pattern": "burst"
+    },
+    "troll": {
+        "name": "Troll",
+        "health": 70,
+        "damage": 15,
+        "speed": 40,
+        "sprite_path": "graphics/dc-mon/troll.png"
     }
 }

@@ -1,0 +1,7 @@
+{
+  "floor": "graphics/dc-dngn/floor/volcanic_floor0.png",
+  "wall": "graphics/dc-dngn/wall/volcanic_wall0.png",
+  "portal": "graphics/spells/fire/fire_storm.png",
+  "decoration": "graphics/UNUSED/features/dngn_lava.png",
+  "unknown": "graphics/UNUSED/other/acid_venom.png"
+}

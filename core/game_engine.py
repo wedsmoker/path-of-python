@@ -7,7 +7,6 @@ from config.constants import STATE_TITLE_SCREEN, STATE_GAMEPLAY, STATE_PAUSE_MEN
 from core.input_handler import InputHandler
 from core.scene_manager import SceneManager, BaseScene
 from core.utils import draw_text
-# from entities.player import Player # Removed Player import here
 from ui.hud import HUD # Import HUD
 from ui.inventory_screen import InventoryScreen # Import InventoryScreen
 from ui.skill_tree_ui import SkillTreeUI # Import SkillTreeUI
@@ -18,6 +17,7 @@ import logging # Import logging module
 import traceback # Import traceback module
 from core.swamp_cave_dungeon import SwampCaveDungeon # Import SwampCaveDungeon
 import json
+import inspect # Import inspect module
 
 class GameEngine:
     """Manages the main game loop, scenes, and core systems."""
@@ -40,8 +40,8 @@ class GameEngine:
 
         self.input_handler = InputHandler()
 
-        # self.player = Player(self, self.settings.SCREEN_WIDTH // 2, self.settings.SCREEN_HEIGHT // 2) # Removed player instantiation
-        # self.hud = HUD(self, self.settings.SCREEN_WIDTH // 2, self.settings.SCREEN_HEIGHT // 2) # HUD will be initialized by BaseGameplayScene or specific scenes
+        self.player = None # Initialize player to None
+        self.hud = None # Initialize hud to None
         self.dialogue_manager = DialogueManager(self)
         self.quest_manager = QuestManager('data/quests.json') # Initialize QuestManager
 
@@ -55,38 +55,48 @@ class GameEngine:
 
     def load_scenes(self):
         """Loads scenes from data/scenes.json."""
-        import json
         with open('data/scenes.json', 'r') as f:
-            scenes_data = json.load(f)
+            self.scenes_data = json.load(f) # Store scenes_data as a self attribute
 
         self.scenes = {}
-        for scene_data in scenes_data['scenes']:
+        for scene_data in self.scenes_data['scenes']: # Use self.scenes_data
             name = scene_data['name']
             class_path = scene_data['class']
             module_name, class_name = class_path.rsplit(".", 1)
             module = __import__(module_name, fromlist=[class_name])
             scene_class = getattr(module, class_name)
-            # Pass the game engine instance, player, and HUD to the scene constructor
+            
+            scene_args = {'game': self}
+            dungeon_data = None
+
             if name == "spawn_town":
                 from core.spawn_town import SpawnTown
                 scene = scene_class(self)
                 self.spawn_town = scene
-            elif hasattr(scene_class, '__init__') and callable(scene_class.__init__) and hasattr(scene_class.__init__, '__code__') and 'player' in scene_class.__init__.__code__.co_varnames and 'hud' in scene_class.__init__.__code__.co_varnames:
-                # Access player and HUD from SpawnTown instance
-                try:
-                    temp_player = self.spawn_town.player # Access player from SpawnTown instance
-                    temp_hud = self.spawn_town.hud # Access HUD from SpawnTown instance
-                    scene = scene_class(self, temp_player, temp_hud)
-                except AttributeError:
-                    print("AttributeError: Player or HUD not initialized in SpawnTown.  Consider initializing SpawnTown first.")
-                    import inspect
-                    sig = inspect.signature(scene_class.__init__)
-                    kwargs = {}
-                    if 'game' in sig.parameters:
-                        kwargs['game'] = self
-                    scene = scene_class(**kwargs)
+                self.player = scene.player # Set player from SpawnTown instance
+                self.hud = scene.hud # Set HUD from SpawnTown instance
             else:
-                scene = scene_class(self)
+                # Check if the scene constructor expects player and hud
+                if hasattr(scene_class, '__init__'):
+                    sig = inspect.signature(scene_class.__init__)
+                    if 'player' in sig.parameters and 'hud' in sig.parameters:
+                        scene_args['player'] = self.player
+                        scene_args['hud'] = self.hud
+                    
+                    # Load dungeon_data if path is specified
+                    if "dungeon_data_path" in scene_data:
+                        dungeon_data_path = scene_data["dungeon_data_path"]
+                        try:
+                            with open(dungeon_data_path, "r") as df:
+                                dungeon_data = json.load(df)
+                            scene_args['dungeon_data'] = dungeon_data
+                        except (FileNotFoundError, json.JSONDecodeError) as e:
+                            self.logger.error(f"Error loading dungeon data for scene {name} from {dungeon_data_path}: {e}")
+                            scene_args['dungeon_data'] = None # Ensure dungeon_data is None on error
+
+                scene = scene_class(**scene_args)
+            
+            self.logger.info(f"Attempting to add scene: {name} with class {class_name}")
             self.scene_manager.add_scene(name, scene)
 
     def run(self):
@@ -104,12 +114,19 @@ class GameEngine:
                 self.scene_manager.update(dt)
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
                     self.scene_manager.current_scene.effects.update(dt)
+                if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
+                    self.scene_manager.current_scene.projectiles.update(dt, self.scene_manager.current_scene.player, self.scene_manager.current_scene.tile_map, self.scene_manager.current_scene.tile_size)
+
 
                 self.screen.fill((0, 0, 0)) # Clear screen
                 self.scene_manager.draw(self.screen)
                 if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'effects'):
                     for sprite in self.scene_manager.current_scene.effects:
                         self.screen.blit(sprite.image, (sprite.rect.x - self.scene_manager.current_scene.camera_x, sprite.rect.y - self.scene_manager.current_scene.camera_y))
+                if self.scene_manager.current_scene and hasattr(self.scene_manager.current_scene, 'projectiles'):
+                    for sprite in self.scene_manager.current_scene.projectiles:
+                        sprite.draw(self.screen, self.scene_manager.current_scene.camera_x, self.scene_manager.current_scene.camera_y, self.scene_manager.current_scene.zoom_level)
+
 
                 self.input_handler.reset_inputs() # Reset input states for the next frame
 

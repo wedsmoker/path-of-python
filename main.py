@@ -10,6 +10,9 @@ from ui.menus import Button
 
 if __name__ == "__main__":
     pygame.init()
+    pygame.mixer.init()
+    pygame.mixer.music.load("./data/rooms.mp3")
+    pygame.mixer.music.play(-1) # -1 means loop indefinitely
     # screen_width = 800
     # screen_height = 600
     # screen = pygame.display.set_mode((screen_width, screen_height))

@@ -17,6 +17,10 @@
             "class": "ui.menus.SettingsMenu"
         },
         {
+            "name": "volume_settings",
+            "class": "ui.menus.VolumeSettingsMenu"
+        },
+        {
             "name": "inventory",
             "class": "ui.inventory_screen.InventoryScreen"
         },
@@ -41,16 +45,22 @@
             "class": "core.dungeons.fort6.fort6"
         },
         {
-            "name": "rtrt",
-            "class": "core.dungeons.rtrt.rtrt"
+            "name": "grass",
+            "class": "core.dungeons.grass.grass"
         },
         {
-            "name": "hell5",
-            "class": "core.dungeons.hell5.hell5"
+            "name": "gg",
+            "class": "core.dungeons.gg.gg"
         },
         {
-            "name": "88",
-            "class": "core.dungeons.88._88"
+            "name": "yt",
+            "class": "core.dungeons.yt.yt",
+            "dungeon_data_path": "data/dungeons/yt.json"
+        },
+        {
+            "name": "ll",
+            "class": "core.dungeons.ll.ll",
+            "dungeon_data_path": "data/dungeons/ll.json"
         }
     ]
 }

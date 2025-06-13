@@ -1,0 +1,7 @@
+{
+  "floor": "graphics/dc-dngn/floor/hive0.png",
+  "wall": "graphics/dc-dngn/wall/slime0.png",
+  "portal": "graphics/UNUSED/monsters/giant_leech.png",
+  "decoration": "graphics/UNUSED/other/mold_large1.png",
+  "unknown": "graphics/UNUSED/other/wand_brass.png"
+}

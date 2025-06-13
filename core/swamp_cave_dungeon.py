@@ -6,7 +6,7 @@ import math
 from core.base_gameplay_scene import BaseGameplayScene
 from entities.player import Player
 from entities.npc import NPC
-from entities.enemy import Enemy
+# from entities.enemy import Enemy # Removed as BaseGameplayScene handles enemy import
 from ui.hud import HUD
 from world.map_generator import MapGenerator
 from core.pathfinding import Pathfinding
@@ -14,20 +14,25 @@ from config.constants import (
     ENEMY_SPAWN_DISTANCE, ENEMY_SPAWN_COOLDOWN, TILE_SIZE,
     KEY_SKILL_TREE, KEY_INVENTORY, KEY_PAUSE_MENU, KEY_SETTINGS_MENU
 )
+from config import settings # Import settings for screen dimensions
 
 class SwampCaveDungeon(BaseGameplayScene):
     def __init__(self, game, player, hud):
-        super().__init__(game, player, hud)
+        # Load dungeon data from JSON first
+        dungeon_data = self.load_dungeon_data("swamp_cave")
+        tileset_name = dungeon_data.get("tileset", "default") # Extract tileset name
+
+        # Pass dungeon_data to the BaseGameplayScene constructor
+        super().__init__(game, player, hud, tileset_name=tileset_name, dungeon_data=dungeon_data)
         self.name = "SwampCaveDungeon"
 
-        # Load dungeon data from JSON
-        self.dungeon_data = self.load_dungeon_data("swamp_cave")
-        self.allowed_enemies = self.dungeon_data.get("allowed_enemies", [])
-        self.enemy_details = self.dungeon_data.get("enemy_details", {})
+        self.dungeon_data = dungeon_data # Store dungeon data locally for other dungeon-specific uses
+        # self.allowed_enemies = self.dungeon_data.get("allowed_enemies", []) # Removed, enemies are loaded from dungeon_data
+        # self.enemy_details = self.dungeon_data.get("enemy_details", {}) # Removed
 
-        self.enemies = pygame.sprite.Group()
+        # self.enemies = pygame.sprite.Group() # Removed, BaseGameplayScene handles this
         self.effects = pygame.sprite.Group() # Add effects group
-        self.last_enemy_spawn_time = pygame.time.get_ticks()
+        # self.last_enemy_spawn_time = pygame.time.get_ticks() # Removed, spawning handled by generator
 
         # Map generation placeholder - use settings from JSON if available
         map_settings = self.dungeon_data.get("map_settings", {"width": 100, "height": 100})
@@ -148,27 +153,7 @@ class SwampCaveDungeon(BaseGameplayScene):
             print(f"Error loading dungeon data from {dungeons_data_path}: {e}")
             return {}
 
-    def spawn_enemy(self):
-        """Spawns a new enemy at a random location within a certain distance of the player."""
-        if not self.allowed_enemies:
-            return
-
-        enemy_type_key = random.choice(self.allowed_enemies)
-        enemy_data = self.enemy_details.get(enemy_type_key)
-
-        if not enemy_data:
-            print(f"Warning: No details found for enemy type '{enemy_type_key}' in dungeons.json")
-            return
-
-        angle = random.uniform(0, 2 * math.pi)
-        player_pos = self.player.rect.center
-        x = player_pos[0] + ENEMY_SPAWN_DISTANCE * math.cos(angle)
-        y = player_pos[1] + ENEMY_SPAWN_DISTANCE * math.sin(angle)
-
-        # Create enemy using data from JSON
-        new_enemy = Enemy(self.game, x, y, enemy_data)
-        self.enemies.add(new_enemy)
-        # print(f"Spawned a {new_enemy.name} at ({int(x)}, {int(y)})!") # Uncomment for debugging
+    # Removed spawn_enemy method as enemy spawning is handled by new_dungeon_generator.py
 
     def handle_event(self, event):
         super().handle_event(event)
@@ -201,15 +186,10 @@ class SwampCaveDungeon(BaseGameplayScene):
     def update(self, dt):
         current_time = pygame.time.get_ticks()
 
-        # Enemy Spawning Logic
-        if current_time - self.last_enemy_spawn_time > ENEMY_SPAWN_COOLDOWN:
-            if len(self.enemies) < 10:  # Allow slightly more enemies in dungeon
-                self.spawn_enemy()
-                self.last_enemy_spawn_time = current_time
+        # Removed Enemy Spawning Logic, handled by generator
 
-        # Update Enemies
-        self.enemies.update(dt)
-        self.effects.update(dt) # Update effects
+        # Update Effects (enemies are updated by BaseGameplayScene)
+        self.effects.update(dt)
 
         # Combine entities for minimap (only enemies for now)
         all_entities = self.enemies.sprites() # TODO: Add dungeon specific NPCs or objects
@@ -225,15 +205,7 @@ class SwampCaveDungeon(BaseGameplayScene):
         super().draw(screen)
         # Draw dungeon specific elements here (e.g., enemies)
 
-        # Draw Enemies relative to the camera
-        for enemy in self.enemies:
-            enemy_screen_x = (enemy.rect.x - self.camera_x) * self.zoom_level
-            enemy_screen_y = (enemy.rect.y - self.camera_y) * self.zoom_level
-
-            # Scale Enemy image
-            scaled_enemy_image = pygame.transform.scale(enemy.image, (int(enemy.rect.width * self.zoom_level), int(enemy.rect.height * self.zoom_level)))
-
-            screen.blit(scaled_enemy_image, (enemy_screen_x, enemy_screen_y))
+        # Removed Enemy drawing, handled by BaseGameplayScene
 
         # Draw the exit portal graphic
         if "dungeon_portal" in self.assets and self.assets["dungeon_portal"] is not None:

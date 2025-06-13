@@ -1,0 +1,7 @@
+{
+  "floor": "graphics/dc-dngn/floor/sandstone_floor0.png",
+  "wall": "graphics/dc-dngn/wall/sandstone_wall0.png",
+  "portal": "graphics/UNUSED/features/dngn_exit.png",
+  "decoration": "graphics/UNUSED/features/pedestal.png",
+  "unknown": "graphics/UNUSED/other/key.png"
+}
