@@ -2,7 +2,6 @@
 ![til](./example4.gif)
 ![til](./example2.gif)
 ![til](./example3.gif)
-Major update: added a dungeon generator GUI that can make new maps and add portals to them in spawntown.
 ![til](./example.gif)
 ## Game Concept
 
