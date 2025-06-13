@@ -5,9 +5,10 @@ from config.constants import TILE_SIZE
 from entities.projectile import Projectile
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, health, damage, speed, sprite_path, attack_range=0, attack_cooldown=0, projectile_sprite_path=None, ranged_attack_pattern="single"):
+    def __init__(self, game, x, y, name, health, damage, speed, sprite_path, attack_range=0, attack_cooldown=0, projectile_sprite_path=None, ranged_attack_pattern="single"):
         super().__init__()
         self.game = game
+        self.name = name # Initialize the name attribute
         self.image = self._load_sprite(sprite_path)
         self.rect = self.image.get_rect(topleft=(x, y))
         self.health = health
@@ -21,6 +22,11 @@ class Enemy(pygame.sprite.Sprite):
         self.last_attack_time = pygame.time.get_ticks() # Last time a ranged attack was performed
         self.projectile_sprite_path = projectile_sprite_path
         self.ranged_attack_pattern = ranged_attack_pattern # e.g., "single", "spread", "burst"
+        self._is_bursting = False
+        self._burst_projectiles_fired = 0
+        self._last_burst_shot_time = 0
+        self.burst_projectile_count = 3 # Number of projectiles in a burst
+        self.burst_delay = 100 # Delay between projectiles in a burst (ms)
 
         # Melee attack attributes
         self.melee_range = TILE_SIZE * 1.2 # Melee range, slightly larger than a tile
@@ -40,7 +46,13 @@ class Enemy(pygame.sprite.Sprite):
                 placeholder.fill((255, 0, 255))  # Magenta color for missing texture
                 return placeholder
             image = pygame.image.load(full_path).convert_alpha()
-            return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
+            scaled_image = pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
+            if scaled_image.get_size() == (0, 0):
+                print(f"Warning: Scaled image for {full_path} has zero dimensions. Returning placeholder.")
+                placeholder = pygame.Surface((TILE_SIZE, TILE_SIZE))
+                placeholder.fill((255, 0, 255))  # Magenta color for missing texture
+                return placeholder
+            return scaled_image
         except pygame.error as e:
             print(f"Error loading enemy sprite {full_path}: {e}")
             # Return a placeholder surface if loading fails
@@ -59,12 +71,24 @@ class Enemy(pygame.sprite.Sprite):
             if self.projectile_sprite_path:
                 if self.ranged_attack_pattern == "single":
                     self._shoot_projectile(player.rect.centerx, player.rect.centery)
+                    self.last_attack_time = current_time
                 elif self.ranged_attack_pattern == "spread":
                     self._shoot_spread_projectiles(player.rect.centerx, player.rect.centery, num_projectiles=3, angle_spread=30)
+                    self.last_attack_time = current_time
                 elif self.ranged_attack_pattern == "burst":
-                    self._shoot_burst_projectiles(player.rect.centerx, player.rect.centery, num_projectiles=3, delay=100)
+                    self._is_bursting = True
+                    self._burst_projectiles_fired = 0
+                    self._last_burst_shot_time = current_time # Start burst timer
+                    # The actual shooting will happen in the update method
+                elif self.ranged_attack_pattern == "circle":
+                    self._shoot_circle_projectiles(num_projectiles=8, radius=50)
+                    self.last_attack_time = current_time
+                elif self.ranged_attack_pattern == "spiral":
+                    self._shoot_spiral_projectiles(num_projectiles=15, angle_increment_degrees=20, radius_increment=10)
+                    self.last_attack_time = current_time
                 # Add more patterns here
-            self.last_attack_time = current_time
+            
+            # self.last_attack_time = current_time # Moved inside pattern specific blocks for burst
 
     def _shoot_projectile(self, target_x, target_y):
         projectile = Projectile(self.game, self.rect.centerx, self.rect.centery,
@@ -87,21 +111,51 @@ class Enemy(pygame.sprite.Sprite):
             proj_target_y = self.rect.centery + math.sin(current_angle) * 1000
             self._shoot_projectile(proj_target_x, proj_target_y)
 
-    def _shoot_burst_projectiles(self, target_x, target_y, num_projectiles, delay):
-        # This will require a more complex timing mechanism or a separate burst manager
-        # For now, we'll just shoot them all at once, or consider a simple delay loop if non-blocking
-        # For a true burst, you'd likely need to schedule these shots over time.
-        # This example will just fire them immediately for simplicity.
-        for _ in range(num_projectiles):
+    def _shoot_circle_projectiles(self, num_projectiles, radius=50):
+        """Shoots projectiles in a circle around the enemy."""
+        center_x, center_y = self.rect.centerx, self.rect.centery
+        for i in range(num_projectiles):
+            angle = (2 * math.pi / num_projectiles) * i
+            target_x = center_x + math.cos(angle) * radius
+            target_y = center_y + math.sin(angle) * radius
             self._shoot_projectile(target_x, target_y)
-            # In a real game, you'd use a timer or coroutine for delay
-            # pygame.time.wait(delay) # This would block, not suitable for game loop
+
+    def _shoot_spiral_projectiles(self, num_projectiles, angle_increment_degrees=20, radius_increment=10):
+        """Shoots projectiles in a spiral pattern."""
+        center_x, center_y = self.rect.centerx, self.rect.centery
+        base_angle = math.atan2(self.game.player.rect.centery - center_y, self.game.player.rect.centerx - center_x)
+        
+        for i in range(num_projectiles):
+            angle = base_angle + math.radians(angle_increment_degrees * i)
+            current_radius = 50 + (radius_increment * i) # Start with a base radius and increase
+            
+            target_x = center_x + math.cos(angle) * current_radius
+            target_y = center_y + math.sin(angle) * current_radius
+            self._shoot_projectile(target_x, target_y)
+    # _shoot_burst_projectiles is no longer needed as burst logic is handled in update
+    # def _shoot_burst_projectiles(self, target_x, target_y, num_projectiles, delay):
+    #     for _ in range(num_projectiles):
+    #         self._shoot_projectile(target_x, target_y)
 
     def update(self, dt, player, tile_map, tile_size):
+        # Debug print to check if update is called for any enemy
+        print(f"Enemy {self.name} update called.")
+
         if not player:
             return
 
         current_time = pygame.time.get_ticks()
+
+        # Handle burst attack sequence
+        if self._is_bursting:
+            if self._burst_projectiles_fired < self.burst_projectile_count:
+                if current_time - self._last_burst_shot_time > self.burst_delay:
+                    self._shoot_projectile(player.rect.centerx, player.rect.centery)
+                    self._burst_projectiles_fired += 1
+                    self._last_burst_shot_time = current_time
+            else:
+                self._is_bursting = False
+                self.last_attack_time = current_time # Reset main cooldown after burst finishes
 
         # Calculate distance to player
         dx, dy = player.rect.centerx - self.rect.centerx, player.rect.centery - self.rect.centery
@@ -111,11 +165,15 @@ class Enemy(pygame.sprite.Sprite):
         if dist <= self.melee_range and current_time - self.last_melee_attack_time > self.melee_cooldown:
             player.take_damage(self.damage)
             self.last_melee_attack_time = current_time
+            # Debug prints for ranged attack
+            if self.attack_range > 0:
+                print(f"Enemy {self.name} - Dist: {dist:.2f}, Attack Range: {self.attack_range}, Cooldown: {self.attack_cooldown}, Time since last attack: {current_time - self.last_attack_time}")
             # print(f"Enemy performed melee attack on player for {self.damage} damage.") # Debug print
 
         # Ranged attack logic (only if not in melee range or if ranged attack is preferred)
         # Prioritize ranged attack if within range and off cooldown, otherwise move or melee
-        if self.attack_range > 0 and dist <= self.attack_range and current_time - self.last_attack_time > self.attack_cooldown:
+        # Only trigger new ranged attack if not currently bursting
+        if not self._is_bursting and self.attack_range > 0 and dist <= self.attack_range and current_time - self.last_attack_time > self.attack_cooldown:
             self._perform_ranged_attack(player)
         elif dist > self.melee_range: # Only move if not in melee range
             # Simple AI: Move towards the player if not in attack range or no ranged attack

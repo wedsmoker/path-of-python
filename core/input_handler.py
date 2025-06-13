@@ -3,7 +3,7 @@ from config.constants import (
     KEY_SKILL_1, KEY_SKILL_2, KEY_SKILL_3, KEY_SKILL_4,
     KEY_POTION_1, KEY_POTION_2, KEY_POTION_3, KEY_POTION_4,
     KEY_INVENTORY, KEY_SKILL_TREE, KEY_INTERACT,
-    KEY_RIGHT_MOUSE, KEY_PAGE_UP, KEY_PAGE_DOWN
+    KEY_RIGHT_MOUSE, KEY_PAGE_UP, KEY_PAGE_DOWN, KEY_DEV_INVENTORY # Added KEY_DEV_INVENTORY
 )
 
 class InputHandler:
@@ -87,6 +87,9 @@ class InputHandler:
     def is_skill_tree_key_pressed(self):
         """Checks if the skill tree key is pressed."""
         return self.is_key_just_pressed(KEY_SKILL_TREE)
+    def is_dev_inventory_key_pressed(self):
+        """Checks if the developer inventory key is pressed."""
+        return self.is_key_just_pressed(KEY_DEV_INVENTORY)
 
     def is_interact_key_pressed(self):
         """Checks if the interact key is pressed."""

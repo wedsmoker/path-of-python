@@ -3,7 +3,7 @@ import os
 sys.path.append(".")
 import pygame
 from config import settings # Import settings module directly
-from config.constants import STATE_TITLE_SCREEN, STATE_GAMEPLAY, STATE_PAUSE_MENU, STATE_SETTINGS_MENU, STATE_INVENTORY, STATE_SKILL_TREE
+from config.constants import STATE_TITLE_SCREEN, STATE_GAMEPLAY, STATE_PAUSE_MENU, STATE_SETTINGS_MENU, STATE_INVENTORY, STATE_SKILL_TREE, STATE_DEVELOPER_INVENTORY
 from core.input_handler import InputHandler
 from core.scene_manager import SceneManager, BaseScene
 from core.utils import draw_text
@@ -12,6 +12,7 @@ from ui.inventory_screen import InventoryScreen # Import InventoryScreen
 from ui.skill_tree_ui import SkillTreeUI # Import SkillTreeUI
 from ui.dialogue_manager import DialogueManager
 from progression.quests import QuestManager # Import QuestManager
+from ui.developer_inventory_screen import DeveloperInventoryScreen
 import sys
 import logging # Import logging module
 import traceback # Import traceback module
@@ -48,6 +49,8 @@ class GameEngine:
         self.scene_manager = SceneManager(self) # Pass self (GameEngine instance) to SceneManager
 
         # Load scenes from data/scenes.json
+        self.developer_inventory_screen = DeveloperInventoryScreen(self)
+        self.scene_manager.add_scene(STATE_DEVELOPER_INVENTORY, self.developer_inventory_screen)
         self.load_scenes()
 
         self.scene_manager.set_scene(STATE_TITLE_SCREEN)

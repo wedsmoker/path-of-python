@@ -143,6 +143,7 @@ class BaseGameplayScene(BaseScene):
                 self.game,
                 enemy_info['x'] * self.tile_size,
                 enemy_info['y'] * self.tile_size,
+                enemy_type, # Pass the enemy_type as the name
                 health,
                 damage,
                 speed,

@@ -5,16 +5,14 @@ import random
 from core.base_gameplay_scene import BaseGameplayScene
 from entities.player import Player
 from entities.npc import NPC
-from entities.enemy import Enemy # Import Enemy class
 from ui.hud import HUD
 from world.map_generator import MapGenerator, SpawnTownMapGenerator
 from core.pathfinding import Pathfinding  # Import the Pathfinding class
 from config.constants import ( # Import necessary constants
-    ENEMY_SPAWN_DISTANCE, ENEMY_SPAWN_COOLDOWN, TILE_SIZE,
+    TILE_SIZE,
     KEY_RIGHT_MOUSE, KEY_PAGE_UP, KEY_PAGE_DOWN,
     KEY_SKILL_1, KEY_SKILL_2, KEY_SKILL_3, KEY_SKILL_4
 )
-import math # Import math for distance calculation
 from core.swamp_cave_dungeon import SwampCaveDungeon # Import the dungeon scene
 from config import settings # Import settings
 from items.weapon import Weapon # Import the Weapon class
@@ -32,19 +30,16 @@ class SpawnTown(BaseGameplayScene):
                 zone_data = json.load(f)
             spawn_town_data = zone_data["zones"]["spawn_town"]
             initial_player_x, initial_player_y = spawn_town_data["initial_player_position"]
-            # Get allowed enemies from zone data
-            self.allowed_enemies = spawn_town_data.get("allowed_enemies", [])
             # Load portals from zone data
             self.portals = spawn_town_data.get("portals", [])
             # Get tileset name from zone data
             tileset_name = spawn_town_data.get("tile_set", "default")
              # Remove suffix
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
-            print(f"SpawnTown: Warning: Could not load initial player position, allowed enemies, or portals from zone_data.json: {e}")
+            print(f"SpawnTown: Warning: Could not load initial player position, or portals from zone_data.json: {e}")
             # Fallback to default if data is missing or corrupted
             initial_player_x = game.settings.SCREEN_WIDTH // 2
             initial_player_y = game.settings.SCREEN_HEIGHT // 2
-            self.allowed_enemies = []
             self.portals = []
 
         # Instantiate player and HUD here
@@ -76,9 +71,7 @@ class SpawnTown(BaseGameplayScene):
         self.pathfinding = Pathfinding(game)  # Pass the game object to Pathfinding
 
         self.npcs = pygame.sprite.Group()
-        self.enemies = pygame.sprite.Group() # Add enemy group
         self.effects = pygame.sprite.Group() # Add effects group
-        self.last_enemy_spawn_time = pygame.time.get_ticks() # Initialize enemy spawn timer
 
         # Function to create an NPC with random sprites
         def create_npc(x, y, name, dialogue_id):
@@ -180,28 +173,6 @@ class SpawnTown(BaseGameplayScene):
         self.player.inventory.add_item(weapon, 1)
         self.load_portal_data()
 
-    def spawn_enemy(self):
-        """Spawns a new enemy at a random location within a certain distance of the player."""
-        if not self.allowed_enemies:
-            # print("No allowed enemies defined for this zone.") # Commented out to reduce console spam
-            return
-
-        # For now, just spawn a generic enemy. In the future, use allowed_enemies to pick type.
-        # enemy_type = random.choice(self.allowed_enemies) # Use this when different enemy types are implemented
-
-        angle = random.uniform(0, 2 * math.pi)  # Random angle in radians
-        # Spawn relative to the player's current position
-        player_pos = self.player.rect.center
-        x = player_pos[0] + ENEMY_SPAWN_DISTANCE * math.cos(angle)
-        y = player_pos[1] + ENEMY_SPAWN_DISTANCE * math.sin(angle)
-
-        # Create a generic enemy for now
-        # TODO: Use enemy data from zone_data.json for SpawnTown enemies
-        new_enemy = Enemy(self.game, x, y, {"name": "Generic Enemy", "health": 50, "damage": 5, "speed": 50, "sprite_path": None}) # Use the updated Enemy constructor
-        self.enemies.add(new_enemy)
-        # print(f"Spawned a Generic Enemy at ({int(x)}, {int(y)})!") # Commented out to reduce console spam)
-
-
     def handle_event(self, event):
         super().handle_event(event) # Call base class event handler
 
@@ -243,19 +214,12 @@ class SpawnTown(BaseGameplayScene):
     def update(self, dt):
         current_time = pygame.time.get_ticks()
 
-        # Enemy Spawning Logic
-        if current_time - self.last_enemy_spawn_time > ENEMY_SPAWN_COOLDOWN:
-            if len(self.enemies) < 5:  # Limit the number of enemies
-                self.spawn_enemy()
-            self.last_enemy_spawn_time = current_time
-
-        # Update NPCs and Enemies
+        # Update NPCs and Effects
         self.npcs.update(dt)
-        self.enemies.update(dt)
         self.effects.update(dt)
 
-        # Combine NPCs and Enemies for the minimap
-        all_entities = self.npcs.sprites() + self.enemies.sprites()
+        # Combine NPCs for the minimap
+        all_entities = self.npcs.sprites()
 
         # Pass the combined list of entities to the base class update, which passes it to the HUD
         super().update(dt, entities=all_entities)
@@ -285,18 +249,6 @@ class SpawnTown(BaseGameplayScene):
             scaled_npc_image = pygame.transform.scale(npc.image, (int(npc.rect.width * self.zoom_level), int(npc.rect.height * self.zoom_level)))
 
             screen.blit(scaled_npc_image, (npc_screen_x, npc_screen_y))
-
-        # Draw Enemies relative to the camera
-        for enemy in self.enemies:
-             # Calculate Enemy's screen position
-            enemy_screen_x = (enemy.rect.x - self.camera_x) * self.zoom_level
-            enemy_screen_y = (enemy.rect.y - self.camera_y) * self.zoom_level
-
-            # Scale Enemy image (using a simple colored square for now)
-            # In the future, load actual enemy sprites
-            scaled_enemy_image = pygame.transform.scale(enemy.image, (int(enemy.rect.width * self.zoom_level), int(enemy.rect.height * self.zoom_level)))
-
-            screen.blit(scaled_enemy_image, (enemy_screen_x, enemy_screen_y))
 
         # Draw effects
         for effect in self.effects:

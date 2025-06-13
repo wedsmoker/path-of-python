@@ -47,6 +47,7 @@ STATE_INVENTORY = "inventory"
 STATE_SKILL_TREE = "skill_tree"
 STATE_PAUSE_MENU = "pause_menu"
 STATE_SETTINGS_MENU = "settings_menu"
+STATE_DEVELOPER_INVENTORY = "developer_inventory"
 
 # Input Bindings
 # KEY_SKILL_1 = pygame.BUTTON_LEFT # Removed, now used for movement
@@ -68,3 +69,4 @@ KEY_INTERACT = pygame.K_f
 KEY_OPTIONS_MENU = pygame.K_o
 KEY_PAUSE_MENU = pygame.K_ESCAPE
 KEY_SETTINGS_MENU = pygame.K_F1
+KEY_DEV_INVENTORY = pygame.K_F2

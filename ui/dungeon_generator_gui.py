@@ -162,7 +162,7 @@ class DungeonGeneratorGUI:
         self.placing_object = None
 
     def browse_portal_graphic(self):
-        filename = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select Portal Graphic", filetypes=(("PNG files", "*.png"), ("all files", "*.*")))
+        filename = filedialog.askopenfilename(initialdir="graphics/dc-dngn/gateways", title="Select Portal Graphic", filetypes=(("PNG files", "*.png"), ("all files", "*.*")))
         self.portal_graphic_path.set(filename)
 
     def update_portal_coordinates(self, event=None):

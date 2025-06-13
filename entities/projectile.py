@@ -91,4 +91,15 @@ class Projectile(pygame.sprite.Sprite):
         scaled_image = pygame.transform.scale(self.image, (int(self.rect.width * zoom_level), int(self.rect.height * zoom_level)))
         screen_x = (self.rect.x - camera_x) * zoom_level
         screen_y = (self.rect.y - camera_y) * zoom_level
+        # Draw a glow/outline effect behind the projectile for better visibility
+        glow_radius = int(scaled_image.get_width() * 0.3) # A little bigger than the graphic
+        glow_color = (255, 0, 0) # Bright red
+
+        # Calculate the center of the projectile on screen
+        center_x = screen_x + scaled_image.get_width() / 2
+        center_y = screen_y + scaled_image.get_height() / 2
+
+        pygame.draw.circle(screen, glow_color, (int(center_x), int(center_y)), glow_radius)
+
+        # Draw the actual projectile image on top
         screen.blit(scaled_image, (screen_x, screen_y))

@@ -1,6 +1,8 @@
 import inspect
 import json # Import json module
 import os # Import os module
+import pygame # Import pygame for key constants
+from config.constants import STATE_DEVELOPER_INVENTORY, STATE_GAMEPLAY # Import constants
 
 class SceneManager:
     def __init__(self, game):
@@ -61,12 +63,19 @@ class SceneManager:
             self.current_scene.__init__(**kwargs)
         if hasattr(self.current_scene, 'enter'):
             self.current_scene.enter()  # Call enter method on new scene
-        self.current_scene_name = type(scene).__name__  # Update current scene name
+        self.current_scene_name = scene_name  # Update current scene name to the string name, not type name
         self.game.logger.info(f"Scene type: {type(scene)}")
-        self.game.logger.info(f"Switched to scene: {type(scene).__name__}")  # Use logger
+        self.game.logger.info(f"Switched to scene: {scene_name}")  # Use logger
 
     def handle_event(self, event):
-        """Passes events to the current scene."""
+        """Passes events to the current scene and handles global scene changes."""
+        # Handle developer inventory key press globally
+        if self.game.input_handler.is_dev_inventory_key_pressed():
+            if self.current_scene_name == STATE_DEVELOPER_INVENTORY:
+                self.set_scene(STATE_GAMEPLAY)
+            else:
+                self.set_scene(STATE_DEVELOPER_INVENTORY)
+        
         if self.current_scene:
             self.current_scene.handle_event(event)
 

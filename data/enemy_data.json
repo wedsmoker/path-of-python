@@ -4,21 +4,33 @@
         "health": 40,
         "damage": 8,
         "speed": 50,
-        "sprite_path": "graphics/dc-mon/undead/phantom.png"
+        "sprite_path": "graphics/dc-mon/undead/phantom.png",
+        "attack_range": 250,
+        "attack_cooldown": 2000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
+        "ranged_attack_pattern": "spiral"
     },
     "bat": {
         "name": "Bat",
         "health": 10,
         "damage": 2,
         "speed": 80,
-        "sprite_path": "graphics/dc-mon/animals/giant_bat.png"
+        "sprite_path": "graphics/dc-mon/animals/giant_bat.png",
+        "attack_range": 150,
+        "attack_cooldown": 1000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
+        "ranged_attack_pattern": "spread"
     },
     "snake": {
         "name": "Snake",
         "health": 15,
         "damage": 3,
         "speed": 70,
-        "sprite_path": "graphics/dc-mon/animals/snake.png"
+        "sprite_path": "graphics/dc-mon/animals/snake.png",
+        "attack_range": 180,
+        "attack_cooldown": 1200,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
+        "ranged_attack_pattern": "circle"
     },
     "imp": {
         "name": "Imp",
@@ -29,14 +41,18 @@
         "attack_range": 200,
         "attack_cooldown": 1500,
         "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
-        "ranged_attack_pattern": "single"
+        "ranged_attack_pattern": "burst"
     },
     "demon_small": {
         "name": "Small Demon",
         "health": 35,
         "damage": 7,
         "speed": 55,
-        "sprite_path": "graphics/UNUSED/monsters/quasit.png"
+        "sprite_path": "graphics/UNUSED/monsters/quasit.png",
+        "attack_range": 220,
+        "attack_cooldown": 1700,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/skull.png",
+        "ranged_attack_pattern": "spread"
     },
     "draconian_red": {
         "name": "Red Draconian",
@@ -54,91 +70,143 @@
         "health": 20,
         "damage": 4,
         "speed": 20,
-        "sprite_path": "graphics/dc-mon/fungi_plants/wandering_mushroom.png"
+        "sprite_path": "graphics/dc-mon/fungi_plants/wandering_mushroom.png",
+        "attack_range": 100,
+        "attack_cooldown": 2500,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/stone.png",
+        "ranged_attack_pattern": "single"
     },
     "angel": {
         "name": "Angel",
         "health": 80,
         "damage": 20,
         "speed": 45,
-        "sprite_path": "graphics/UNUSED/monsters/angel.png"
+        "sprite_path": "graphics/UNUSED/monsters/angel.png",
+        "attack_range": 280,
+        "attack_cooldown": 1800,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/snowflake.png",
+        "ranged_attack_pattern": "circle"
     },
     "gargoyle": {
         "name": "Gargoyle",
         "health": 60,
         "damage": 12,
         "speed": 35,
-        "sprite_path": "graphics/dc-mon/nonliving/gargoyle.png"
+        "sprite_path": "graphics/dc-mon/nonliving/gargoyle.png",
+        "attack_range": 250,
+        "attack_cooldown": 2000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/stone_cracked.png",
+        "ranged_attack_pattern": "burst"
     },
     "spriggan": {
         "name": "Spriggan",
         "health": 20,
         "damage": 5,
         "speed": 90,
-        "sprite_path": "graphics/dc-mon/spriggan/spriggan.png"
+        "sprite_path": "graphics/dc-mon/spriggan/spriggan.png",
+        "attack_range": 120,
+        "attack_cooldown": 800,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
+        "ranged_attack_pattern": "spread"
     },
     "training_dummy": {
         "name": "Training Dummy",
         "health": 1,
         "damage": 0,
         "speed": 0,
-        "sprite_path": "graphics/dc-mon/statues/training_dummy.png"
+        "sprite_path": "graphics/dc-mon/statues/training_dummy.png",
+        "attack_range": 0,
+        "attack_cooldown": 0,
+        "projectile_sprite_path": null,
+        "ranged_attack_pattern": "single"
     },
     "ghoul": {
         "name": "Ghoul",
         "health": 45,
         "damage": 9,
         "speed": 48,
-        "sprite_path": "graphics/dc-mon/undead/ghoul.png"
+        "sprite_path": "graphics/dc-mon/undead/ghoul.png",
+        "attack_range": 200,
+        "attack_cooldown": 1500,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/hand1.png",
+        "ranged_attack_pattern": "spiral"
     },
     "skeletal_warrior": {
         "name": "Skeletal Warrior",
         "health": 50,
         "damage": 10,
         "speed": 45,
-        "sprite_path": "graphics/dc-mon/undead/skeletal_warrior.png"
+        "sprite_path": "graphics/dc-mon/undead/skeletal_warrior.png",
+        "attack_range": 200,
+        "attack_cooldown": 1500,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/sword.png",
+        "ranged_attack_pattern": "burst"
     },
     "blork_the_orc": {
         "name": "Blork the Orc",
         "health": 100,
         "damage": 25,
         "speed": 30,
-        "sprite_path": "graphics/dc-mon/unique/blork_the_orc.png"
+        "sprite_path": "graphics/dc-mon/unique/blork_the_orc.png",
+        "attack_range": 250,
+        "attack_cooldown": 2000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
+        "ranged_attack_pattern": "spread"
     },
     "grum": {
         "name": "Grum",
         "health": 90,
         "damage": 22,
         "speed": 32,
-        "sprite_path": "graphics/dc-mon/unique/grum.png"
+        "sprite_path": "graphics/dc-mon/unique/grum.png",
+        "attack_range": 250,
+        "attack_cooldown": 2000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/horn.png",
+        "ranged_attack_pattern": "circle"
     },
     "sigmund": {
         "name": "Sigmund",
         "health": 120,
         "damage": 30,
         "speed": 28,
-        "sprite_path": "graphics/dc-mon/unique/sigmund.png"
+        "sprite_path": "graphics/dc-mon/unique/sigmund.png",
+        "attack_range": 250,
+        "attack_cooldown": 2000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/eye.png",
+        "ranged_attack_pattern": "spiral"
     },
     "royal_jelly": {
         "name": "Royal Jelly",
         "health": 150,
         "damage": 10,
         "speed": 15,
-        "sprite_path": "graphics/dc-mon/unique/royal_jelly.png"
+        "sprite_path": "graphics/dc-mon/unique/royal_jelly.png",
+        "attack_range": 100,
+        "attack_cooldown": 3000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/corpse.png",
+        "ranged_attack_pattern": "burst"
     },
     "lernaean_hydra": {
         "name": "Lernaean Hydra",
         "health": 200,
         "damage": 35,
         "speed": 25,
-        "sprite_path": "graphics/dc-mon/unique/lernaean_hydra.png"
+        "sprite_path": "graphics/dc-mon/unique/lernaean_hydra.png",
+        "attack_range": 300,
+        "attack_cooldown": 2500,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/dragon.png",
+        "ranged_attack_pattern": "spread"
     },
     "titan": {
         "name": "Titan",
         "health": 250,
         "damage": 40,
         "speed": 20,
-        "sprite_path": "graphics/dc-mon/titan.png"
+        "sprite_path": "graphics/dc-mon/titan.png",
+        "attack_range": 350,
+        "attack_cooldown": 3000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/pentagram_horizontal.png",
+        "ranged_attack_pattern": "circle"
     },
     "storm_dragon": {
         "name": "Storm Dragon",
@@ -156,6 +224,21 @@
         "health": 70,
         "damage": 15,
         "speed": 40,
-        "sprite_path": "graphics/dc-mon/troll.png"
+        "sprite_path": "graphics/dc-mon/troll.png",
+        "attack_range": 200,
+        "attack_cooldown": 1500,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/stone.png",
+        "ranged_attack_pattern": "spread"
+    },
+    "goblin": {
+        "name": "Goblin",
+        "health": 20,
+        "damage": 5,
+        "speed": 60,
+        "sprite_path": "graphics/dc-mon/goblin.png",
+        "attack_range": 150,
+        "attack_cooldown": 1000,
+        "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
+        "ranged_attack_pattern": "burst"
     }
 }

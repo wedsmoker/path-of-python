@@ -1,4 +1,5 @@
 import pygame
+import sys
 from core.scene_manager import BaseScene
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, UI_FONT, UI_FONT_SIZE_LARGE, UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, UI_SECONDARY_COLOR, UI_BACKGROUND_COLOR, UI_ACCENT_COLOR
 from core.spawn_town import SpawnTown
@@ -16,12 +17,21 @@ class TitleScreen(BaseScene):
             "Start Game", lambda: self.game.scene_manager.set_scene("spawn_town")
         )
         self.info_button = Button(
-            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 120, 200, 50,
+            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 110, 200, 50,
             "Info", lambda: self.game.scene_manager.set_scene("info_screen")
         )
         self.dungeon_maker_button = Button(
-            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 190, 200, 50,
+            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 170, 200, 50,
             "Dungeon Maker", self.open_dungeon_generator
+        )
+        self.exit_button = Button(
+            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 230, 200, 50,
+            "Exit Game", lambda: (pygame.quit(), sys.exit())
+        )
+        self.volume_slider = VolumeSlider(
+            50, SCREEN_HEIGHT // 2 - 50, 200, 20,
+            pygame.mixer.music.get_volume(),
+            lambda vol: pygame.mixer.music.set_volume(vol)
         )
         self.animation_frame = 0
         self.image_index = 0
@@ -58,6 +68,8 @@ class TitleScreen(BaseScene):
         self.start_button.handle_event(event)
         self.info_button.handle_event(event)
         self.dungeon_maker_button.handle_event(event)
+        self.exit_button.handle_event(event)
+        self.volume_slider.handle_event(event)
 
     def update(self, dt):
         self.animation_frame += 0.001
@@ -114,6 +126,10 @@ class TitleScreen(BaseScene):
         self.start_button.draw(screen)
         self.info_button.draw(screen)
         self.dungeon_maker_button.draw(screen)
+        self.exit_button.draw(screen)
+        self.volume_slider.draw(screen)
+        draw_text(screen, "Volume", UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, self.volume_slider.rect.x + self.volume_slider.rect.width // 2, self.volume_slider.rect.y - 30, align="center")
+
 
 class InfoScreen(BaseScene):
     def __init__(self, game):
@@ -156,3 +172,32 @@ class InfoScreen(BaseScene):
             screen.blit(text_surface, text_rect)
             y_offset += 30
         self.back_button.draw(screen)
+
+class VolumeSlider:
+    def __init__(self, x, y, width, height, initial_volume, on_change_callback):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.volume = initial_volume
+        self.on_change_callback = on_change_callback
+        self.thumb_width = 10
+        self.dragging = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.rect.collidepoint(event.pos):
+                self.dragging = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.dragging = False
+        elif event.type == pygame.MOUSEMOTION:
+            if self.dragging:
+                mouse_x = event.pos[0]
+                self.volume = (mouse_x - self.rect.x) / self.rect.width
+                self.volume = max(0, min(1, self.volume))
+                self.on_change_callback(self.volume)
+
+    def draw(self, surface):
+        # Draw slider background
+        pygame.draw.rect(surface, UI_SECONDARY_COLOR, self.rect)
+        # Draw thumb
+        thumb_x = self.rect.x + int(self.volume * self.rect.width)
+        thumb_rect = pygame.Rect(thumb_x - self.thumb_width // 2, self.rect.y, self.thumb_width, self.rect.height)
+        pygame.draw.rect(surface, UI_ACCENT_COLOR, thumb_rect)

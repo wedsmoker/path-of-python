@@ -17,7 +17,8 @@ class GameplayScene(BaseGameplayScene):
     def __init__(self, game):
         super().__init__(game)
         self.player = game.spawn_town.player
-        self.enemies = []
+        self.tile_map = None # Initialize tile_map to prevent AttributeError
+        self.enemies = pygame.sprite.Group() # Changed from list to pygame.sprite.Group
         self.damage_calculator = DamageCalculator()
         self.last_enemy_spawn_time = 0
         self.enemy_spawn_cooldown = ENEMY_SPAWN_COOLDOWN
@@ -36,6 +37,7 @@ class GameplayScene(BaseGameplayScene):
     def load_tilemap(self):
         try:
             self.tilemap_image = load_image(self.tilemap_path)
+            self.tile_map = self.tilemap_image # Assign to tile_map for BaseGameplayScene
             self.tilemap_rect = self.tilemap_image.get_rect()
             print(f"Tilemap loaded successfully from: {self.tilemap_path}")
         except FileNotFoundError:
@@ -59,14 +61,14 @@ class GameplayScene(BaseGameplayScene):
                 self.last_enemy_spawn_time = current_time
 
         # Update Enemies
-        for enemy in self.enemies[:]:  # Iterate over a slice copy for safe removal
+        for enemy in self.enemies.copy():  # Iterate over a copy for safe removal
             enemy.update(dt, self.player)
             if calculate_distance(self.player.rect.center, enemy.rect.center) > ENEMY_DESPAWN_DISTANCE:
                 self.enemies.remove(enemy)
                 print("Enemy despawned (too far).")
 
         # Update Projectiles
-        for projectile in self.projectiles:
+        for projectile in self.projectiles.copy(): # Iterate over a copy for safe removal
             projectile.update(dt)
             if projectile.lifetime > PROJECTILE_LIFETIME or \
                calculate_distance(projectile.start_pos, projectile.rect.center) > PROJECTILE_DESPAWN_DISTANCE:
@@ -74,7 +76,7 @@ class GameplayScene(BaseGameplayScene):
                 print("Projectile despawned (lifetime or distance exceeded).")
 
             # Projectile-Enemy Collision
-            for enemy in self.enemies[:]:
+            for enemy in self.enemies.copy(): # Iterate over a copy for safe removal
                 if projectile.rect.colliderect(enemy.rect):
                     projectile.hit(enemy)
                     self.damage_calculator.apply_damage(enemy, self.player, projectile.damage)
@@ -83,7 +85,7 @@ class GameplayScene(BaseGameplayScene):
                     break  # Only hit one enemy per projectile
 
         # Check for enemy deaths and remove them
-        for enemy in self.enemies[:]:
+        for enemy in self.enemies.copy(): # Iterate over a copy for safe removal
             if enemy.current_life <= 0:
                 self.enemies.remove(enemy)
                 print("Enemy died!")
@@ -116,6 +118,6 @@ class GameplayScene(BaseGameplayScene):
         y = self.player.rect.centery + ENEMY_SPAWN_DISTANCE * pygame.Vector2(1, 0).rotate_rad(angle).y
 
         # Create an instance of the chosen enemy type
-        new_enemy = Enemy(x, y, enemy_type)
-        self.enemies.append(new_enemy)
+        new_enemy = Enemy(self.game, x, y, {"name": enemy_type, "health": 50, "damage": 5, "speed": 50, "sprite_path": None}) # Updated Enemy constructor
+        self.enemies.add(new_enemy) # Changed from append to add
         print(f"Spawned a {enemy_type}!")
