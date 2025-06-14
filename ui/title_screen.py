@@ -14,7 +14,7 @@ class TitleScreen(BaseScene):
         self.title_font = pygame.font.SysFont("Courier New", UI_FONT_SIZE_LARGE * 2)
         self.start_button = Button(
             SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50, 200, 50,
-            "Start Game", lambda: self.game.scene_manager.set_scene("spawn_town")
+            "Start Game", lambda: self.game.scene_manager.set_scene("intro_scene")  # Changed to intro_scene
         )
         self.info_button = Button(
             SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 110, 200, 50,
@@ -29,7 +29,7 @@ class TitleScreen(BaseScene):
             "Exit Game", lambda: (pygame.quit(), sys.exit())
         )
         self.volume_slider = VolumeSlider(
-            50, SCREEN_HEIGHT // 2 - 50, 200, 20,
+            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT - 150, 200, 20,
             pygame.mixer.music.get_volume(),
             lambda vol: pygame.mixer.music.set_volume(vol)
         )
@@ -127,6 +127,9 @@ class TitleScreen(BaseScene):
         self.info_button.draw(screen)
         self.dungeon_maker_button.draw(screen)
         self.exit_button.draw(screen)
+
+        # Draw rectangle around volume slider
+        pygame.draw.rect(screen, UI_SECONDARY_COLOR, (self.volume_slider.rect.x - 5, self.volume_slider.rect.y - 5, self.volume_slider.rect.width + 10, self.volume_slider.rect.height + 10), 2)
         self.volume_slider.draw(screen)
         draw_text(screen, "Volume", UI_FONT_SIZE_DEFAULT, UI_PRIMARY_COLOR, self.volume_slider.rect.x + self.volume_slider.rect.width // 2, self.volume_slider.rect.y - 30, align="center")
 

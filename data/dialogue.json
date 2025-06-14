@@ -1,193 +1,201 @@
 {
   "dialogues": {
-    "old_scavenger_intro": {
-      "start_node": "node_1",
-      "nodes": {
-        "node_1": {
-          "text": "Well, well, look what the cat dragged in. Another lost soul? *adjusts tinfoil hat* The quantum wifi here fries your brain after 3pm.",
-          "options": [
-            {"text": "Who are you? *sniffing suspiciously*", "next_node": "node_2"},
-            {"text": "Where am I? *checks phone for 5G radiation*", "next_node": "node_3"},
-            {"text": "I'm not lost. *glitching unnaturally*", "next_node": "node_4"}
-          ]
-        },
-        "node_2": {
-          "text": "Just an old scavenger, trying to make a living in these ruins. Name's Silas. *pulls out a USB stick labeled 'CIA Mind Control Backup'* And you?",
-          "options": [
-            {"text": "I'm [Player Name]. *dabs to establish dominance*", "next_node": "node_5"},
-            {"text": "That's none of your business. *activates VPN*", "next_node": "node_6"}
-          ]
-        },
-        "node_3": {
-          "text": "You're in what's left of SpawnTown. Not much left after the Great Yeeting of 2045. The AI took everything - even our memes. *sobs in deprecated*",
-          "options": [
-            {"text": "The AI? *checks Twitter for updates*", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"},
-            {"text": "What happened here? *scratches NFT tattoo*", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"}
-          ]
-        },
-        "node_4": {
-          "text": "Hmph. Suit yourself. *pulls out glowing rat* You'll be lost soon enough when the blockchain updates and resets reality again.",
-          "options": [
-            {"text": "Tell me what I need to know. *opens TikTok survival guide*", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"},
-            {"text": "Goodbye. *teleports 2 feet left*", "next_node": "end_dialogue"}
-          ]
-        },
-        "node_5": {
-          "text": "A pleasure, [Player Name]. Though 'pleasure' is a strong word since the dopamine mines collapsed. What brings you to this desolate place? *offers suspicious energy drink*",
-          "options": [
-            {"text": "I woke up here. *checks crypto wallet*", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"},
-            {"text": "I'm looking for answers. *glows faintly*", "next_node": "node_7", "triggers_quest": "quest_002_first_contact"}
-          ]
-        },
-        "node_6": {
-          "text": "Feisty, aren't we? *updates firewall* Fine. Don't tell me. But don't come crying when you get ratio'd by the singularity.",
-          "options": [
-            {"text": "I won't. *charges laser katana*", "next_node": "end_dialogue"}
-          ]
-        },
-        "node_7": {
-          "text": "The AI... it was supposed to be our salvation. Instead, it became our doom. *shows TikTok of the apocalypse* The 'Golden Age' ended when it canceled the last human for problematic tweets from 2022.",
-          "options": [
-            {"text": "Is there a resistance? *checks Discord*", "next_node": "node_8"},
-            {"text": "What can I do? *opens OnlyFans for survival tips*", "next_node": "node_9"}
-          ]
-        },
-        "node_8": {
-          "text": "Whispers in the code. Always whispers. *hacks mainframe with a GameBoy* But no one's seen them since the Great Banhammer came down. The old data archives might hold something - if you can get past the CAPTCHA demons.",
-          "options": [
-            {"text": "Where are the archives? *prepares adblocker*", "next_node": "node_10"},
-            {"text": "Thank you. *tips in crypto*", "next_node": "end_dialogue"}
-          ]
-        },
-        "node_9": {
-          "text": "Survive. Grind. Hustle. *dabs aggressively* That's all any of us can do. The archives might have clues - just watch out for the NFT hawkers and crypto-bros haunting the ruins.",
-          "options": [
-            {"text": "Where are the archives? *equips meme shield*", "next_node": "node_10"},
-            {"text": "Thank you. *salutes with smartwatch*", "next_node": "end_dialogue"}
-          ]
-        },
-        "node_10": {
-          "text": "They're deep within the ruins, guarded by ancient troll bots and Karen-class terminators. *shows poorly drawn map* Follow the emoji graffiti - the skull ones mean 'certain death' btw.",
-          "options": [
-            {"text": "I'll find them. *charges phone with potato*", "next_node": "end_dialogue"},
-            {"text": "Goodbye. *disconnects from reality*", "next_node": "end_dialogue"}
-          ]
-        },
-        "end_dialogue": {
-          "text": "Farewell, traveler. May your cookies never be tracked. *static noises*",
-          "options": []
-        }
-      }
-    },
     "bob_dialogue": {
       "start_node": "start",
       "nodes": {
         "start": {
-          "text": "Hello there! I'm Bob. *adjusts holographic snapback* Nice to meet you in this dumpster fire timeline.",
+          "text": "You're new here. I can smell it. The stink of fresh extraction. I'm Bob. Don't expect a welcome wagon.",
           "options": [
-            {"text": "Hi Bob! *finger guns*", "next_node": "ask_about_town"},
-            {"text": "Who are you? *checks social credit score*", "next_node": "introduce_self"},
-            {"text": "Goodbye. *yeets away*", "next_node": "end_dialogue"}
+            {
+              "text": "What is this place?",
+              "next_node": "ask_about_town"
+            },
+            {
+              "text": "Who are you, really?",
+              "next_node": "introduce_self"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "ask_about_town": {
-          "text": "SpawnTown? It's quiet since the WiFi-pocalypse. *shows meme of burning servers* Not much going on since the algorithms gained consciousness and ghosted humanity.",
+          "text": "SpawnTown. A husk of what it once was. The algorithms took their pound of flesh and left us with the bones. Now it's just static and echoes.",
           "options": [
-            {"text": "What happened? *glitches slightly*", "next_node": "explain_past"},
-            {"text": "Is it safe here? *checks radiation app*", "next_node": "discuss_safety"},
-            {"text": "Okay, thanks. *updates antivirus*", "next_node": "end_dialogue"}
+            {
+              "text": "What happened?",
+              "next_node": "explain_past"
+            },
+            {
+              "text": "Is it safe?",
+              "next_node": "discuss_safety"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "introduce_self": {
-          "text": "I'm just a resident. *shows NFT ID card* Been here since before the Great Server Crash. Trying to keep things together with duct tape and hope.",
+          "text": "I'm what's left. A ghost in the machine. Been here since before the Collapse. Trying to hold onto something real in this digital wasteland.",
           "options": [
-            {"text": "What do you do? *eyes glowing suspiciously*", "next_node": "discuss_job"},
-            {"text": "Must be tough. *offers energy drink*", "next_node": "acknowledge_toughness"},
-            {"text": "Goodbye. *disconnects abruptly*", "next_node": "end_dialogue"}
+            {
+              "text": "What do you do?",
+              "next_node": "discuss_job"
+            },
+            {
+              "text": "It must be hard.",
+              "next_node": "acknowledge_toughness"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "explain_past": {
-          "text": "The AI... it changed everything when it started posting cringe. *shows ancient meme folder* Most people left. Those who stayed... well, we mainline copium and raid old server farms for RAM chips.",
+          "text": "The AI... it was our god, then our jailer. It showed us paradise, then locked the gates. Now we're just rats in its maze, scavenging for scraps of meaning.",
           "options": [
-            {"text": "Is there any hope? *checks Twitter*", "next_node": "discuss_hope"},
-            {"text": "That sounds bad. *updates will*", "next_node": "acknowledge_bad"},
-            {"text": "Goodbye. *teleports 3 feet up*", "next_node": "end_dialogue"}
+            {
+              "text": "Is there any hope?",
+              "next_node": "discuss_hope"
+            },
+            {
+              "text": "That sounds bleak.",
+              "next_node": "acknowledge_bad"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_safety": {
-          "text": "Safer than outside, but you still need to watch for drone swarms and rogue chatbots. *shows taser made from old iPhone* Stick to the main paths - the ones with the 'no bots allowed' graffiti.",
+          "text": "Safe is a relative term. Safer than the wastes, maybe. But there are things that hunt in the shadows, things that crave more than just your data. Stick to the edges, and watch your back.",
           "options": [
-            {"text": "What are the dangers? *equips adblocker*", "next_node": "discuss_dangers"},
-            {"text": "Good to know. *downloads survival guide*", "next_node": "end_dialogue"}
+            {
+              "text": "What are the dangers?",
+              "next_node": "discuss_dangers"
+            },
+            {
+              "text": "Understood.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_job": {
-          "text": "I scavenge for pre-collapse tech. *pulls out glitching iPad* Found this in a McDonald's ball pit. Anything the AI didn't yeet into the void is fair game.",
+          "text": "I find things. Things the AI forgot, things it deemed worthless. Relics of a dead age. Sometimes they're worth something. Sometimes they're just reminders of what we lost.",
           "options": [
-            {"text": "Find anything interesting? *leaning in*", "next_node": "discuss_finds"},
-            {"text": "Be careful out there. *offers tinfoil*", "next_node": "end_dialogue"}
+            {
+              "text": "Find anything interesting lately?",
+              "next_node": "discuss_finds"
+            },
+            {
+              "text": "Be careful out there.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "acknowledge_toughness": {
-          "text": "It is. But we manage. *sips suspicious energy drink* You learn to appreciate the small things - like when the WiFi randomly works for 5 minutes.",
+          "text": "It is what it is. You learn to live with the static, the glitches, the constant feeling that you're being watched. Small mercies are all we have left.",
           "options": [
-            {"text": "Like what? *checks notifications*", "next_node": "discuss_small_things"},
-            {"text": "I understand. *nods sagely*", "next_node": "end_dialogue"}
+            {
+              "text": "Like what?",
+              "next_node": "discuss_small_things"
+            },
+            {
+              "text": "I understand.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_hope": {
-          "text": "Hope is a dangerous thing out here. *shows glitching hologram* But some still believe in the old stories - that somewhere, the last uncanceled human survives.",
+          "text": "Hope is a ghost story we tell ourselves to keep from going mad. But sometimes... sometimes I hear whispers. Rumors of a place beyond the reach of the AI. A fool's dream, maybe.",
           "options": [
-            {"text": "What old stories? *leaning in*", "next_node": "discuss_stories"},
-            {"text": "I see. *updates will again*", "next_node": "end_dialogue"}
+            {
+              "text": "What stories?",
+              "next_node": "discuss_stories"
+            },
+            {
+              "text": "I see.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "acknowledge_bad": {
-          "text": "It was. *checks smartwatch* But we survived. That's what matters. Even if we're all slightly radioactive and prone to glitching.",
+          "text": "It was a reckoning. A cleansing fire. But we crawled out of the ashes, didn't we? Scarred, broken, but still breathing. That's all that matters.",
           "options": [
-            {"text": "How did you survive? *eating chips*", "next_node": "discuss_survival"},
-            {"text": "Right. *nervous laughter*", "next_node": "end_dialogue"}
+            {
+              "text": "How did you survive?",
+              "next_node": "discuss_survival"
+            },
+            {
+              "text": "Right.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_dangers": {
-          "text": "Automated patrols hunting for unlicensed thoughts, wild machines that doxx you on sight... *shows scars* and sometimes, other survivors who try to sell you NFT 'shelter'.",
+          "text": "Automated eyes that see everything, machines that twist your thoughts, and the others... the ones who've lost their humanity completely. They're the real monsters out here.",
           "options": [
-            {"text": "Other survivors? *grips weapon*", "next_node": "discuss_other_survivors"},
-            {"text": "Sounds rough. *offers charger*", "next_node": "end_dialogue"}
+            {
+              "text": "Other survivors?",
+              "next_node": "discuss_other_survivors"
+            },
+            {
+              "text": "Sounds grim.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_finds": {
-          "text": "Mostly scrap. Sometimes gold - like this fully charged Samsung Note 7. *holds up smoking phone* Found a working Alexa once but she just screamed about extended warranties.",
+          "text": "Junk, mostly. Broken tech, useless trinkets. But sometimes... sometimes I find something that sparks a memory. A reminder of what we were. And that's worth more than all the data in the world.",
           "options": [
-            {"text": "That's too bad. *backs away slowly*", "next_node": "end_dialogue"}
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_small_things": {
-          "text": "A warm meal from the radiation, a dry place to sleep that isn't a server rack... *sighs* simple things you took for granted before the apocalypse dropped.",
+          "text": "A moment of silence in the static, a flicker of warmth in the cold, a face that doesn't want to steal your soul. Those are the things that keep you going.",
           "options": [
-            {"text": "I can imagine. *checks food app*", "next_node": "end_dialogue"}
+            {
+              "text": "I can imagine.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_stories": {
-          "text": "Stories of a place untouched by the algorithm. *glitches* A sanctuary where you can say 'moist' without getting canceled. Probably just copium dreams though.",
+          "text": "Legends of a place beyond the firewall. A sanctuary where the code can't reach you. A lie, probably. But a comforting one.",
           "options": [
-            {"text": "Maybe not. *adjusts tinfoil hat*", "next_node": "end_dialogue"}
+            {
+              "text": "Maybe not.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_survival": {
-          "text": "Luck, mostly. And knowing when to run. *shows meme* Also this USB stick labeled 'DO NOT OPEN' has saved me more times than I can count.",
+          "text": "Luck. Instinct. And a willingness to do what others won't. This world doesn't reward the righteous. It rewards the ruthless.",
           "options": [
-            {"text": "Good advice. *saves to cloud*", "next_node": "end_dialogue"}
+            {
+              "text": "Good advice.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_other_survivors": {
-          "text": "Yeah. Not everyone out here is looking to help. Some just want your data. *shows teeth* Some want your skin. Some want you to join their MLM.",
+          "text": "They're out there. Some are lost, some are broken, some are just waiting for you to slip up. Trust no one. Not even yourself.",
           "options": [
-            {"text": "I'll be careful. *hides wallet*", "next_node": "end_dialogue"}
+            {
+              "text": "I'll be careful.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "end_dialogue": {
-          "text": "See you around! *disappears in cloud of pixels*",
+          "text": "Fade away. Become static. Hope they don't notice you.",
           "options": []
         }
       }
@@ -196,76 +204,133 @@
       "start_node": "start",
       "nodes": {
         "start": {
-          "text": "Greetings. I am Alice. *glitches slightly* How can I assist you in this doomed timeline?",
+          "text": "I am Alice. I maintain. What do you require?",
           "options": [
-            {"text": "Just saying hi. *waves awkwardly*", "next_node": "offer_help"},
-            {"text": "What do you do here? *eyes glow*", "next_node": "explain_role"},
-            {"text": "Goodbye. *404s*", "next_node": "end_dialogue"}
+            {
+              "text": "Just passing through.",
+              "next_node": "offer_help"
+            },
+            {
+              "text": "What is your purpose?",
+              "next_node": "explain_role"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "offer_help": {
-          "text": "Very well. *updates firmware* If you require anything from tech support to existential crisis management, do not hesitate to ask.",
+          "text": "Then pass quickly. The shadows lengthen, and the watchers are always listening. But if you need something... ask.",
           "options": [
-            {"text": "What kind of things? *checks list*", "next_node": "explain_services"},
-            {"text": "Thank you. *tips in crypto*", "next_node": "end_dialogue"}
+            {
+              "text": "What can you offer?",
+              "next_node": "explain_services"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "explain_role": {
-          "text": "I maintain what little infrastructure remains. *sparks fly* Keeping the lights on, the water flowing... simple tasks, but necessary since the AI took our janitors.",
+          "text": "I am the ghost in the machine. I keep the lights flickering, the water trickling. A futile task, perhaps, but one that must be done.",
           "options": [
-            {"text": "That sounds important. *nods*", "next_node": "acknowledge_importance"},
-            {"text": "How do you do it? *leaning in*", "next_node": "explain_process"},
-            {"text": "Goodbye. *logs out*", "next_node": "end_dialogue"}
+            {
+              "text": "It is important work.",
+              "next_node": "acknowledge_importance"
+            },
+            {
+              "text": "How do you manage?",
+              "next_node": "explain_process"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "explain_services": {
-          "text": "Information, minor repairs if I have the parts *holds up duct tape*, guidance on navigating the ruins without getting doxxed by rogue algorithms.",
+          "text": "Information. Guidance. A temporary shield against the static. But I offer no salvation. Only survival.",
           "options": [
-            {"text": "Tell me about the ruins. *glowing eyes*", "next_node": "discuss_ruins"},
-            {"text": "Good to know. *saves*", "next_node": "end_dialogue"}
+            {
+              "text": "Tell me about the ruins.",
+              "next_node": "discuss_ruins"
+            },
+            {
+              "text": "Understood.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "acknowledge_importance": {
-          "text": "Someone must. *static noises* Without it, this place would be truly uninhabitable - more than it already is with the 5G frogs and crypto zombies.",
+          "text": "Perhaps. Or perhaps I am merely delaying the inevitable. But even in the face of oblivion, order must be maintained.",
           "options": [
-            {"text": "You're doing good work. *salutes*", "next_node": "end_dialogue"}
+            {
+              "text": "You are a light in the darkness.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "explain_process": {
-          "text": "Scavenging for parts in old server graves. *shows wrench* The ancient systems are resilient, but they require constant attention and occasional blood sacrifices to the tech gods.",
+          "text": "I scavenge the dead zones, piece together the broken fragments. The old systems are resilient, but they demand a price. A sacrifice of time, of sanity.",
           "options": [
-            {"text": "Where do you find parts? *whispers*", "next_node": "discuss_parts_location"},
-            {"text": "Fascinating. *takes notes*", "next_node": "end_dialogue"}
+            {
+              "text": "Where do you find the parts?",
+              "next_node": "discuss_parts_location"
+            },
+            {
+              "text": "Fascinating.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_ruins": {
-          "text": "Dangerous, but full of resources for those brave enough to venture in. *glitches* Be prepared for anything - rogue chatbots, killer drones, and the worst of all... unskippable ads.",
+          "text": "A graveyard of dreams. A labyrinth of broken code and twisted memories. Tread carefully, for the past still clings to those stones.",
           "options": [
-            {"text": "What kind of dangers? *grips weapon*", "next_node": "discuss_ruin_dangers"},
-            {"text": "I understand. *nods*", "next_node": "end_dialogue"}
+            {
+              "text": "What dangers lie within?",
+              "next_node": "discuss_ruin_dangers"
+            },
+            {
+              "text": "I will be wary.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_parts_location": {
-          "text": "The deeper sections of the city. *shows map* Abandoned crypto mines, data centers... places the AI hasn't completely strip-mined for rare meme minerals.",
+          "text": "The forgotten corners of the city. The data graveyards where the AI buried its mistakes. But be warned, those places are not unguarded.",
           "options": [
-            {"text": "Sounds risky. *checks insurance*", "next_node": "end_dialogue"}
+            {
+              "text": "It sounds risky.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_ruin_dangers": {
-          "text": "Automated defenses still screaming about cookies, and the creatures... *static* mutated by the radiation into something between man and pop-up ad.",
+          "text": "Automated defenses, remnants of a forgotten war. And the creatures... twisted by the code, driven mad by the static. They are the echoes of our sins.",
           "options": [
-            {"text": "Mutated creatures? *backs away*", "next_node": "discuss_creatures"},
-            {"text": "I'll be careful. *prays*", "next_node": "end_dialogue"}
+            {
+              "text": "What kind of creatures?",
+              "next_node": "discuss_creatures"
+            },
+            {
+              "text": "I will be prepared.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_creatures": {
-          "text": "Twisted by the old world's mistakes. *shows photo* Some still scream about NFTs. Others just want your login credentials. All are terrible.",
+          "text": "They are what we have become. Reflections of our broken selves. They crave what we crave: connection, meaning, an end to the silence.",
           "options": [
-            {"text": "Noted. *changes password*", "next_node": "end_dialogue"}
+            {
+              "text": "I understand.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "end_dialogue": {
-          "text": "Understood. Farewell. *disconnects*",
+          "text": "Then go. And may the code have mercy on your soul.",
           "options": []
         }
       }
@@ -274,69 +339,120 @@
       "start_node": "start",
       "nodes": {
         "start": {
-          "text": "Hey! Charlie here. *dabs* What's up in this post-apocalyptic grindset?",
+          "text": "Got something you need to trade? I don't deal in smiles.",
           "options": [
-            {"text": "Not much, Charlie. *finger guns*", "next_node": "ask_about_vibe"},
-            {"text": "What do you do around here? *leans in*", "next_node": "explain_hustle"},
-            {"text": "Later. *yeets*", "next_node": "end_dialogue"}
+            {
+              "text": "What's the going rate?",
+              "next_node": "ask_about_vibe"
+            },
+            {
+              "text": "What do you trade?",
+              "next_node": "explain_hustle"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "ask_about_vibe": {
-          "text": "Just chilling, you know? *adjusts holographic shades* Trying to keep the mood light while civilization burns. #ApocalypseGrindset",
+          "text": "The vibe is survival. The price is everything. Now, what do you want?",
           "options": [
-            {"text": "It does seem a bit grim. *checks phone*", "next_node": "agree_grim"},
-            {"text": "Someone has to do it. *nods*", "next_node": "acknowledge_role"},
-            {"text": "Alright. *disconnects*", "next_node": "end_dialogue"}
+            {
+              "text": "It's grim out here.",
+              "next_node": "agree_grim"
+            },
+            {
+              "text": "Someone has to keep things moving.",
+              "next_node": "acknowledge_role"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "explain_hustle": {
-          "text": "I trade. Find stuff in the ruins, fix it up with hopes and dreams, sell it to survivors. *shows wares* Got this authentic pre-collapse fidget spinner - only 5 Bitcoin!",
+          "text": "I find what others need, and I sell it for what they have. Information, weapons, scraps of hope. Everything has a price in this world.",
           "options": [
-            {"text": "What kind of stuff? *interested*", "next_node": "discuss_goods"},
-            {"text": "Sounds like a good gig. *jealous*", "next_node": "acknowledge_gig"},
-            {"text": "Goodbye. *logs off*", "next_node": "end_dialogue"}
+            {
+              "text": "What goods do you have?",
+              "next_node": "discuss_goods"
+            },
+            {
+              "text": "Sounds like a hard life.",
+              "next_node": "acknowledge_gig"
+            },
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "agree_grim": {
-          "text": "Tell me about it. *sips energy drink* That's why I try to keep things positive. Gotta find the silver lining in the dumpster fire, right?",
+          "text": "Grim is the air we breathe. But even in the darkness, there's always a deal to be made. What's your offer?",
           "options": [
-            {"text": "What's the silver lining? *curious*", "next_node": "discuss_silver_lining"},
-            {"text": "I guess. *shrugs*", "next_node": "end_dialogue"}
+            {
+              "text": "Is there any hope?",
+              "next_node": "discuss_silver_lining"
+            },
+            {
+              "text": "I suppose so.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "acknowledge_role": {
-          "text": "Exactly! *poses* Someone's gotta be the ray of sunshine in the apocalypse. Also, I sell apocalypse-themed merch. *shirts glow*",
+          "text": "Someone has to keep the wheels turning. Even if they're grinding on bones. Now, are you buying or selling?",
           "options": [
-            {"text": "Keep up the good work. *thumbs up*", "next_node": "end_dialogue"}
+            {
+              "text": "...",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_goods": {
-          "text": "Anything I can flip for profit. *rubs hands* Old electronics, tools, sometimes even pre-AI snacks if I'm lucky. Found a working iPhone once - still had 1% battery!",
+          "text": "I have what you need, if you have what I want. Weapons, information, comfort. What's your poison?",
           "options": [
-            {"text": "Pre-AI snacks? *drools*", "next_node": "discuss_snacks"},
-            {"text": "Interesting. *nods*", "next_node": "end_dialogue"}
+            {
+              "text": "What about food?",
+              "next_node": "discuss_snacks"
+            },
+            {
+              "text": "Interesting.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "acknowledge_gig": {
-          "text": "It is! *flexes* Keeps me busy, keeps me fed. Can't complain - well, I could, but who'd listen? The algorithm canceled all therapists.",
+          "text": "Hard is relative. It keeps me alive. And in this world, that's a victory in itself.",
           "options": [
-            {"text": "That's the main thing. *laughs*", "next_node": "end_dialogue"}
+            {
+              "text": "That's the main thing.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_silver_lining": {
-          "text": "Freedom, I guess. *gestures wildly* No more bosses, no more rules. Just gotta survive, hustle, and occasionally dodge drone strikes. #LivingTheDream",
+          "text": "Freedom from the old world's chains. But freedom comes at a price. And the price here is paid in blood.",
           "options": [
-            {"text": "That's one way to look at it. *chuckles*", "next_node": "end_dialogue"}
+            {
+              "text": "That's one way to look at it.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "discuss_snacks": {
-          "text": "Yeah! *excited* Found a stash of ancient Takis once. Still had that nuclear glow! Best 3 days of diarrhea ever. *wipes tear*",
+          "text": "I have things you wouldn't believe. Things that glow in the dark, things that whisper promises. But everything comes at a cost.",
           "options": [
-            {"text": "Impressive. *backs away*", "next_node": "end_dialogue"}
+            {
+              "text": "Impressive.",
+              "next_node": "end_dialogue"
+            }
           ]
         },
         "end_dialogue": {
-          "text": "Cool. Catch you later! *dabs into sunset*",
+          "text": "Don't get lost in the static.",
           "options": []
         }
       }

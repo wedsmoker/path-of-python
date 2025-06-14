@@ -37,19 +37,19 @@ class HUD:
 
     def draw(self, screen):
         # Draw Health Bar
-        self._draw_bar(screen, 10, SCREEN_HEIGHT - 40, 200, 20, self.player.current_life, self.player.max_life, RED, "HP")
+        self._draw_bar(screen, 10, SCREEN_HEIGHT - 40, 300, 30, self.player.current_life, self.player.max_life, RED, "HP")
 
         # Draw Energy Shield Bar
-        self._draw_bar(screen, 10, SCREEN_HEIGHT - 65, 200, 20, self.player.current_energy_shield, self.player.max_energy_shield, BLUE, "ES")
+        self._draw_bar(screen, 10, SCREEN_HEIGHT - 65, 300, 30, self.player.current_energy_shield, self.player.max_energy_shield, (100, 100, 200), "ES")
 
         # Draw Mana Bar
-        self._draw_bar(screen, 10, SCREEN_HEIGHT - 90, 200, 20, self.player.current_mana, self.player.max_mana, GREEN, "MP")
+        self._draw_bar(screen, SCREEN_WIDTH - 310, SCREEN_HEIGHT - 40, 300, 30, self.player.current_mana, self.player.max_mana, BLUE, "MP")
 
         # Draw Skill Bar (Placeholder)
-        self._draw_skill_bar(screen)
+        #self._draw_skill_bar(screen)
 
         # Draw Potion Slots (Placeholder)
-        self._draw_potion_slots(screen)
+        #self._draw_potion_slots(screen)
 
         # Draw Minimap
         self.minimap.draw(screen)

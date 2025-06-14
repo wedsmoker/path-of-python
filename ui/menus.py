@@ -49,7 +49,7 @@ class PauseMenu(BaseScene):
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.game.scene_manager.set_scene(STATE_GAMEPLAY, self.game.spawn_town.player)
+            self.buttons[1].action()
             return
 
         for button in self.buttons:
@@ -134,6 +134,10 @@ class VolumeSettingsMenu(BaseScene):
         self.slider_rect = pygame.Rect(self.slider_x, self.slider_y, self.slider_width, self.slider_height)
         self.thumb_width = 10
         self.dragging = False
+        self.next_song_button = Button(
+            SCREEN_WIDTH // 2 + 120, SCREEN_HEIGHT // 2 - 10, 100, 40,
+            "Next Song", lambda: self.game.spawn_town.next_song()
+        )
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -149,6 +153,7 @@ class VolumeSettingsMenu(BaseScene):
                 pygame.mixer.music.set_volume(self.volume)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.game.scene_manager.set_scene(STATE_SETTINGS_MENU, self.game.spawn_town.player)
+        self.next_song_button.handle_event(event)
 
     def update(self, dt):
         pass
@@ -163,6 +168,7 @@ class VolumeSettingsMenu(BaseScene):
         thumb_x = self.slider_x + int(self.volume * self.slider_width)
         thumb_rect = pygame.Rect(thumb_x - self.thumb_width // 2, self.slider_y, self.thumb_width, self.slider_height)
         pygame.draw.rect(screen, UI_ACCENT_COLOR, thumb_rect)
+        self.next_song_button.draw(screen)
 
 class CharacterStatsMenu(BaseScene):
     def __init__(self, game):

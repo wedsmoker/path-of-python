@@ -9,7 +9,7 @@ class Projectile(pygame.sprite.Sprite):
         self.game = game
         self.image = self._load_sprite(sprite_path)
         self.rect = self.image.get_rect(center=(x, y))
-        self.speed = speed
+        self.speed = speed * 0.8
         self.damage = damage
         self.target_x = target_x
         self.target_y = target_y

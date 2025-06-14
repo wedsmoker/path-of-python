@@ -48,6 +48,22 @@
                         1280
                     ],
                     "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_pandemonium.png"
+                },
+                {
+                    "target_scene": "yes",
+                    "location": [
+                        896,
+                        1472
+                    ],
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_gehenna.png"
+                },
+                {
+                    "target_scene": "yes2",
+                    "location": [
+                        480,
+                        896
+                    ],
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_entrance.png"
                 }
             ],
             "map_width": 50,

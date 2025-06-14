@@ -61,6 +61,16 @@
             "name": "ll",
             "class": "core.dungeons.ll.ll",
             "dungeon_data_path": "data/dungeons/ll.json"
+        },
+        {
+            "name": "yes",
+            "class": "core.dungeons.yes.yes",
+            "dungeon_data_path": "data/dungeons/yes.json"
+        },
+        {
+            "name": "yes2",
+            "class": "core.dungeons.yes2.yes2",
+            "dungeon_data_path": "data/dungeons/yes2.json"
         }
     ]
 }

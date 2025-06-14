@@ -62,6 +62,10 @@ class DialogueManager:
                 else:
                     dialogue_tree_id = self.get_current_dialogue_tree_id()
                     if dialogue_tree_id:
+                        # ADDED: Check for the target nodes in Charlie's dialogue
+                        if dialogue_tree_id == "charlie_dialogue" and (next_node_id == "ask_about_vibe" or next_node_id == "explain_hustle"):
+                            self.game.spawn_town.open_shop_window()  # Open the shop window
+
                         self.current_dialogue_node = self.dialogue_data["dialogues"][dialogue_tree_id]["nodes"].get(next_node_id)
                     else:
                         self.end_dialogue()

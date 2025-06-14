@@ -8,6 +8,7 @@ class NPC(pygame.sprite.Sprite):
         self.game = game
         self.name = name
         self.dialogue_id = dialogue_id
+        self.in_dialogue = False
 
         # Load random merfolk sprite
         merfolk_sprites = [
@@ -35,5 +36,6 @@ class NPC(pygame.sprite.Sprite):
     def interact(self, player):
         # Placeholder for interaction logic (e.g., open dialogue, quest, shop)
         if self.dialogue_id:
+            self.in_dialogue = True
             self.game.dialogue_manager.start_dialogue(self.dialogue_id)
         # In a real game, this would trigger a dialogue UI

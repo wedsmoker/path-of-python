@@ -7,6 +7,7 @@ import random
 # from core.pathfinding import Pathfinding # Removed pathfinding import
 from config.constants import TILE_SIZE, PLAYER_SPEED
 from entities.arc_skill import ArcSkill
+from entities.summon_skeletons import SummonSkeletons  # Import SummonSkeletons
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y, class_name="knight"):
@@ -58,8 +59,8 @@ class Player(pygame.sprite.Sprite):
         self.max_life = 100
         self.current_energy_shield = 50
         self.max_energy_shield = 50
-        self.current_mana = 50
-        self.max_mana = 50
+        self.current_mana = 100
+        self.max_mana = 100
         self.item_find_chance = 0.0
         self.evasion = 0.0
         self.stealth = 0.0
@@ -92,7 +93,7 @@ class Player(pygame.sprite.Sprite):
 
         # Load skill data from JSON
         self.skills = self.load_skills('data/skill_tree.json')
-        self.unlocked_skills = [] # List to store unlocked skill IDs
+        self.unlocked_skills = ["summon_skeletons"] # List to store unlocked skill IDs
         self.skill_key_bindings = {}
 
         # Create skill key bindings
@@ -107,6 +108,7 @@ class Player(pygame.sprite.Sprite):
         # Skill-specific attributes
         # self.arc_chain_lightning_image = pygame.image.load("graphics/spells/air/chain_lightning.png").convert_alpha() if os.path.exists("graphics/spells/air/chain_lightning.png") else None
         self.arc_skill = ArcSkill(self)
+        self.summon_skeletons_skill = SummonSkeletons(self)  # Initialize SummonSkeletons skill
 
     def load_skills(self, json_path):
         """Loads skill data from a JSON file."""
@@ -284,14 +286,111 @@ class Player(pygame.sprite.Sprite):
         """Activates the Arc skill, chaining electricity to strike multiple enemies."""
         self.arc_skill.activate()
 
+    def activate_summon_skeletons(self, x, y):
+        """Activates the Summon Skeletons skill."""
+        self.summon_skeletons_skill.activate(x, y)
+
+    def _check_collision(self, tile_map, tile_size):
+        """Checks for collision with solid tiles."""
+        # Get the tile coordinates the enemy is currently occupying
+        enemy_left_tile = int(self.rect.left / tile_size)
+        enemy_right_tile = int(self.rect.right / tile_size)
+        enemy_top_tile = int(self.rect.top / tile_size)
+        enemy_bottom_tile = int(self.rect.bottom / tile_size)
+
+        # Clamp tile coordinates to map boundaries
+        map_width_tiles = len(tile_map[0])
+        map_height_tiles = len(tile_map)
+
+        enemy_left_tile = max(0, min(enemy_left_tile, map_width_tiles - 1))
+        enemy_right_tile = max(0, min(enemy_right_tile, map_width_tiles - 1))
+        enemy_top_tile = max(0, min(enemy_top_tile, map_height_tiles - 1))
+        enemy_bottom_tile = max(0, min(enemy_bottom_tile, map_height_tiles - 1))
+
+        # Iterate over the tiles the enemy overlaps with
+        for y in range(enemy_top_tile, enemy_bottom_tile + 1):
+            for x in range(enemy_left_tile, enemy_right_tile + 1):
+                if 0 <= y < map_height_tiles and 0 <= x < map_width_tiles:
+                    tile_type = tile_map[y][x]
+                    # Assuming 'wall' is a solid tile type. Add other solid types as needed.
+                    if tile_type in ('wall', 'mountain', 'building', 'rubble'):
+                        # print(f"Enemy collision with wall at tile ({x}, {y})") # Debug print
+                        return True
+        return False
+
+    def check_and_correct_position(self):
+        """Checks if the player is on an unwalkable tile and moves them to a walkable one."""
+        tile_size = TILE_SIZE  # Assuming tile size is accessible here
+        tile_map = self.game.scene_manager.current_scene.tile_map
+        player_tile_x = int(self.rect.centerx // tile_size)
+        player_tile_y = int(self.rect.centery // tile_size)
+
+        if 0 <= player_tile_x < self.game.scene_manager.current_scene.map_width and \
+           0 <= player_tile_y < self.game.scene_manager.current_scene.map_height:
+            tile_type = tile_map[player_tile_y][player_tile_x]
+            if tile_type in ('wall', 'mountain', 'building', 'rubble'):
+                # Find a nearby walkable tile
+                for offset in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]:
+                    new_tile_x = player_tile_x + offset[0]
+                    new_tile_y = player_tile_y + offset[1]
+                    if 0 <= new_tile_x < self.game.scene_manager.current_scene.map_width and \
+                       0 <= new_tile_y < self.game.scene_manager.current_scene.map_height:
+                        new_tile_type = tile_map[new_tile_y][new_tile_x]
+                        if new_tile_type not in ('wall', 'mountain', 'building', 'rubble'):
+                            # Move the player to the center of this tile
+                            self.rect.x = new_tile_x * tile_size
+                            self.rect.y = new_tile_y * tile_size
+                            break # Stop searching after finding one walkable tile
+
+    def blink(self, target_x, target_y):
+        """Teleports the player to the target location if it's walkable."""
+        tile_size = TILE_SIZE
+        tile_map = self.game.scene_manager.current_scene.tile_map
+
+        target_tile_x = int(target_x // tile_size)
+        target_tile_y = int(target_y // tile_size)
+
+        if 0 <= target_tile_x < self.game.scene_manager.current_scene.map_width and \
+           0 <= target_tile_y < self.game.scene_manager.current_scene.map_height:
+            tile_type = tile_map[target_tile_y][target_tile_x]
+            if tile_type not in ('wall', 'mountain', 'building', 'rubble'):
+                # Teleport the player to the target location
+                self.rect.x = target_x
+                self.rect.y = target_y
+                print(f"Player blinked to ({target_x}, {target_y})")
+            else:
+                print("Cannot blink to an unwalkable tile.")
+        else:
+            print("Cannot blink outside the map boundaries.")
+
     def update(self, dt):
+        # Get the tile_map and tile_size from the current scene
+        tile_map = self.game.scene_manager.current_scene.tile_map
+        tile_size = TILE_SIZE
+
+        # Check and correct the player's position at the start of each update
+        self.check_and_correct_position()
+
         dt = min(dt, 0.1)  # Clamp dt to a maximum of 0.1
         current_time = pygame.time.get_ticks()
 
         if self.is_moving and self.target:
-            # Move the player
-            self.rect.x += self.velocity.x * dt
-            self.rect.y += self.velocity.y * dt
+            # Calculate the potential new position
+            new_x = self.rect.x + self.velocity.x * dt
+            new_y = self.rect.y + self.velocity.y * dt
+
+            # Store original position for collision rollback
+            original_x, original_y = self.rect.x, self.rect.y
+
+            # Attempt to move horizontally
+            self.rect.x = new_x
+            if self._check_collision(tile_map, tile_size):
+                self.rect.x = original_x  # Rollback if collision
+
+            # Attempt to move vertically
+            self.rect.y = new_y
+            if self._check_collision(tile_map, tile_size):
+                self.rect.y = original_y  # Rollback if collision
 
         # Check if the player has reached the target
             distance_x = self.target[0] - self.rect.x
@@ -356,7 +455,7 @@ class Player(pygame.sprite.Sprite):
 
     def create_footstep(self):
         # Load a random cloud_magic_trail image
-        footstep_image = pygame.image.load(f"graphics/effect/cloud_magic_trail{random.randint(0, 3)}.png").convert_alpha()
+        footstep_image = pygame.image.load(f"graphics/player/base/shadow.png").convert_alpha()
         footstep_sprite = pygame.sprite.Sprite()
         footstep_sprite.image = footstep_image
         footstep_sprite.rect = footstep_sprite.image.get_rect(center=self.rect.center)

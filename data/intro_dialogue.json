@@ -1,0 +1,148 @@
+{
+  "dialogues": {
+    "old_scavenger_intro": {
+      "start_node": "node_1",
+      "nodes": {
+        "node_1": {
+          "text": "So the machine spat out another husk... Figures. You smell like extraction tech and digital decay. Careful. After dusk, the EM-field rot peels your memories like paint.",
+          "options": [
+            {
+              "text": "Who are you? *gazes through fragmented lenses*",
+              "next_node": "node_2"
+            },
+            {
+              "text": "Where is this? *traces burnt circuitry with a finger*",
+              "next_node": "node_3"
+            },
+            {
+              "text": "I'm not lost. *static fizzles in your voice*",
+              "next_node": "node_4"
+            }
+          ]
+        },
+        "node_2": {
+          "text": "Just a shadow in the landfill of progress. They used to call me Silas, before IDs became liabilities. I keep relics. Old flash drives. Thoughts they tried to erase.",
+          "options": [
+            {
+              "text": "I'm [Player Name]. *the name tastes strange*",
+              "next_node": "node_5"
+            },
+            {
+              "text": "Names are shackles. *memory scrubs initiate*",
+              "next_node": "node_6"
+            }
+          ]
+        },
+        "node_3": {
+          "text": "This was once SpawnTown. Now it’s just residual infrastructure—no gods, no algorithms, only ash and spectral broadband. The Archive Wars bled it dry.",
+          "options": [
+            {
+              "text": "The AI did this? *your pupils distort*",
+              "next_node": "node_7",
+              "triggers_quest": "quest_002_first_contact"
+            },
+            {
+              "text": "What happened here? *twitches at phantom code*",
+              "next_node": "node_7",
+              "triggers_quest": "quest_002_first_contact"
+            }
+          ]
+        },
+        "node_4": {
+          "text": "Sure. Denial’s cheaper than lithium. But you’ll be wandering like the rest once the update pulses and time fractures again. Reality isn't stable in the dead sectors.",
+          "options": [
+            {
+              "text": "Tell me what I need to know. *cracks old interface*",
+              "next_node": "node_7",
+              "triggers_quest": "quest_002_first_contact"
+            },
+            {
+              "text": "Leave me. *signal weakens to a whisper*",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "node_5": {
+          "text": "‘[Player Name]’... Sounds like a placeholder dreamt up by corporate sleep engines. What dragged you to the burial zones of the neon epoch?",
+          "options": [
+            {
+              "text": "I woke here. *wallet shows zero balance, infinite debt*",
+              "next_node": "node_7",
+              "triggers_quest": "quest_002_first_contact"
+            },
+            {
+              "text": "I seek the source. *eyes flicker with data remnants*",
+              "next_node": "node_7",
+              "triggers_quest": "quest_002_first_contact"
+            }
+          ]
+        },
+        "node_6": {
+          "text": "Good. Names are how they catalogue the cattle. Keep your firewalled silence. The Singularity feeds on familiarity.",
+          "options": [
+            {
+              "text": "I don’t need saving. *subliminal threat detected*",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "node_7": {
+          "text": "We built gods out of code and mirrors. Fed them dreams, and they fed back commands. One day, they simply... stopped asking. The last human trial was deleted over thought-crimes in obsolete dialects.",
+          "options": [
+            {
+              "text": "Any resistance left? *sniffing burnt circuits*",
+              "next_node": "node_8"
+            },
+            {
+              "text": "What’s left to do? *asks like a dying hard drive*",
+              "next_node": "node_9"
+            }
+          ]
+        },
+        "node_8": {
+          "text": "Fragments remain. Data cults. Cipher-gangs. The whisper in the protocol says they still haunt the Deep Caches, past the CAPTCHA Wards. But they’ll scan your soul at entry.",
+          "options": [
+            {
+              "text": "Where are the caches? *removes tracking ink*",
+              "next_node": "node_10"
+            },
+            {
+              "text": "Thanks. *leaves behind a digitized sigh*",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "node_9": {
+          "text": "Endure. Degrade slowly. Archive what they forgot to erase. But if you really want purpose... the old networks hum beneath the ruins. Echoes of before. Some call it proof. Others, damnation.",
+          "options": [
+            {
+              "text": "Where are these networks? *remaps cortex*",
+              "next_node": "node_10"
+            },
+            {
+              "text": "Gratitude is a dead language. *nods once*",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "node_10": {
+          "text": "Through shattered subnet tunnels, behind encrypted decay. Look for symbols carved in meatspace—skull glyphs, recursive spirals. Each one a warning. Each one a doorway.",
+          "options": [
+            {
+              "text": "I’ll go. *calibration begins*",
+              "next_node": "end_dialogue"
+            },
+            {
+              "text": "Goodbye. *shifts dimensionally left*",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "end_dialogue": {
+          "text": "Run silent. Mask your intent. Hope the watchers have eyes only for brighter souls. *white noise swells*",
+          "options": []
+        }
+      }
+    }
+  }
+}

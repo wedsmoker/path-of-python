@@ -52,17 +52,16 @@ class Pathfinding:
             for neighbor_offset in [(0, 1), (0, -1), (1, 0), (-1, 0)]: # 4-directional movement
                 neighbor_tile = (current_tile[0] + neighbor_offset[0], current_tile[1] + neighbor_offset[1])
 
-# Check if neighbor is within map bounds and is walkable
+                # Check if neighbor is within map bounds and is walkable
                 if not (0 <= neighbor_tile[0] < self.game.scene_manager.current_scene.map_width and \
                         0 <= neighbor_tile[1] < self.game.scene_manager.current_scene.map_height):
                     continue # Skip if out of bounds
 
-                # Assuming tile_map is accessible and defines walkable tiles
-                # For now, all tiles are walkable as per the request.
-                # In the future, this would check self.game.scene_manager.current_scene.tile_map[neighbor_tile[1]][neighbor_tile[0]]
-                # to determine walkability.
-                # Since we ignore boundaries, all neighbors are considered valid.
-                # In a real game, you'd check if neighbor_tile is within map bounds.
+                # Check if the neighbor tile is walkable
+                tile_map = self.game.scene_manager.current_scene.tile_map
+                tile_type = tile_map[neighbor_tile[1]][neighbor_tile[0]]
+                if tile_type in ('mountain', 'building', 'rubble'):
+                    continue  # Skip if it's a wall
 
                 tentative_g_score = g_score[current_tile] + 1 # Cost to move to neighbor is 1
 

@@ -147,7 +147,7 @@ class Enemy(pygame.sprite.Sprite):
     #     for _ in range(num_projectiles):
     #         self._shoot_projectile(target_x, target_y)
 
-    def update(self, dt, player, tile_map, tile_size):
+    def update(self, dt, player, tile_map, tile_size, nearest_skeleton=None):
         # Debug print to check if update is called for any enemy
         # print(f"Enemy {self.name} update called.")
 
@@ -170,13 +170,14 @@ class Enemy(pygame.sprite.Sprite):
         # Update damage texts
         self.damage_texts.update(dt)
 
-        # Calculate distance to player
-        dx, dy = player.rect.centerx - self.rect.centerx, player.rect.centery - self.rect.centery
+        # Calculate distance to player or nearest skeleton
+        target = nearest_skeleton if nearest_skeleton else player
+        dx, dy = target.rect.centerx - self.rect.centerx, target.rect.centery - self.rect.centery
         dist = math.hypot(dx, dy)
 
         # Melee attack logic
         if dist <= self.melee_range and current_time - self.last_melee_attack_time > self.melee_cooldown:
-            player.take_damage(self.damage)
+            target.take_damage(self.damage)
             self.last_melee_attack_time = current_time
             # Debug prints for ranged attack
             if self.attack_range > 0:

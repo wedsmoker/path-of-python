@@ -95,6 +95,14 @@ class InputHandler:
         """Checks if the interact key is pressed."""
         return self.is_key_just_pressed(KEY_INTERACT)
 
+    def is_backpage_key_pressed(self):
+        """Checks if the backpage key (mouse button X1) is pressed."""
+        return self.is_mouse_button_just_pressed(pygame.BUTTON_X1)
+
+    def is_mouse_button_7_just_pressed(self):
+        """Checks if mouse button 7 is pressed."""
+        return self.is_mouse_button_just_pressed(7)
+
     def reset_inputs(self):
         """Resets single-frame input states at the end of a new frame/loop."""
         self.just_pressed_keys.clear()

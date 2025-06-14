@@ -250,16 +250,36 @@ class BaseGameplayScene(BaseScene):
                                 self.game.scene_manager.set_scene(portal["target_scene"], self.player, self.hud)
                                 break # Interact with only one portal at a time
 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Left-click
-            # Get the mouse position in world coordinates
-            world_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
-            world_y = (event.pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
-            if self.player:
-                self.player.set_target(world_x, world_y)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == KEY_RIGHT_MOUSE:
+            if event.button == pygame.BUTTON_RIGHT:
+                # Get the mouse position in world coordinates
+                world_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
+                world_y = (event.pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
+                if self.player:
+                    if self.player.current_mana >= 15: # Check if player has enough mana
+                        self.player.blink(world_x, world_y)
+                        self.player.current_mana -= 15 # Deduct mana cost
+                    else:
+                        print("Not enough mana to blink!")
+            elif self.game.input_handler.is_backpage_key_pressed():
                 if self.player:
                     self.player.activate_arc()
+            elif self.game.input_handler.is_mouse_button_7_just_pressed():
+                if self.player:
+                    # Get the mouse position in world coordinates
+                    world_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
+                    world_y = (event.pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
+                    self.player.activate_summon_skeletons(world_x, world_y)
+            elif event.button == 1: # Left-click
+                # Get the mouse position in world coordinates
+                world_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
+                world_y = (event.pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
+                if self.player:
+                    self.player.set_target(world_x, world_y)
+        #if event.type == pygame.MOUSEBUTTONDOWN:
+        #    if event.button == KEY_RIGHT_MOUSE:
+        #        if self.player:
+        #            self.player.activate_arc()
 
     def update(self, dt, entities=None):
         if self.player:  # Only update player if player exists

@@ -17,6 +17,7 @@ from core.swamp_cave_dungeon import SwampCaveDungeon # Import the dungeon scene
 from config import settings # Import settings
 from items.weapon import Weapon # Import the Weapon class
 from items.potion import HealthPotion # Import the HealthPotion class
+from ui.shop_window import ShopWindow
 
 class SpawnTown(BaseGameplayScene):
     def __init__(self, game):
@@ -54,10 +55,16 @@ class SpawnTown(BaseGameplayScene):
         self.player.unlocked_skills.append("neural_interface")
         self.player.unlocked_skills.append("arc") # Unlock arc by default
 
-        # Display "RIGHT CLICK TO ARC" message
-        self.display_message = True
-        self.message_start_time = pygame.time.get_ticks()
-        self.message_duration = 5000 # 5 seconds
+        # Display messages
+        self.display_message1 = True
+        self.message1_start_time = pygame.time.get_ticks()
+        self.message1_duration = 5000  # 5 seconds
+        self.display_message2 = False
+        self.message2_start_time = 0
+        self.message2_duration = 5000  # 5 seconds
+        self.display_message3 = False
+        self.message3_start_time = 0
+        self.message3_duration = 5000  # 5 seconds
 
         # Instantiate MapGenerator and then generate the map
         map_generator = SpawnTownMapGenerator(200, 200) # Create an instance with desired width and height
@@ -134,6 +141,7 @@ class SpawnTown(BaseGameplayScene):
 
         npc3 = create_npc(800, 400, "Charlie the Calm", "charlie_dialogue")
         self.npcs.add(npc3)
+        self.charlie = npc3 # Store charlie for shop positioning
 
         # Load portal images and create portal rects
         self.portal_images = {}
@@ -156,10 +164,10 @@ class SpawnTown(BaseGameplayScene):
                     except FileNotFoundError:
                         print(f"SpawnTown: Warning: Could not load portal image: {full_path}")
 
-            portal_x = portal.get("location", [0, 0])[0]
-            portal_y = portal.get("location", [0, 0])[1]
-            portal_rect = pygame.Rect(portal_x, portal_y, 64, 64)  # Example size
-            self.portal_rects.append(portal_rect)
+                portal_x = portal.get("location", [0, 0])[0]
+                portal_y = portal.get("location", [0, 0])[1]
+                portal_rect = pygame.Rect(portal_x, portal_y, 64, 64)  # Example size
+                self.portal_rects.append(portal_rect)
 
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
             print(f"SpawnTown: Warning: Could not load portal data from zone_data.json: {e}")
@@ -172,9 +180,127 @@ class SpawnTown(BaseGameplayScene):
         self.player.inventory.add_item(health_potion, 1)
         self.player.inventory.add_item(weapon, 1)
         self.load_portal_data()
+        self.ui_elements = [] # List to store UI elements
+        self.shop_window = None # Initialize shop_window to None
+        self.player.money = 100 # Starting money
+        self.shop_message = None
+
+    def enter(self):
+        self.game.logger.info("Entering SpawnTown.")
+
+        if not pygame.mixer.music.get_busy():
+            # Load music files from the data/music directory
+            music_dir = os.path.join(os.getcwd(), "data", "music")
+            self.music_files = [f for f in os.listdir(music_dir) if os.path.isfile(os.path.join(music_dir, f))]
+            self.current_music_index = 0
+
+            # Define a function to play the next song
+            def play_next_song():
+                if self.music_files:
+                    next_song = os.path.join(music_dir, self.music_files[self.current_music_index % len(self.music_files)])
+                    pygame.mixer.music.load(next_song)
+                    pygame.mixer.music.play()
+                    self.current_music_index += 1
+                else:
+                    print("No music files found in data/music/")
+
+            # Set the function to be called when a song finishes
+            def music_end_callback():
+                play_next_song()
+
+            # Set the end event for the music
+            pygame.mixer.music.set_endevent(pygame.USEREVENT+1)
+
+            # Set the function to be called when a song finishes
+            pygame.mixer.music.set_endevent(pygame.USEREVENT+1)
+
+            # Start playing the music
+            play_next_song()
+
+        pygame.event.clear(pygame.USEREVENT+1)
+
+    def exit(self):
+        self.game.logger.info("Exiting SpawnTown.")
+
+    def open_shop_window(self):
+        """Opens the shop window in the spawn town scene next to Charlie."""
+        try:
+            with open('data/items.json', 'r') as f:
+                items_data = json.load(f)
+        except FileNotFoundError:
+            self.game.logger.error("ERROR: items.json not found.")
+            return
+        except json.JSONDecodeError:
+            self.game.logger.error("ERROR: Could not decode items.json. Check for JSON syntax errors.")
+            return
+
+        # Combine items from all categories
+        all_items = []
+        for category in items_data:
+            all_items.extend(items_data[category])
+
+        # Assuming there's a ShopWindow class in ui/shop_window.py
+
+        # Get Charlie's position in the spawn town scene
+        charlie_x = self.charlie.rect.x
+        charlie_y = self.charlie.rect.y
+
+        # Calculate the shop window position (next to Charlie)
+        shop_x = charlie_x + 50  # Adjust the offset as needed
+        shop_y = charlie_y
+
+        # Create the shop window
+        self.shop_window = ShopWindow(shop_x, shop_y, items_data, self.game)
+        self.add_ui_element(self.shop_window)
+        self.game.dialogue_manager.end_dialogue()
+        if self.charlie:
+            self.charlie.in_dialogue = False
+        if self.shop_window:
+            self.shop_window.is_open = True
+
+    def close_shop_window(self):
+        """Closes the shop window."""
+        if self.shop_window:
+            self.ui_elements.remove(self.shop_window)
+            self.shop_window = None
+            if self.charlie:
+                self.charlie.in_dialogue = False
+            if self.game.dialogue_manager:
+                self.game.dialogue_manager.start_dialogue(self.charlie.dialogue_id)
+        self.shop_message = None
+
+    def add_ui_element(self, element):
+        """Adds a UI element to the list of elements to be drawn."""
+        self.ui_elements.append(element)
 
     def handle_event(self, event):
+        # Open shop window if dialogue option is chosen
+        for npc in self.npcs:
+            if npc.name == "Charlie the Calm" and npc.in_dialogue and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                self.open_shop_window()
+                break
+
         super().handle_event(event) # Call base class event handler
+
+        if self.shop_window:
+            shop_action = self.shop_window.handle_event(event) # Handle shop window events
+            if shop_action == "close":
+                self.close_shop_window()
+                return
+            elif shop_action:
+                # Try to buy the item
+                if 'price' in shop_action:
+                    if self.player.money >= shop_action['price']:
+                        self.player.money -= shop_action['price']
+                        print(f"Bought {shop_action['name']}! Remaining money: {self.player.money}")
+                        self.player.inventory.add_item(shop_action, 1)
+                        self.shop_message = f"Bought {shop_action['name']}!"
+                        #self.close_shop_window() # REMOVE
+                    else:
+                        print("Not enough money!")
+                        self.shop_message = "Not enough money!"
+                return
+
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Left-click
             # Check for NPC interaction
@@ -187,6 +313,7 @@ class SpawnTown(BaseGameplayScene):
                 npc_screen_rect = pygame.Rect(npc_screen_x, npc_screen_y,
                                               npc.rect.width * self.zoom_level,
                                               npc.rect.height * self.zoom_level)
+
                 # print(f"SpawnTown: handle_event: event.pos={event.pos}, npc_screen_rect={npc_screen_rect}") # Commented out to reduce console spam
 
                 if npc_screen_rect.collidepoint(event.pos):
@@ -224,10 +351,24 @@ class SpawnTown(BaseGameplayScene):
         # Pass the combined list of entities to the base class update, which passes it to the HUD
         super().update(dt, entities=all_entities)
 
-        # Check if message should be displayed
-        if self.display_message:
-            if current_time - self.message_start_time > self.message_duration:
-                self.display_message = False
+        # Message 1
+        if self.display_message1:
+            if current_time - self.message1_start_time > self.message1_duration:
+                self.display_message1 = False
+                self.display_message2 = True
+                self.message2_start_time = current_time
+
+        # Message 2
+        if self.display_message2:
+            if current_time - self.message2_start_time > self.message2_duration:
+                self.display_message2 = False
+                self.display_message3 = True
+                self.message3_start_time = current_time
+
+        # Message 3
+        if self.display_message3:
+            if current_time - self.message3_start_time > self.message3_duration:
+                self.display_message3 = False
 
 
     def draw(self, screen):
@@ -271,12 +412,30 @@ class SpawnTown(BaseGameplayScene):
             else:
                 pygame.draw.rect(screen, (255, 0, 0), scaled_portal_rect) # Red placeholder
 
-        # Display "RIGHT CLICK TO ARC" message
-        if self.display_message:
-            font = pygame.font.Font(None, 50)
-            text_surface = font.render("RIGHT CLICK TO ARC", True, (255, 255, 255))
+        # Display messages
+        font = pygame.font.Font(None, 50)
+        if self.display_message1:
+            text_surface = font.render("Left click for movement...", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
             screen.blit(text_surface, text_rect)
+        elif self.display_message2:
+            text_surface = font.render("Right click to blink...", True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
+            screen.blit(text_surface, text_rect)
+        elif self.display_message3:
+            text_surface = font.render("Mouse side button to attack...", True, (255, 255, 255))
+            text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
+            screen.blit(text_surface, text_rect)
+
+        self.draw_ui_elements(screen) # Draw UI elements
+
+        if self.shop_message:
+            draw_text(screen, self.shop_message, 24, (255, 255, 255), settings.SCREEN_WIDTH // 2, 50, align="center")
+
+    def draw_ui_elements(self, screen):
+        """Draws all UI elements in the scene."""
+        for element in self.ui_elements:
+            element.draw(screen)
 
     def load_portal_data(self):
         """Loads portal data from zone_data.json and updates the portal_images and portal_rects lists."""
@@ -300,10 +459,28 @@ class SpawnTown(BaseGameplayScene):
                     except FileNotFoundError:
                         print(f"SpawnTown: Warning: Could not load portal image: {full_path}")
 
-                portal_x = portal.get("location", [0, 0])[0]
-                portal_y = portal.get("location", [0, 0])[1]
-                portal_rect = pygame.Rect(portal_x, portal_y, 64, 64)  # Example size
-                self.portal_rects.append(portal_rect)
+                    # Move these lines inside the loop
+                    portal_x = portal.get("location", [0, 0])[0]
+                    portal_y = portal.get("location", [0, 0])[1]
+                    portal_rect = pygame.Rect(portal_x, portal_y, 64, 64)  # Example size
+                    self.portal_rects.append(portal_rect)
 
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
             print(f"SpawnTown: Warning: Could not load portal data from zone_data.json: {e}")
+
+    @property
+    def player_money(self):
+        return self.player.money
+
+    @player_money.setter
+    def player_money(self, value):
+        self.player.money = value
+
+    def next_song(self):
+        if self.music_files:
+            self.current_music_index += 1
+            next_song = os.path.join(os.getcwd(), "data", "music", self.music_files[self.current_music_index % len(self.music_files)])
+            pygame.mixer.music.load(next_song)
+            pygame.mixer.music.play()
+        else:
+            print("No music files found in data/music/")

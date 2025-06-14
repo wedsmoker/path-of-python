@@ -6,6 +6,7 @@ import json
 from config.constants import TILE_SIZE
 from entities.projectile import Projectile
 from entities.enemy import Enemy # Import Enemy class
+from entities.summon_skeletons import WraithEffect
 
 class ArcSkill:
     def __init__(self, player):
@@ -101,6 +102,9 @@ class ArcSkill:
         initial_targets = []
         for sprite in self.player.game.current_scene.enemies:
             enemy = sprite
+            # Exclude skeletons and wraiths
+            if isinstance(enemy, WraithEffect) or enemy.name == "Skeleton":
+                continue
             distance = math.hypot(enemy.rect.centerx - start_x, enemy.rect.centery - start_y)
             if distance < self.chain_range:
                 initial_targets.append(enemy)
@@ -153,6 +157,9 @@ class ArcSkill:
         eligible_enemies = []
         for sprite in self.player.game.current_scene.enemies:
             enemy = sprite
+            # Exclude skeletons and wraiths
+            if isinstance(enemy, WraithEffect) or enemy.name == "Skeleton":
+                continue
             # Allow re-hitting enemies for visual effect, but prevent chaining back to the immediate previous target
             # and prevent chaining to the current target (as it just got hit)
             if enemy == current_target or enemy == previous_target: 
