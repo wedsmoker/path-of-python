@@ -4,6 +4,7 @@ import math
 from config.constants import TILE_SIZE
 from entities.projectile import Projectile
 from ui.damage_text import DamageText
+# Removed: from entities.summon_skeletons import Skeleton # Import Skeleton class
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, game, x, y, name, health, damage, speed, sprite_path, attack_range=0, attack_cooldown=0, projectile_sprite_path=None, ranged_attack_pattern="single", level=1, xp_value=0):
@@ -75,15 +76,15 @@ class Enemy(pygame.sprite.Sprite):
             print(f"Enemy {self.name} died. Awarding {self.xp_value} XP to player.") # Debug print
             self.game.player.gain_experience(self.xp_value) # Pass xp_value instead of level
 
-    def _perform_ranged_attack(self, player):
+    def _perform_ranged_attack(self, target): # Modified to accept target
         current_time = pygame.time.get_ticks()
         if current_time - self.last_attack_time > self.attack_cooldown:
             if self.projectile_sprite_path:
                 if self.ranged_attack_pattern == "single":
-                    self._shoot_projectile(player.rect.centerx, player.rect.centery)
+                    self._shoot_projectile(target.rect.centerx, target.rect.centery)
                     self.last_attack_time = current_time
                 elif self.ranged_attack_pattern == "spread":
-                    self._shoot_spread_projectiles(player.rect.centerx, player.rect.centery, num_projectiles=3, angle_spread=30)
+                    self._shoot_spread_projectiles(target.rect.centerx, target.rect.centery, num_projectiles=3, angle_spread=30)
                     self.last_attack_time = current_time
                 elif self.ranged_attack_pattern == "burst":
                     self._is_bursting = True
@@ -97,8 +98,6 @@ class Enemy(pygame.sprite.Sprite):
                     self._shoot_spiral_projectiles(num_projectiles=15, angle_increment_degrees=20, radius_increment=10)
                     self.last_attack_time = current_time
                 # Add more patterns here
-
-            # self.last_attack_time = current_time # Moved inside pattern specific blocks for burst
 
     def _shoot_projectile(self, target_x, target_y):
         projectile = Projectile(self.game, self.rect.centerx, self.rect.centery,
@@ -142,12 +141,30 @@ class Enemy(pygame.sprite.Sprite):
             target_x = center_x + math.cos(angle) * current_radius
             target_y = center_y + math.sin(angle) * current_radius
             self._shoot_projectile(target_x, target_y)
-    # _shoot_burst_projectiles is no longer needed as burst logic is handled in update
-    # def _shoot_burst_projectiles(self, target_x, target_y, num_projectiles, delay):
-    #     for _ in range(num_projectiles):
-    #         self._shoot_projectile(target_x, target_y)
 
-    def update(self, dt, player, tile_map, tile_size, nearest_skeleton=None):
+    def _find_nearest_friendly_skeleton(self, finding_range):
+        """Find the nearest friendly skeleton to attack within the finding range."""
+        from entities.summon_skeletons import Skeleton # Import Skeleton here to avoid circular dependency
+        nearest_skeleton = None
+        min_distance = float('inf')
+
+        # Iterate through all sprites in the enemies group
+        for sprite in self.game.current_scene.enemies:
+            # Check if the sprite is a Skeleton and is friendly
+            if isinstance(sprite, Skeleton) and hasattr(sprite, 'is_friendly') and sprite.is_friendly:
+                # Calculate distance to the skeleton
+                dx, dy = sprite.rect.centerx - self.rect.centerx, sprite.rect.centery - self.rect.centery
+                dist = math.hypot(dx, dy)
+
+                # Check if the skeleton is within the finding range and is closer than the current nearest
+                if dist < min_distance and dist <= finding_range:
+                    min_distance = dist
+                    nearest_skeleton = sprite
+
+        # Return the nearest friendly skeleton found, or None if none are within range
+        return nearest_skeleton
+
+    def update(self, dt, player, tile_map, tile_size): # Removed nearest_skeleton parameter
         # Debug print to check if update is called for any enemy
         # print(f"Enemy {self.name} update called.")
 
@@ -160,6 +177,7 @@ class Enemy(pygame.sprite.Sprite):
         if self._is_bursting:
             if self._burst_projectiles_fired < self.burst_projectile_count:
                 if current_time - self._last_burst_shot_time > self.burst_delay:
+                    # Target the player during burst, or potentially the nearest skeleton if implemented
                     self._shoot_projectile(player.rect.centerx, player.rect.centery)
                     self._burst_projectiles_fired += 1
                     self._last_burst_shot_time = current_time
@@ -170,12 +188,20 @@ class Enemy(pygame.sprite.Sprite):
         # Update damage texts
         self.damage_texts.update(dt)
 
-        # Calculate distance to player or nearest skeleton
+        # Find nearest friendly skeleton within a certain range (e.g., enemy's attack_range or a dedicated targeting range)
+        # Assuming enemies have a targeting range, let's use attack_range for now
+        targeting_range = self.attack_range if self.attack_range > 0 else TILE_SIZE * 15 # Use attack range or a default
+        nearest_skeleton = self._find_nearest_friendly_skeleton(targeting_range)
+
+        # Determine the target: prioritize nearest skeleton if found, otherwise target the player
         target = nearest_skeleton if nearest_skeleton else player
+
+        # Calculate distance to the determined target
         dx, dy = target.rect.centerx - self.rect.centerx, target.rect.centery - self.rect.centery
         dist = math.hypot(dx, dy)
 
         # Melee attack logic
+        # Check if the target is within melee range and attack cooldown is met
         if dist <= self.melee_range and current_time - self.last_melee_attack_time > self.melee_cooldown:
             target.take_damage(self.damage)
             self.last_melee_attack_time = current_time
@@ -186,11 +212,11 @@ class Enemy(pygame.sprite.Sprite):
 
         # Ranged attack logic (only if not in melee range or if ranged attack is preferred)
         # Prioritize ranged attack if within range and off cooldown, otherwise move or melee
-        # Only trigger new ranged attack if not currently bursting
+        # Only trigger new ranged attack if not currently bursting and target is within attack range
         if not self._is_bursting and self.attack_range > 0 and dist <= self.attack_range and current_time - self.last_attack_time > self.attack_cooldown:
-            self._perform_ranged_attack(player)
+            self._perform_ranged_attack(target) # Pass the determined target
         elif dist > self.melee_range: # Only move if not in melee range
-            # Simple AI: Move towards the player if not in attack range or no ranged attack
+            # Simple AI: Move towards the target if not in attack range or no ranged attack
             if dist > 0:
                 # Normalize direction vector
                 dx, dy = dx / dist, dy / dist

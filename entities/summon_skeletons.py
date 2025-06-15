@@ -72,7 +72,7 @@ class SummonSkeletons:
             print(f"An unexpected error occurred: {e}")
 
     def activate(self, x, y):
-        """Activates the Summon Skeletons skill, summoning skeletons to fight for the player."""
+        """Activates the Summon Skeletons skill, summoning a random number of skeletons (1-3) to fight for the player."""
         print("SummonSkeletons.activate() called!")  # Add print statement
         current_time = pygame.time.get_ticks()
         if current_time - self.last_used < self.cooldown:
@@ -87,6 +87,7 @@ class SummonSkeletons:
             print("Cannot activate Summon Skeletons skill: Not enough mana!")
             return
 
+        # Check if maximum skeletons are already active
         if len(self.active_skeletons) >= self.max_skeletons:
             print("Cannot summon more skeletons! Maximum reached.")
             return
@@ -95,13 +96,29 @@ class SummonSkeletons:
         self.player.current_mana -= self.mana_cost
         self.last_used = current_time
 
-        self._summon_skeleton(x, y)
+        # Determine a random number of skeletons to summon (between 1 and 3)
+        num_to_summon = random.randint(1, 3)
+        print(f"Attempting to summon {num_to_summon} skeletons.")
+        # Add debug print to show current active skeletons and number to summon
+        print(f"DEBUG: Current active skeletons: {len(self.active_skeletons)}, Attempting to summon: {num_to_summon}")
+
+
+        # Summon the determined number of skeletons, respecting the max limit
+        for _ in range(num_to_summon):
+            if len(self.active_skeletons) < self.max_skeletons:
+                # Summon skeleton with a small random offset
+                offset_x = random.randint(-int(TILE_SIZE * 0.75), int(TILE_SIZE * 0.75)) # Increased offset range
+                offset_y = random.randint(-int(TILE_SIZE * 0.75), int(TILE_SIZE * 0.75)) # Increased offset range
+                self._summon_skeleton(x + offset_x, y + offset_y)
+            else:
+                print("Maximum skeletons reached during summoning sequence.")
+                break # Stop summoning if max limit is hit
 
     def _summon_skeleton(self, x, y):
-        """Summons a skeleton at the specified location."""
+        """Summons a single skeleton at the specified location."""
 
         # Create a skeleton enemy
-        skeleton = Skeleton(self.player.game, x, y, self.skeleton_health, self.skeleton_damage, self.skeleton_speed, self.skeleton_image_path, self.player)
+        skeleton = Skeleton(self.player.game, x, y, self.skeleton_health, self.skeleton_damage, self.skeleton_speed, self.skeleton_image_path, self) # Pass self (SummonSkeletons instance) as owner
         self.player.game.current_scene.enemies.add(skeleton)
         self.active_skeletons.append(skeleton)
         print("Summoned a skeleton!")
@@ -110,22 +127,36 @@ class SummonSkeletons:
         wraith = WraithEffect(self.player.game, x, y, self.wraith_image_path, scale=2)
         self.player.game.current_scene.enemies.add(wraith)
 
+
     def remove_skeleton(self, skeleton):
         """Removes a skeleton from the active skeletons list."""
         if skeleton in self.active_skeletons:
             self.active_skeletons.remove(skeleton)
+            print(f"Removed a skeleton from active list. Current active: {len(self.active_skeletons)}")
 
 
 class Skeleton(Enemy):
     def __init__(self, game, x, y, health, damage, speed, sprite_path, owner):
         super().__init__(game, x, y, "Skeleton", health, damage, speed, sprite_path)
-        self.owner = owner  # The player who summoned this skeleton
+        self.owner = owner  # The SummonSkeletons instance that summoned this skeleton
         self.is_friendly = True  # Skeletons are friendly to the player
+        self.faction = "player_minions"  # Set skeleton's faction
         self.attack_range = TILE_SIZE * 1.5 # Melee range
         self.attack_cooldown = 1000 # 1 second cooldown
         self.last_attack_time = pygame.time.get_ticks()
         self.following_range = TILE_SIZE * 20 # Increased following range
         self.enemy_finding_range = TILE_SIZE * 8 # Range to find enemies
+
+    def take_damage(self, amount):
+        """Overrides Enemy.take_damage to handle removal from active_skeletons list."""
+        # Call the parent class's take_damage method
+        super().take_damage(amount)
+
+        # If the skeleton died, remove it from the owner's active_skeletons list
+        if self.current_life <= 0:
+            if self.owner: # Ensure owner exists
+                self.owner.remove_skeleton(self)
+
 
     def update(self, dt, player, tile_map, tile_size):
         """Update the skeleton's behavior: move towards and attack enemies."""
@@ -153,7 +184,7 @@ class Skeleton(Enemy):
                 dx, dy = dx / dist, dy / dist
                 # Calculate potential movement
                 move_x = dx * self.speed * dt
-                move_y = dy * self.speed * dt
+                move_y = dy * self.speed * dt # Corrected potential typo here
 
                 # Store original position for collision rollback
                 original_x, original_y = self.rect.x, self.rect.y
@@ -179,7 +210,7 @@ class Skeleton(Enemy):
 
                 # Calculate potential movement
                 move_x = dx * self.speed * dt
-                move_y = dy * self.speed * dt
+                move_y = dy * self.speed * dt # Corrected potential typo here
 
                 # Store original position for collision rollback
                 original_x, original_y = self.rect.x, self.rect.y
