@@ -27,7 +27,7 @@ The core gameplay experience is heavily inspired by "Path of Exile," focusing on
 3.  Install the required dependencies using pip:
 
     ```
-    pip install pygame noise panda3d gltf ursina screeninfo scipy numpy hypothesis olefile typing_extensions h2 cryptography pyodide
+    pip install pygame noise panda3d gltf ursina screeninfo scipy numpy hypothesis olefile typing_extensions h2 
     ```
 
 ## How to Run the Game
