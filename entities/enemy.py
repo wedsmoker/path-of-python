@@ -230,24 +230,72 @@ class Enemy(pygame.sprite.Sprite):
 
                 # Attempt to move horizontally
                 self.rect.x += move_x
-                if self._check_collision(tile_map, tile_size):
+                collision = self._check_collision(tile_map, tile_size)
+                if collision:
                     self.rect.x = original_x  # Rollback if collision
+                    # If collision, try moving vertically instead
+                    self.rect.y += move_y
+                    if self._check_collision(tile_map, tile_size):
+                        self.rect.y = original_y # Rollback vertical movement as well
+                        # If both horizontal and vertical movements are blocked, try diagonal movements
+                        # Try top-left
+                        self.rect.x -= move_x
+                        self.rect.y -= move_y
+                        if self._check_collision(tile_map, tile_size):
+                            self.rect.x = original_x
+                            self.rect.y = original_y
+                        else:
+                            # Top-left movement was successful
+                            pass
+                    else:
+                        # Vertical movement was successful
+                        pass
+                else:
+                    # Horizontal movement was successful, continue
+                    pass
 
                 # Attempt to move vertically
                 self.rect.y += move_y
-                if self._check_collision(tile_map, tile_size):
+                collision = self._check_collision(tile_map, tile_size)
+                if collision:
                     self.rect.y = original_y  # Rollback if collision
+                    # If collision, try moving horizontally instead
+                    self.rect.x += move_x
+                    if self._check_collision(tile_map, tile_size):
+                        self.rect.x = original_x # Rollback horizontal movement as well
+                        # If both horizontal and vertical movements are blocked, try diagonal movements
+                        # Try bottom-right
+                        self.rect.x += move_x
+                        self.rect.y += move_y
+                        if self._check_collision(tile_map, tile_size):
+                            self.rect.x = original_x
+                            self.rect.y = original_y
+                        else:
+                            # Bottom-right movement was successful
+                            pass
+                    else:
+                        # Horizontal movement was successful
+                        pass
+                else:
+                    # Vertical movement was successful, continue
+                    pass
+
+        # Store current position for next update
+        self.last_x = self.rect.x
+        self.last_y = self.rect.y
 
         # print(f"Enemy at ({self.rect.x}, {self.rect.y}) updated. Player at ({player.rect.centerx}, {player.rect.centery}).") # Debug print
 
     def _check_collision(self, tile_map, tile_size):
-        """Checks for collision with solid tiles."""
+        """Checks for collision with solid tiles, allowing movement through single-tile gaps."""
         # Get the tile coordinates the enemy is currently occupying
         enemy_left_tile = int(self.rect.left / tile_size)
         enemy_right_tile = int(self.rect.right / tile_size)
         enemy_top_tile = int(self.rect.top / tile_size)
         enemy_bottom_tile = int(self.rect.bottom / tile_size)
 
+        if not tile_map:
+            return False
         # Clamp tile coordinates to map boundaries
         map_width_tiles = len(tile_map[0])
         map_height_tiles = len(tile_map)
@@ -257,16 +305,41 @@ class Enemy(pygame.sprite.Sprite):
         enemy_top_tile = max(0, min(enemy_top_tile, map_height_tiles - 1))
         enemy_bottom_tile = max(0, min(enemy_bottom_tile, map_height_tiles - 1))
 
-        # Iterate over the tiles the enemy overlaps with
+        # Check for collision on each side of the enemy
+        collide_left = False
+        collide_right = False
+        collide_top = False
+        collide_bottom = False
+
+        # Calculate movement direction based on the change in position
+        if hasattr(self, 'last_x') and hasattr(self, 'last_y'):
+            dx = self.rect.x - self.last_x
+            dy = self.rect.y - self.last_y
+        else:
+            dx = 0
+            dy = 0
+
         for y in range(enemy_top_tile, enemy_bottom_tile + 1):
-            for x in range(enemy_left_tile, enemy_right_tile + 1):
-                if 0 <= y < map_height_tiles and 0 <= x < map_width_tiles:
-                    tile_type = tile_map[y][x]
-                    # Assuming 'wall' is a solid tile type. Add other solid types as needed.
-                    if tile_type == 'wall':
-                        # print(f"Enemy collision with wall at tile ({x}, {y})") # Debug print
-                        return True
-        return False
+            if tile_map[y][enemy_left_tile] in ('wall', 'mountain', 'building', 'rubble'):
+                collide_left = True
+            if tile_map[y][enemy_right_tile] in ('wall', 'mountain', 'building', 'rubble'):
+                collide_right = True
+
+        for x in range(enemy_left_tile, enemy_right_tile + 1):
+            if tile_map[enemy_top_tile][x] in ('wall', 'mountain', 'building', 'rubble'):
+                collide_top = True
+            if tile_map[enemy_bottom_tile][x] in ('wall', 'mountain', 'building', 'rubble'):
+                collide_bottom = True
+
+        # Allow squeezing through single-tile gaps based on movement direction
+        if dx != 0:  # Moving horizontally
+            if collide_left and collide_right:
+                return True  # Blocked horizontally
+        elif dy != 0:  # Moving vertically
+            if collide_top and collide_bottom:
+                return True  # Blocked vertically
+
+        return False  # No collision
 
     def draw(self, screen, camera_x, camera_y, zoom_level):
         # Calculate the enemy's position on the screen relative to the camera and zoom

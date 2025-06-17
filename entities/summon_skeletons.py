@@ -146,6 +146,9 @@ class Skeleton(Enemy):
         self.last_attack_time = pygame.time.get_ticks()
         self.following_range = TILE_SIZE * 20 # Increased following range
         self.enemy_finding_range = TILE_SIZE * 8 # Range to find enemies
+        self.circle_angle = random.uniform(0, 2 * math.pi)  # Initial random angle for circling
+        self.circle_speed = random.uniform(0.5, 1.5)  # Random speed for circling
+        self.circle_radius = random.uniform(TILE_SIZE * 1.5, TILE_SIZE * 2.5)  # Random radius for circling
 
     def take_damage(self, amount):
         """Overrides Enemy.take_damage to handle removal from active_skeletons list."""
@@ -205,25 +208,7 @@ class Skeleton(Enemy):
 
             # Move towards the player if no enemies are nearby and within following range
             if dist > 0 and dist < self.following_range:
-                # Normalize direction vector
-                dx, dy = dx / dist, dy / dist
-
-                # Calculate potential movement
-                move_x = dx * self.speed * dt
-                move_y = dy * self.speed * dt # Corrected potential typo here
-
-                # Store original position for collision rollback
-                original_x, original_y = self.rect.x, self.rect.y
-
-                # Attempt to move horizontally
-                self.rect.x += move_x
-                if self._check_collision(tile_map, tile_size):
-                    self.rect.x = original_x  # Rollback if collision
-
-                # Attempt to move vertically
-                self.rect.y += move_y
-                if self._check_collision(tile_map, tile_size):
-                    self.rect.y = original_y  # Rollback if collision
+                self._circle_around_player(dt, player, tile_map, tile_size)
 
     def _find_nearest_enemy(self, player, finding_range):
         """Find the nearest enemy (that is not a skeleton) to attack within the finding range."""
@@ -269,6 +254,33 @@ class Skeleton(Enemy):
                         # print(f"Enemy collision with wall at tile ({x}, {y})") # Debug print
                         return True
         return False
+
+    def _circle_around_player(self, dt, player, tile_map, tile_size):
+        """Makes the skeleton circle and dance around the player."""
+        # Update the circle angle
+        self.circle_angle += self.circle_speed * dt
+        if self.circle_angle > 2 * math.pi:
+            self.circle_angle -= 2 * math.pi
+
+        # Calculate the offset using sine and cosine functions for a wave-like motion
+        offset_x = math.cos(self.circle_angle) * self.circle_radius + math.sin(2 * self.circle_angle) * self.circle_radius * 0.3
+        offset_y = math.sin(self.circle_angle) * self.circle_radius + math.cos(2 * self.circle_angle) * self.circle_radius * 0.3
+
+        # Calculate the new position
+        new_x = player.rect.centerx + offset_x
+        new_y = player.rect.centery + offset_y
+
+        # Store original position for collision rollback
+        original_x, original_y = self.rect.x, self.rect.y
+
+        # Move to the new position
+        self.rect.x = new_x - self.rect.width / 2
+        if self._check_collision(tile_map, tile_size):
+            self.rect.x = original_x  # Rollback if collision
+
+        self.rect.y = new_y - self.rect.height / 2
+        if self._check_collision(tile_map, tile_size):
+            self.rect.y = original_y  # Rollback if collision
 
 class WraithEffect(pygame.sprite.Sprite):
     def __init__(self, game, x, y, image_path, scale=1):

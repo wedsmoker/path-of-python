@@ -1,0 +1,151 @@
+{
+  "bosses": {
+    "goblin_king": {
+      "name": "Goblin King",
+      "sprite": "graphics/dc-mon/holy/apis.png",
+      "stats": {
+        "health": 500,
+        "damage": 50,
+        "speed": 5
+      },
+      "attack_patterns": ["melee", "summon_minions"],
+      "enemies": [
+        {
+          "type": "goblin_king",
+          "sprite_path": "graphics/dc-mon/holy/apis.png",
+          "health": 500,
+          "damage": 50,
+          "speed": 5,
+          "attack_range": 200,
+          "attack_cooldown": 2000,
+          "projectile_sprite_path": "graphics/UNUSED/weapons/orcish_arrow.png",
+          "ranged_attack_pattern": "single",
+          "xp_value": 100
+        }
+      ]
+    },
+    "ice_elemental": {
+      "name": "Ice Elemental",
+      "sprite": "graphics/dc-mon/holy/cherub.png",
+      "stats": {
+        "health": 600,
+        "damage": 60,
+        "speed": 4
+      },
+      "attack_patterns": ["ice_bolt", "freeze_aoe"],
+      "enemies": [
+        {
+          "type": "ice_elemental",
+          "sprite_path": "graphics/dc-mon/holy/cherub.png",
+          "health": 600,
+          "damage": 60,
+          "speed": 4,
+          "attack_range": 250,
+          "attack_cooldown": 2500,
+          "projectile_sprite_path": "graphics/UNUSED/weapons/elven_arrow.png",
+          "ranged_attack_pattern": "single",
+          "xp_value": 120
+        }
+      ]
+    },
+    "sandstone_golem": {
+      "name": "Sandstone Golem",
+      "sprite": "graphics/dc-mon/holy/eastern_dragon.png",
+      "stats": {
+        "health": 800,
+        "damage": 70,
+        "speed": 3
+      },
+      "attack_patterns": ["slam", "rock_throw"],
+      "enemies": [
+        {
+          "type": "sandstone_golem",
+          "sprite_path": "graphics/dc-mon/holy/eastern_dragon.png",
+          "health": 800,
+          "damage": 70,
+          "speed": 3,
+          "attack_range": 150,
+          "attack_cooldown": 3000,
+          "projectile_sprite_path": "graphics/UNUSED/weapons/silver_arrow.png",
+          "ranged_attack_pattern": "single",
+          "xp_value": 140
+        }
+      ]
+    },
+    "swamp_thing": {
+      "name": "Swamp Thing",
+      "sprite": "graphics/dc-mon/holy/ophan.png",
+      "stats": {
+        "health": 700,
+        "damage": 55,
+        "speed": 4
+      },
+      "attack_patterns": ["poison_spit", "root_trap"],
+      "enemies": [
+        {
+          "type": "swamp_thing",
+          "sprite_path": "graphics/dc-mon/holy/ophan.png",
+          "health": 700,
+          "damage": 55,
+          "speed": 4,
+          "attack_range": 220,
+          "attack_cooldown": 2200,
+          "projectile_sprite_path": "graphics/UNUSED/weapons/elven_arrow.png",
+          "ranged_attack_pattern": "single",
+          "xp_value": 130
+        }
+      ]
+    },
+    "crystal_guardian": {
+      "name": "Crystal Guardian",
+      "sprite": "graphics/dc-mon/holy/paladin.png",
+      "stats": {
+        "health": 900,
+        "damage": 80,
+        "speed": 3
+      },
+      "attack_patterns": ["crystal_shard", "energy_beam"],
+      "enemies": [
+        {
+          "type": "crystal_guardian",
+          "sprite_path": "graphics/dc-mon/holy/paladin.png",
+          "health": 900,
+          "damage": 80,
+          "speed": 3,
+          "attack_range": 280,
+          "attack_cooldown": 2800,
+          "projectile_sprite_path": "graphics/UNUSED/weapons/golden_sword.png",
+          "ranged_attack_pattern": "single",
+          "xp_value": 150
+        }
+      ]
+    }
+  },
+  "dungeon_to_boss_mapping": {
+    "grassland": {
+      "boss_key": "goblin_king",
+      "layout_path": "data/boss_rooms/generic_boss_layout.json",
+      "tileset_name": "grassland"
+    },
+    "ice_cave": {
+      "boss_key": "ice_elemental",
+      "layout_path": "data/boss_rooms/generic_boss_layout.json",
+      "tileset_name": "ice_cave"
+    },
+    "sandstone": {
+      "boss_key": "sandstone_golem",
+      "layout_path": "data/boss_rooms/generic_boss_layout.json",
+      "tileset_name": "sandstone"
+    },
+    "swamp_cave": {
+      "boss_key": "swamp_thing",
+      "layout_path": "data/boss_rooms/generic_boss_layout.json",
+      "tileset_name": "swamp_cave"
+    },
+    "crystal_cave": {
+      "boss_key": "crystal_guardian",
+      "layout_path": "data/boss_rooms/generic_boss_layout.json",
+      "tileset_name": "crystal_cave"
+    }
+  }
+}

@@ -4,6 +4,7 @@ import os  # Import os to construct file paths
 from ui.dialogue_manager import DialogueManager
 from core.scene_manager import BaseScene
 from entities.player import Player
+from entities.boss_portal import BossPortal  # Import BossPortal
 from ui.hud import HUD
 from config.constants import (
     KEY_INVENTORY, KEY_SKILL_TREE, KEY_INTERACT, KEY_OPTIONS_MENU,
@@ -15,15 +16,21 @@ import math # Import math for distance calculation
 from entities.enemy import Enemy # Import the Enemy class
 from entities.projectile import Projectile # Import the Projectile class
 
+# Removed: from core.boss_system_manager import BossSystemManager # Import BossSystemManager
 class BaseGameplayScene(BaseScene):
     def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None):  # Added tileset_name and dungeon_data parameter
+        # Moved import here to avoid circular dependency
+        from core.boss_system_manager import BossSystemManager
+        self.boss_system_manager = BossSystemManager(game) # Instantiate BossSystemManager
         super().__init__(game)
         self.player = player  # Player is now passed in or remains None
         self.hud = hud  # HUD is now passed in or remains None
         self.tileset_name = tileset_name  # Store the tileset name
         self.projectiles = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group() # Group to hold enemy sprites
+        self.portals = pygame.sprite.Group() # Group to hold boss portals
         self.dungeon_data = dungeon_data # Store dungeon data
+        self.portal_spawned = False # Add a flag to indicate whether the portal has been spawned
 
         # Camera settings
         self.camera_x = 0
@@ -37,6 +44,7 @@ class BaseGameplayScene(BaseScene):
         self.frame_count = 0
 
         self.tile_images = {}
+        #self.faded_tile_images = {}  # Dictionary to store faded tile images
         self._load_tile_images()
 
         # Placeholder NPC for testing dialogue
@@ -45,11 +53,40 @@ class BaseGameplayScene(BaseScene):
             {"name": "Old Scavenger", "tile_x": 10, "tile_y": 10, "dialogue_id": "old_scavenger_intro"}
         ]
 
-        # If dungeon_data is provided, load enemies
-        print(f"BaseGameplayScene: __init__ received dungeon_data: {self.dungeon_data is not None}, enemies key present: {'enemies' in self.dungeon_data if self.dungeon_data else 'N/A'}")
-        if self.dungeon_data and 'enemies' in self.dungeon_data:
-            self.load_enemies(self.dungeon_data['enemies'])
+        # If dungeon_data is provided, attempt to load enemies
+        if self.dungeon_data:
+            # Set player_spawn_location if not provided in dungeon_data
+            if 'player_spawn_location' not in self.dungeon_data and hasattr(self, 'tile_map'):
+                # Find first floor tile if spawn location not specified
+                for y, row in enumerate(self.tile_map):
+                    for x, tile_type in enumerate(row):
+                        if tile_type == 'floor':
+                            self.player_spawn_location = (x * self.tile_size, y * self.tile_size)
+                            break
+                    else:
+                        continue
+                    break
+                else:
+                    # Default to (0, 0) if no floor tile found
+                    self.player_spawn_location = (0, 0)
+            elif 'player_spawn_location' in self.dungeon_data:
+                self.player_spawn_location = self.dungeon_data['player_spawn_location']
 
+            # Load enemies if present in dungeon_data
+            self.load_enemies(self.dungeon_data.get('enemies', []))
+
+        self.post_init()
+
+    def post_init(self):
+        """
+        Called by subclasses after their own initialization is complete.
+        Responsible for tasks that require the full scene to be set up,
+        like spawning the boss portal.
+        """
+        if self.dungeon_data and not self.portal_spawned: # Only attempt to spawn if portal hasn't been spawned yet
+            # Attempt to spawn a boss portal in this scene now that tile_map and player_spawn_location should be set
+            self.boss_system_manager.attempt_spawn_portal(self)
+            self.portal_spawned = True # Set the flag to True after attempting to spawn the portal
 
     def _load_tile_images(self):
         """Loads tile images based on the dungeon's tileset."""
@@ -61,8 +98,10 @@ class BaseGameplayScene(BaseScene):
             tile_sets = zone_data.get("tile_sets", {})
             tileset_data = tile_sets.get(self.tileset_name)
 
-            print(f"BaseGameplayScene: _load_tile_images: self.tileset_name = {self.tileset_name}")  # Added logging
-            print(f"BaseGameplayScene: _load_tile_images: tileset_data = {tileset_data}")  # Added logging
+            if tileset_data:
+                pass
+            else:
+                pass
 
             if tileset_data:
                 # Load tile images from zone_data.json
@@ -77,11 +116,23 @@ class BaseGameplayScene(BaseScene):
 
                         image = pygame.image.load(full_path).convert_alpha()
                         self.tile_images[tile_name] = image
+
+                        # Create a faded version of the tile image
+                        #faded_image = image.copy()
+                        #for i in range(faded_image.get_width()):
+                        #    for j in range(faded_image.get_height()):
+                        #        color = faded_image.get_at((i, j))
+                        #        new_color = (color[0], color[1], color[2], 0)  # Fully transparent
+                        #        faded_image.set_at((i, j), new_color)
+                        #self.faded_tile_images[tile_name] = faded_image
+
                         # print(f"BaseGameplayScene: Loaded tile image: {tile_name} from {full_path}")  # Added logging
                     except pygame.error as e:
                         print(f"BaseGameplayScene: Warning: Could not load tile image {full_path}: {e}")
                         self.tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size))
                         self.tile_images[tile_name].fill((255, 0, 255))  # Magenta placeholder
+                        #self.faded_tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size), pygame.SRCALPHA)  # Transparent placeholder
+
             else:
                 # Load tile images from a separate JSON file
                 tileset_path = os.path.join(os.getcwd(), "data", "tilesets", f"{self.tileset_name}_tileset.json")
@@ -99,11 +150,22 @@ class BaseGameplayScene(BaseScene):
 
                         image = pygame.image.load(full_path).convert_alpha()
                         self.tile_images[tile_name] = image
+
+                        # Create a faded version of the tile image
+                        #faded_image = image.copy()
+                        #for i in range(faded_image.get_width()):
+                        #    for j in range(faded_image.get_height()):
+                        #        color = faded_image.get_at((i, j))
+                        #        new_color = (color[0], color[1], color[2], 0)  # Fully transparent
+                        #        faded_image.set_at((i, j), new_color)
+                        #self.faded_tile_images[tile_name] = faded_image
+
                         # print(f"BaseGameplayScene: Loaded tile image: {tile_name} from {full_path}")  # Added logging
                     except pygame.error as e:
                         print(f"BaseGameplayScene: Warning: Could not load tile image {full_path}: {e}")
                         self.tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size))
                         self.tile_images[tile_name].fill((255, 0, 255))  # Magenta placeholder
+                        #self.faded_tile_images[tile_name] = pygame.Surface((self.tile_size, self.tile_size), pygame.SRCALPHA)  # Transparent placeholder
 
         except FileNotFoundError:
             print(f"BaseGameplayScene: Error: data/zone_data.json or tileset file not found. Cannot load tile images.")
@@ -115,7 +177,6 @@ class BaseGameplayScene(BaseScene):
     def load_enemies(self, enemies_data):
         """Loads enemies from the dungeon data."""
         self.enemies.empty() # Clear existing enemies
-        print(f"BaseGameplayScene: Attempting to load {len(enemies_data)} enemies.") # Debug print
         # Load enemy data from enemy_data.json
         enemy_config_path = os.path.join(os.getcwd(), "data", "enemy_data.json")
         try:
@@ -128,7 +189,6 @@ class BaseGameplayScene(BaseScene):
         for enemy_info in enemies_data:
             enemy_type = enemy_info.get('type')
             config = all_enemy_configs.get(enemy_type, {})
-
             # Use config values, falling back to enemy_info if config doesn't have it
             health = enemy_info.get('health', config.get('health', 10))
             damage = enemy_info.get('damage', config.get('damage', 1))
@@ -155,9 +215,7 @@ class BaseGameplayScene(BaseScene):
                 ranged_attack_pattern,
                 xp_value
             )
-            print(f"DEBUG: Instantiating Enemy {enemy_type} with xp_value: {xp_value}")
             self.enemies.add(enemy)
-            print(f"BaseGameplayScene: Added enemy: {enemy_type} at ({enemy_info['x']}, {enemy_info['y']})") # Debug print
         print(f"BaseGameplayScene: Loaded {len(self.enemies)} enemies.")
 
     def debug_log(self):
@@ -238,17 +296,6 @@ class BaseGameplayScene(BaseScene):
                             # Start dialogue with this NPC
                             self.game.dialogue_manager.start_dialogue(npc["dialogue_id"])
                             break # Interact with only one NPC at a time
-                    # Check for interaction with Portals
-                    if hasattr(self, 'dungeon_data') and 'portals' in self.dungeon_data:
-                        for portal in self.dungeon_data['portals']:
-                            portal_world_x = portal["location"][0]
-                            portal_world_y = portal["location"][1]
-
-                            distance = math.hypot(player_world_x - portal_world_x, player_world_y - portal_world_y)
-
-                            if distance < interaction_distance:
-                                self.game.scene_manager.set_scene(portal["target_scene"], self.player, self.hud)
-                                break # Interact with only one portal at a time
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == pygame.BUTTON_RIGHT:
@@ -276,22 +323,46 @@ class BaseGameplayScene(BaseScene):
                 world_y = (event.pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
                 if self.player:
                     self.player.set_target(world_x, world_y)
-        #if event.type == pygame.MOUSEBUTTONDOWN:
-        #    if event.button == KEY_RIGHT_MOUSE:
-        #        if self.player:
-        #            self.player.activate_arc()
+
+        # Check for interaction with Portals
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            world_x = -1
+            world_y = -1
+            if event.button == 1:  # Left-click
+                # Get the mouse position in world coordinates
+                world_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
+                world_y = (event.pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
+
+            for portal in self.portals:
+                if isinstance(portal, BossPortal) and portal.rect.collidepoint(world_x, world_y):
+                    self.game.scene_manager.set_scene("boss_room", self.player, self.hud)
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "boss1.mp3"))
+                    pygame.mixer.music.play(0)  # Play once
+                    pygame.mixer.music.queue(os.path.join(os.getcwd(), "data", "boss.mp3"))  # Play the boss music in a loop
+                    return  # Interact with only one portal at a time
 
     def update(self, dt, entities=None):
         if self.player:  # Only update player if player exists
             self.player.update(dt)
         if self.hud:  # Only update HUD if HUD exists
+            self.boss_system_manager.update(dt, self.player) # Update BossSystemManager and pass player
             self.hud.update(dt, entities)
 
         self.debug_log()
         self.frame_count += 1
 
         # Update enemies
+        if not self.tile_map:
+            return
         self.enemies.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
+# Update portals
+        # Add a check to ensure self.portals is a sprite group before updating
+        if isinstance(self.portals, pygame.sprite.Group):
+            self.portals.update(dt)
+        else:
+            # Optional: Log a warning if self.portals is not a sprite group
+            print(f"BaseGameplayScene: Warning: Non-sprite object found in self.portals is not a sprite group Skipping update.")
 
         # Update projectiles
         self.projectiles.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
@@ -393,15 +464,12 @@ class BaseGameplayScene(BaseScene):
                                     pygame.draw.rect(screen, color, (tile_x, tile_y, self.tile_size * self.zoom_level, self.tile_size * self.zoom_level))
                                     if self.frame_count % 60 == 0:
                                         print(f"BaseGameplayScene: WARNING: No image for tile type '{tile_type_value}' at ({x},{y}). Drawing magenta.")
-                                        print(f"BaseGameplayScene: tile_x: {tile_x}, tile_y: {tile_y}, screen_width: {screen_width}, screen_height: {screen_height}")  # Added logging
-                                        print(f"BaseGameplayScene: tile_images: {self.tile_images}")
-                                        print(f"BaseGameplayScene: tile_type_value: {tile_type_value}")
                                         pass
                             else:
                                 # print(f"BaseGameplayScene: draw: Tile at ({{x}}, {{y}}) is off-screen. Screen pos: ({{tile_x:.2f}}, {{tile_y:.2f}})") # Debug log
                                 if self.frame_count % 60 == 0:
-                                    # print(f"BaseGameplayScene: Tile at ({{x}},{{y}}) is off-screen. Screen pos: ({{tile_x:.2f}}, {{tile_y:.2f}})") # Added logging
                                     pass
+
 
             # Draw the player (centered on screen)
             if self.player:  # Only draw player if player exists
@@ -410,6 +478,14 @@ class BaseGameplayScene(BaseScene):
             # Draw enemies
             for enemy in self.enemies:
                 enemy.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
+
+# Draw portals
+            for portal in self.portals:
+                # Skip non-Sprite objects and log a warning
+                if not isinstance(portal, pygame.sprite.Sprite):
+                    print(f"BaseGameplayScene: Warning: Non-sprite object found in self.portals is not a sprite group Skipping draw.")
+                    continue
+                portal.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
 
             # Draw projectiles
             for projectile in self.projectiles:
@@ -447,7 +523,6 @@ class BaseGameplayScene(BaseScene):
             if defeat_image:
                 defeat_rect = defeat_image.get_rect(center=(center_x, center_y))
                 screen.blit(defeat_image, defeat_rect)
-
             # Display "YOU DIED" message
             font = pygame.font.Font(None, 100)
             text_surface = font.render("YOU DIED", True, (255, 0, 0))

@@ -71,6 +71,11 @@
             "name": "yes2",
             "class": "core.dungeons.yes2.yes2",
             "dungeon_data_path": "data/dungeons/yes2.json"
+        },
+        {
+            "name": "boss_room",
+            "class": "core.boss_scenes.boss_room_scene.BossRoomScene",
+            "dungeon_data_path": "data/boss_rooms/generic_boss_layout.json"
         }
     ]
 }

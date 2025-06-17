@@ -105,6 +105,8 @@ class GameEngine:
     def run(self):
         """Runs the main game loop."""
         try:
+            # self.screen = pygame.display.set_mode((self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT), pygame.SHOWN)
+
             while self.running:
                 dt = self.clock.tick(self.settings.FPS) / 1000.0 # Delta time in seconds
 
@@ -172,11 +174,11 @@ class GameEngine:
         if self.settings.VSYNC:
             flags |= pygame.DOUBLEBUF # Vsync is often tied to double buffering
 
-        self.screen = pygame.display.set_mode(
-            (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT),
-            flags,
-            vsync=self.settings.VSYNC
-        )
+        # self.screen = pygame.display.set_mode(
+        #     (self.settings.SCREEN_WIDTH, self.settings.SCREEN_HEIGHT),
+        #     flags,
+        #     vsync=self.settings.VSYNC
+        # )
         pygame.display.set_caption(self.settings.CAPTION)
 
         # Center the window

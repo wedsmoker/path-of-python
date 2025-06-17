@@ -291,13 +291,15 @@ class Player(pygame.sprite.Sprite):
         self.summon_skeletons_skill.activate(x, y)
 
     def _check_collision(self, tile_map, tile_size):
-        """Checks for collision with solid tiles."""
+        """Checks for collision with solid tiles, allowing movement through single-tile gaps."""
         # Get the tile coordinates the enemy is currently occupying
         enemy_left_tile = int(self.rect.left / tile_size)
         enemy_right_tile = int(self.rect.right / tile_size)
         enemy_top_tile = int(self.rect.top / tile_size)
         enemy_bottom_tile = int(self.rect.bottom / tile_size)
 
+        if not tile_map:
+            return False
         # Clamp tile coordinates to map boundaries
         map_width_tiles = len(tile_map[0])
         map_height_tiles = len(tile_map)
@@ -307,16 +309,33 @@ class Player(pygame.sprite.Sprite):
         enemy_top_tile = max(0, min(enemy_top_tile, map_height_tiles - 1))
         enemy_bottom_tile = max(0, min(enemy_bottom_tile, map_height_tiles - 1))
 
-        # Iterate over the tiles the enemy overlaps with
+        # Check for collision on each side of the player
+        collide_left = False
+        collide_right = False
+        collide_top = False
+        collide_bottom = False
+
         for y in range(enemy_top_tile, enemy_bottom_tile + 1):
-            for x in range(enemy_left_tile, enemy_right_tile + 1):
-                if 0 <= y < map_height_tiles and 0 <= x < map_width_tiles:
-                    tile_type = tile_map[y][x]
-                    # Assuming 'wall' is a solid tile type. Add other solid types as needed.
-                    if tile_type in ('wall', 'mountain', 'building', 'rubble'):
-                        # print(f"Enemy collision with wall at tile ({x}, {y})") # Debug print
-                        return True
-        return False
+            if tile_map[y][enemy_left_tile] in ('wall', 'mountain', 'building', 'rubble'):
+                collide_left = True
+            if tile_map[y][enemy_right_tile] in ('wall', 'mountain', 'building', 'rubble'):
+                collide_right = True
+
+        for x in range(enemy_left_tile, enemy_right_tile + 1):
+            if tile_map[enemy_top_tile][x] in ('wall', 'mountain', 'building', 'rubble'):
+                collide_top = True
+            if tile_map[enemy_bottom_tile][x] in ('wall', 'mountain', 'building', 'rubble'):
+                collide_bottom = True
+
+        # Allow squeezing through single-tile gaps based on movement direction
+        if self.velocity.x != 0:  # Moving horizontally
+            if collide_left and collide_right:
+                return True  # Blocked horizontally
+        elif self.velocity.y != 0:  # Moving vertically
+            if collide_top and collide_bottom:
+                return True  # Blocked vertically
+
+        return False  # No collision
 
     def check_and_correct_position(self):
         """Checks if the player is on an unwalkable tile and moves them to a walkable one."""
@@ -327,20 +346,22 @@ class Player(pygame.sprite.Sprite):
 
         if 0 <= player_tile_x < self.game.scene_manager.current_scene.map_width and \
            0 <= player_tile_y < self.game.scene_manager.current_scene.map_height:
-            tile_type = tile_map[player_tile_y][player_tile_x]
-            if tile_type in ('wall', 'mountain', 'building', 'rubble'):
-                # Find a nearby walkable tile
-                for offset in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]:
-                    new_tile_x = player_tile_x + offset[0]
-                    new_tile_y = player_tile_y + offset[1]
-                    if 0 <= new_tile_x < self.game.scene_manager.current_scene.map_width and \
-                       0 <= new_tile_y < self.game.scene_manager.current_scene.map_height:
-                        new_tile_type = tile_map[new_tile_y][new_tile_x]
-                        if new_tile_type not in ('wall', 'mountain', 'building', 'rubble'):
-                            # Move the player to the center of this tile
-                            self.rect.x = new_tile_x * tile_size
-                            self.rect.y = new_tile_y * tile_size
-                            break # Stop searching after finding one walkable tile
+            if player_tile_y < len(tile_map) and player_tile_x < len(tile_map[player_tile_y]):
+                tile_type = tile_map[player_tile_y][player_tile_x]
+                if tile_type in ('wall', 'mountain', 'building', 'rubble'):
+                    # Find a nearby walkable tile
+                    for offset in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]:
+                        new_tile_x = player_tile_x + offset[0]
+                        new_tile_y = player_tile_y + offset[1]
+                        if 0 <= new_tile_x < self.game.scene_manager.current_scene.map_width and 0 <= new_tile_y < self.game.scene_manager.current_scene.map_height:
+                            if new_tile_y < len(tile_map) and new_tile_x < len(tile_map[new_tile_y]):
+                                new_tile_type = tile_map[new_tile_y][new_tile_x]
+                                if new_tile_type not in ('wall', 'mountain', 'building', 'rubble'):
+                                    # Move the player to the center of this tile
+                                    self.rect.x = new_tile_x * tile_size
+                                    self.rect.y = new_tile_y * tile_size
+                                    break # Stop searching after finding one walkable tile
+                            
 
     def blink(self, target_x, target_y):
         """Teleports the player to the target location if it's walkable."""
@@ -350,16 +371,24 @@ class Player(pygame.sprite.Sprite):
         target_tile_x = int(target_x // tile_size)
         target_tile_y = int(target_y // tile_size)
 
-        if 0 <= target_tile_x < self.game.scene_manager.current_scene.map_width and \
-           0 <= target_tile_y < self.game.scene_manager.current_scene.map_height:
-            tile_type = tile_map[target_tile_y][target_tile_x]
-            if tile_type not in ('wall', 'mountain', 'building', 'rubble'):
-                # Teleport the player to the target location
-                self.rect.x = target_x
-                self.rect.y = target_y
-                print(f"Player blinked to ({target_x}, {target_y})")
+        if 0 <= target_tile_x < self.game.scene_manager.current_scene.map_width:
+            if 0 <= target_tile_y < self.game.scene_manager.current_scene.map_height:
+                if target_tile_y < len(tile_map):
+                    if target_tile_x < len(tile_map[target_tile_y]):
+                        tile_type = tile_map[target_tile_y][target_tile_x]
+                        if tile_type not in ('wall', 'mountain', 'building', 'rubble'):
+                            # Teleport the player to the target location
+                            self.rect.x = target_x
+                            self.rect.y = target_y
+                            print(f"Player blinked to ({target_x}, {target_y})")
+                        else:
+                            print("Cannot blink to an unwalkable tile.")
+                    else:
+                        print("Cannot blink outside the map boundaries.")
+                else:
+                    print("Cannot blink outside the map boundaries.")
             else:
-                print("Cannot blink to an unwalkable tile.")
+                print("Cannot blink outside the map boundaries.")
         else:
             print("Cannot blink outside the map boundaries.")
 

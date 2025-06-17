@@ -98,11 +98,12 @@
             "well": "graphics/dc-dngn/floor/floor_vines0.png"
         },
         "swamp_cave_tileset": {
-            "floor_swamp": "graphics/dc-dngn/floor/swamp0.png",
-            "floor_bog": "graphics/dc-dngn/floor/bog_green0.png",
-            "wall_stone_dark": "graphics/dc-dngn/wall/stone_dark0.png",
-            "wall_vines": "graphics/dc-dngn/wall/wall_vines0.png",
-            "water_murky": "graphics/dc-dngn/water/dngn_shallow_water_murky.png"
+        },
+        "grassland_tileset": {
+        },
+        "ice_cave_tileset": {
+        },
+        "sandstone_tileset": {
         }
     },
     "assets": {

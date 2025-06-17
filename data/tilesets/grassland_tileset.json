@@ -1,7 +1,7 @@
 {
   "floor": "graphics/dc-dngn/floor/grass/grass0.png",
   "wall": "graphics/dc-dngn/wall/tree1_yellow.png",
-  "portal": "graphics/UNUSED/features/dngn_exit_flickering.png",
+  "portal": "graphics/dc-dngn/zot_pillar.png",
   "decoration": "graphics/dc-dngn/floor/grass/grass_flowers_blue1.png",
   "unknown": "graphics/UNUSED/other/large_box.png"
 }

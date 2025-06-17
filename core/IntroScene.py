@@ -64,7 +64,6 @@ class IntroScene(BaseScene):
                 self.frame_counter += 1
                 if self.frame_counter % 2 == 0:
                     self.halo_current_frame = (self.halo_current_frame + 1) % 25
-                print(f"Current halo frame: {self.halo_current_frame}")
 
         if self.fading:
             self.fade_alpha -= self.fade_speed
@@ -119,8 +118,8 @@ class IntroScene(BaseScene):
         face_width = self.face_image1.get_width()
         face_height = self.face_image1.get_height()
         face_x = (SCREEN_WIDTH - face_width) // 2
-        face_y = (SCREEN_HEIGHT - face_height) // 2 - 150  # Raise the face and halo
-        halo_y = (SCREEN_HEIGHT - self.halo_frame_height) // 2 - 150
+        face_y = (SCREEN_HEIGHT - face_height) // 2 - 170  # Raise the face and halo
+        halo_y = (SCREEN_HEIGHT - self.halo_frame_height) // 2 - 170
 
         # Draw halo.gif behind the face
         if self.halo_sprite_sheet:
@@ -139,7 +138,7 @@ class IntroScene(BaseScene):
             current_node = self.dialogue["nodes"][self.current_node_id]
             text = current_node["text"]
             wrapped_lines = self.wrap_text(text, self.font, SCREEN_WIDTH - 100)
-            y_offset = halo_y + self.halo_frame_height + 20  # Position text below the halo
+            y_offset = face_y + face_height + 20  # Position text below the face
             for line in wrapped_lines:
                 text_surface = self.font.render(line, True, self.text_color)
                 text_rect = text_surface.get_rect(centerx=SCREEN_WIDTH // 2, y=y_offset)
