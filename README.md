@@ -27,36 +27,10 @@ The core gameplay experience is heavily inspired by "Path of Exile," focusing on
 3.  Install the required dependencies using pip:
 
     ```
-    pip install pygame noise panda3d gltf ursina screeninfo scipy numpy hypothesis olefile typing_extensions h2 cryptography pyodide
+    pip install pygame noise panda3d gltf ursina screeninfo scipy numpy hypothesis olefile typing_extensions h2 
     ```
 
 ## How to Run the Game
 
 1.  Navigate to the project directory.
-2.  Run the game using the following command:
-
-    ```
-    python main.py
-    ```
-
-## Project Structure
-
-The project is organized into a modular structure to facilitate development and maintainability. Below is a description of each directory's purpose:
-
-*   `config/`: Contains global game settings (`settings.py`) and constants (`constants.py`).
-*   `core/`: Contains core game functionalities like the game engine (`game_engine.py`), scene manager (`scene_manager.py`), input handler (`input_handler.py`), and utility functions (`utils.py`).
-*   `graphics/`: Contains visual assets for characters, tilesets, and UI elements.
-*   `ui/`: Implements the user interface elements, including the HUD (`hud.py`), inventory screen (`inventory_screen.py`), skill tree UI (`skill_tree_ui.py`), and menus (`menus.py`).
-*   `entities/`: Defines the game entities, including the player (`player.py`), enemies (`enemy.py`), NPCs (`npc.py`), projectiles (`projectile.py`), and effects (`effects.py`).
-*   `combat/`: Implements the combat mechanics, including skills (`skills.py`), skill gems (`skill_gems.py`), status effects (`status_effects.py`), and damage calculation (`damage_calc.py`).
-*   `progression/`: Handles character progression, including the passive skill tree (`passive_tree.py`), experience system (`experience.py`), classes (`classes.py`), and quests (`quests.py`).
-*   `world/`: Implements the game world, including map generation (`map_generator.py`), zones (`zone.py`), world state (`world_state.py`), and environment (`environment.py`).
-*   `items/`: Defines the item system, including items (`item.py`), weapons (`weapon.py`), armor (`armor.py`), gems (`gem.py`), and loot generation (`loot_generator.py`).
-*   `data/`: Stores game data in JSON format, including items (`items.json`), enemies (`enemies.json`), skills (`skills.json`), the passive skill tree (`passive_tree.json`), and quests (`quests.json`).
-*   `saves/`: Contains player save files.
-*   `tests/`: Contains unit tests for various game systems.
-
-## Credits
-
-*   This game was created by wedsmoker.
-
+2.  Run the game using main.py
