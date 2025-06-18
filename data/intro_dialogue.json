@@ -140,7 +140,12 @@
         },
         "end_dialogue": {
           "text": "Run silent. Mask your intent. Hope the watchers have eyes only for brighter souls. *white noise swells*",
-          "options": []
+          "options": [
+            {
+              "text": "Goodbye...",
+              "next_node": null
+            }
+          ]
         }
       }
     }

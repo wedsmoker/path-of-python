@@ -112,7 +112,7 @@
       "type": "spell",
       "tags": ["lightning", "chain", "aoe"],
       "mana_cost": 15,
-      "base_damage": {"min": 10, "max": 25, "type": "lightning"},
+      "base_damage": {"min": 25, "max": 50, "type": "lightning"},
       "cooldown": 0,
       "cast_time": 0.7,
       "chain_count": 4

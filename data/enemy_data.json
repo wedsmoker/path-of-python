@@ -7,7 +7,7 @@
         "sprite_path": "graphics/dc-mon/undead/phantom.png",
         "attack_range": 250,
         "attack_cooldown": 2000,
-        "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
+        "projectile_sprite_path": "graphics/spells/air/chain_lightning.png",
         "ranged_attack_pattern": "spiral",
         "xp_value": 15
     },
@@ -19,7 +19,7 @@
         "sprite_path": "graphics/dc-mon/animals/giant_bat.png",
         "attack_range": 150,
         "attack_cooldown": 1000,
-        "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
+        "projectile_sprite_path": "graphics/spells/air/lightning_bolt.png",
         "ranged_attack_pattern": "spread",
         "xp_value": 5
     },
@@ -31,7 +31,7 @@
         "sprite_path": "graphics/dc-mon/animals/snake.png",
         "attack_range": 180,
         "attack_cooldown": 1200,
-        "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
+        "projectile_sprite_path": "graphics/spells/air/chain_lightning.png",
         "ranged_attack_pattern": "circle",
         "xp_value": 8
     },
@@ -43,7 +43,7 @@
         "sprite_path": "graphics/dc-mon/demons/imp.png",
         "attack_range": 200,
         "attack_cooldown": 1500,
-        "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
+        "projectile_sprite_path": "graphics/spells/air/lightning_bolt.png",
         "ranged_attack_pattern": "burst",
         "xp_value": 10
     },
@@ -55,7 +55,7 @@
         "sprite_path": "graphics/UNUSED/monsters/quasit.png",
         "attack_range": 220,
         "attack_cooldown": 1700,
-        "projectile_sprite_path": "graphics/UNUSED/spells/components/skull.png",
+        "projectile_sprite_path": "graphics/spells/fire/bolt_of_magma.png",
         "ranged_attack_pattern": "spread",
         "xp_value": 12
     },
@@ -115,7 +115,7 @@
         "sprite_path": "graphics/dc-mon/spriggan/spriggan.png",
         "attack_range": 120,
         "attack_cooldown": 800,
-        "projectile_sprite_path": "graphics/UNUSED/spells/components/arrow.png",
+        "projectile_sprite_path": "graphics/spells/air/lightning_bolt.png",
         "ranged_attack_pattern": "spread",
         "xp_value": 10
     },
@@ -163,7 +163,7 @@
         "sprite_path": "graphics/dc-mon/unique/blork_the_orc.png",
         "attack_range": 250,
         "attack_cooldown": 2000,
-        "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
+        "projectile_sprite_path": "graphics/spells/air/chain_lightning.png",
         "ranged_attack_pattern": "spread",
         "xp_value": 50
     },
@@ -259,7 +259,7 @@
         "sprite_path": "graphics/dc-mon/goblin.png",
         "attack_range": 150,
         "attack_cooldown": 1000,
-        "projectile_sprite_path": "graphics/UNUSED/spells/components/bolt.png",
+        "projectile_sprite_path": "graphics/spells/air/chain_lightning.png",
         "ranged_attack_pattern": "burst",
         "xp_value": 10
     }

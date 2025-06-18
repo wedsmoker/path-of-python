@@ -70,6 +70,7 @@ class Player(pygame.sprite.Sprite):
         self.last_energy_shield_hit_time = 0
         self.energy_shield_recharge_rate = 0.10 # 10% of max_energy_shield per second
         self.mana_recharge_rate = 0.1 # 10% of max_mana per second
+        self.health_regen_rate = 0.20 # 20% of max_life per second
 
         # New stats dictionary
         self.stats = {
@@ -460,6 +461,11 @@ class Player(pygame.sprite.Sprite):
         if self.current_mana < self.max_mana:
             recharge_amount = self.max_mana * self.mana_recharge_rate * dt
             self.current_mana = min(self.max_mana, self.current_mana + recharge_amount)
+# Health Regeneration Logic (only in SpawnTown)
+        if self.game.scene_manager.current_scene.name == "SpawnTown":
+            if self.current_life < self.max_life:
+                regen_amount = self.max_life * self.health_regen_rate * dt
+                self.current_life = min(self.max_life, self.current_life + regen_amount)
 
         # Footstep logic
         if self.is_moving and current_time - self.last_footstep_time > self.footstep_interval:

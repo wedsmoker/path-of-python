@@ -4,10 +4,10 @@ import json
 import os
 from core.base_gameplay_scene import BaseGameplayScene
 
-class ll(BaseGameplayScene):
+class arena2(BaseGameplayScene):
     def __init__(self, game, player, hud, dungeon_data=None):
         super().__init__(game, player, hud, tileset_name=dungeon_data.get("tileset", "default"), dungeon_data=dungeon_data)
-        self.name = "ll"
+        self.name = "arena2"
         self.dungeon_data = dungeon_data
         self.tile_map = self.dungeon_data["tile_map"]
         self.map_width = self.dungeon_data["width"]

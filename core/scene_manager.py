@@ -22,7 +22,7 @@ class SceneManager:
         self.scenes[name] = scene
         self.game.logger.info(f"Added scene {name} of type {type(scene).__name__}")
 
-    def set_scene(self, scene_name, player=None, hud=None, boss_key=None): # Changed scene_class to scene_name, removed dungeon_data parameter
+    def set_scene(self, scene_name, player=None, hud=None, boss_key=None, friendly_entities=None): # Added friendly_entities parameter
         """Sets the current active scene."""
         if self.current_scene:
             self.current_scene.exit()  # Call exit method on current scene
@@ -41,12 +41,14 @@ class SceneManager:
             kwargs = {}
             if 'game' in sig.parameters:
                 kwargs['game'] = self.game
-            if 'player' in sig.parameters and player is not None:
-                kwargs['player'] = player
-            if 'hud' in sig.parameters and hud is not None:
-                kwargs['hud'] = hud
+            if 'player' in sig.parameters:
+                kwargs['player'] = player if player is not None else self.game.player
+            if 'hud' in sig.parameters:
+                kwargs['hud'] = hud if hud is not None else self.game.hud
             if 'boss_key' in sig.parameters and boss_key is not None:
                 kwargs['boss_key'] = boss_key
+            if 'friendly_entities' in sig.parameters: # Pass friendly_entities if accepted
+                kwargs['friendly_entities'] = friendly_entities if friendly_entities is not None else []
             
             # Load dungeon_data if path is specified in self.game.scenes_data
             scene_data_from_game_engine = next((s for s in self.game.scenes_data['scenes'] if s['name'] == scene_name), None)

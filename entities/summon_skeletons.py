@@ -18,7 +18,7 @@ class SummonSkeletons:
         self.skeleton_speed = 50
         self.last_used = 0
         self.cooldown = 1000  # 1 second cooldown
-        self.active_skeletons = [] # Keep track of active skeletons
+        # self.active_skeletons = [] # Removed: Keep track of active skeletons - now managed by scene's friendly_entities
 
         # Load skill data from JSON
         self._load_skill_data()
@@ -88,7 +88,8 @@ class SummonSkeletons:
             return
 
         # Check if maximum skeletons are already active
-        if len(self.active_skeletons) >= self.max_skeletons:
+        # Use the friendly_entities group from the current scene
+        if len(self.player.game.current_scene.friendly_entities) >= self.max_skeletons:
             print("Cannot summon more skeletons! Maximum reached.")
             return
 
@@ -100,12 +101,12 @@ class SummonSkeletons:
         num_to_summon = random.randint(1, 3)
         print(f"Attempting to summon {num_to_summon} skeletons.")
         # Add debug print to show current active skeletons and number to summon
-        print(f"DEBUG: Current active skeletons: {len(self.active_skeletons)}, Attempting to summon: {num_to_summon}")
+        print(f"DEBUG: Current active skeletons: {len(self.player.game.current_scene.friendly_entities)}, Attempting to summon: {num_to_summon}")
 
 
         # Summon the determined number of skeletons, respecting the max limit
         for _ in range(num_to_summon):
-            if len(self.active_skeletons) < self.max_skeletons:
+            if len(self.player.game.current_scene.friendly_entities) < self.max_skeletons:
                 # Summon skeleton with a small random offset
                 offset_x = random.randint(-int(TILE_SIZE * 0.75), int(TILE_SIZE * 0.75)) # Increased offset range
                 offset_y = random.randint(-int(TILE_SIZE * 0.75), int(TILE_SIZE * 0.75)) # Increased offset range
@@ -118,9 +119,22 @@ class SummonSkeletons:
         """Summons a single skeleton at the specified location."""
 
         # Create a skeleton enemy
-        skeleton = Skeleton(self.player.game, x, y, self.skeleton_health, self.skeleton_damage, self.skeleton_speed, self.skeleton_image_path, self) # Pass self (SummonSkeletons instance) as owner
-        self.player.game.current_scene.enemies.add(skeleton)
-        self.active_skeletons.append(skeleton)
+        # Calculate scaled stats based on player level
+        player_level = self.player.level
+        scaled_health = self.skeleton_health + (player_level - 1) * 5  # Example: +5 health per level
+        scaled_damage = self.skeleton_damage + (player_level - 1) * 1  # Example: +1 damage per level
+        scaled_speed = self.skeleton_speed + (player_level - 2) * 2  # Example: +2 speed per level (start scaling from level 2)
+        
+        # Ensure stats don't go below base values for level 1
+        scaled_health = max(self.skeleton_health, scaled_health)
+        scaled_damage = max(self.skeleton_damage, scaled_damage)
+        scaled_speed = max(self.skeleton_speed, scaled_speed)
+
+        # Create a skeleton enemy with scaled stats
+        skeleton = Skeleton(self.player.game, x, y, scaled_health, scaled_damage, scaled_speed, self.skeleton_image_path, self, player_level=player_level) # Pass self (SummonSkeletons instance) as owner
+        # Add skeleton to the scene's friendly_entities group
+        self.player.game.current_scene.friendly_entities.add(skeleton)
+        # self.active_skeletons.append(skeleton) # Removed: now managed by scene's friendly_entities
         print("Summoned a skeleton!")
 
         #Create wraith effect
@@ -130,14 +144,27 @@ class SummonSkeletons:
 
     def remove_skeleton(self, skeleton):
         """Removes a skeleton from the active skeletons list."""
-        if skeleton in self.active_skeletons:
-            self.active_skeletons.remove(skeleton)
-            print(f"Removed a skeleton from active list. Current active: {len(self.active_skeletons)}")
+        # Remove skeleton from the scene's friendly_entities group
+        if skeleton in self.player.game.current_scene.friendly_entities:
+            self.player.game.current_scene.friendly_entities.remove(skeleton)
+            print(f"Removed a skeleton from active list. Current active: {len(self.player.game.current_scene.friendly_entities)}")
 
 
 class Skeleton(Enemy):
-    def __init__(self, game, x, y, health, damage, speed, sprite_path, owner):
+    def __init__(self, game, x, y, health, damage, speed, sprite_path, owner, player_level):
         super().__init__(game, x, y, "Skeleton", health, damage, speed, sprite_path)
+        self.player_level = player_level
+        # Calculate scale factor based on player level
+        # Base scale is 1.0 for level 1, increases by 0.1 for every 5 levels
+        scale_increment_per_level = 0.50 # Increased to 50%per level
+        self.scale_factor = 2.0 + (self.player_level - 1) * scale_increment_per_level # Base scale 2.0 for level 1
+        
+        # Load and scale the sprite image
+        original_image = pygame.image.load(os.path.join(os.getcwd(), sprite_path)).convert_alpha()
+        new_width = int(original_image.get_width() * self.scale_factor)
+        new_height = int(original_image.get_height() * self.scale_factor)
+        self.image = pygame.transform.scale(original_image, (new_width, new_height))
+        self.rect = self.image.get_rect(center=(x, y)) # Update rect after scaling
         self.owner = owner  # The SummonSkeletons instance that summoned this skeleton
         self.is_friendly = True  # Skeletons are friendly to the player
         self.faction = "player_minions"  # Set skeleton's faction
@@ -215,7 +242,9 @@ class Skeleton(Enemy):
         nearest_enemy = None
         min_distance = float('inf')
 
+        # Iterate over all enemies in the current scene
         for sprite in self.game.current_scene.enemies:
+            # Ensure it's an Enemy and not a friendly skeleton
             if isinstance(sprite, Enemy) and not isinstance(sprite, Skeleton):
                 # Calculate distance to the enemy
                 dx, dy = sprite.rect.centerx - self.rect.centerx, sprite.rect.centery - self.rect.centery

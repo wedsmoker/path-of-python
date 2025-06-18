@@ -18,21 +18,13 @@ from entities.projectile import Projectile # Import the Projectile class
 
 # Removed: from core.boss_system_manager import BossSystemManager # Import BossSystemManager
 class BaseGameplayScene(BaseScene):
-    def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None):  # Added tileset_name and dungeon_data parameter
+    def __init__(self, game, player=None, hud=None, tileset_name="default", dungeon_data=None, friendly_entities=None):  # Added friendly_entities parameter
         # Moved import here to avoid circular dependency
         from core.boss_system_manager import BossSystemManager
         self.boss_system_manager = BossSystemManager(game) # Instantiate BossSystemManager
         super().__init__(game)
-        self.player = player  # Player is now passed in or remains None
-        self.hud = hud  # HUD is now passed in or remains None
-        self.tileset_name = tileset_name  # Store the tileset name
-        self.projectiles = pygame.sprite.Group()
-        self.enemies = pygame.sprite.Group() # Group to hold enemy sprites
-        self.portals = pygame.sprite.Group() # Group to hold boss portals
-        self.dungeon_data = dungeon_data # Store dungeon data
-        self.portal_spawned = False # Add a flag to indicate whether the portal has been spawned
-
-        # Camera settings
+        
+        # Camera settings - Initialize these always
         self.camera_x = 0
         self.camera_y = 0
         self.camera_offset_x = 0
@@ -42,7 +34,43 @@ class BaseGameplayScene(BaseScene):
         self.map_height = 30  # Placeholder, will be updated when the map is loaded
         self.tile_size = TILE_SIZE  # Get from constants
         self.frame_count = 0
+        self.name = None # Initialize name attribute
+        self.friendly_entities = pygame.sprite.Group() # Initialize friendly entities group
 
+        self.player = player  # Player is now passed in or remains None
+        self.hud = hud 
+        if self.player is not None and self.hud is not None:
+            self.tileset_name = tileset_name  # Store the tileset name
+            self.dungeon_data = dungeon_data # Store dungeon data
+            self.portal_spawned = False # Add a flag to indicate whether the portal has been spawned
+            self.enemies_loaded = False # Add a flag to indicate whether the enemies have been loaded
+            self.tile_images = {}
+            self._load_tile_images()
+            self.projectiles = pygame.sprite.Group()
+            self.enemies = pygame.sprite.Group() # Group to hold enemy sprites
+            self.portals = pygame.sprite.Group() # Group to hold boss portals
+            self.npcs = [
+                {"name": "Old Scavenger", "tile_x": 10, "tile_y": 10, "dialogue_id": "old_scavenger_intro"}
+            ]
+            # If dungeon_data is provided, attempt to load enemies
+            if self.dungeon_data and not self.enemies_loaded:
+                self.load_enemies(self.dungeon_data.get('enemies', []))
+            
+            if friendly_entities: # Add friendly entities if passed
+                for entity in friendly_entities:
+                    self.friendly_entities.add(entity)
+
+            self.post_init()
+            return  # Do not re-initialize if player and HUD are passed in
+        
+        self.tileset_name = tileset_name  # Store the tileset name
+        self.projectiles = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group() # Group to hold enemy sprites
+        self.portals = pygame.sprite.Group() # Group to hold boss portals
+        self.dungeon_data = dungeon_data # Store dungeon data
+        self.portal_spawned = False # Add a flag to indicate whether the portal has been spawned
+        self.enemies_loaded = False # Add a flag to indicate whether the enemies have been loaded
+        
         self.tile_images = {}
         #self.faded_tile_images = {}  # Dictionary to store faded tile images
         self._load_tile_images()
@@ -73,7 +101,12 @@ class BaseGameplayScene(BaseScene):
                 self.player_spawn_location = self.dungeon_data['player_spawn_location']
 
             # Load enemies if present in dungeon_data
-            self.load_enemies(self.dungeon_data.get('enemies', []))
+            if not self.enemies_loaded:
+                self.load_enemies(self.dungeon_data.get('enemies', []))
+        
+        if friendly_entities: # Add friendly entities if passed
+            for entity in friendly_entities:
+                self.friendly_entities.add(entity)
 
         self.post_init()
 
@@ -87,6 +120,21 @@ class BaseGameplayScene(BaseScene):
             # Attempt to spawn a boss portal in this scene now that tile_map and player_spawn_location should be set
             self.boss_system_manager.attempt_spawn_portal(self)
             self.portal_spawned = True # Set the flag to True after attempting to spawn the portal
+
+        # Update enemy XP values based on enemy_data.json
+        enemy_config_path = os.path.join(os.getcwd(), "data", "enemy_data.json")
+        try:
+            with open(enemy_config_path, "r") as f:
+                all_enemy_configs = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error loading enemy configuration from {enemy_config_path}: {e}")
+            all_enemy_configs = {}
+
+        for enemy in self.enemies:
+            config = all_enemy_configs.get(enemy.name, {})
+            if config:
+                enemy.xp_value = config.get('xp_value', 0)
+                print(f"Updated XP value for {enemy.name} to {enemy.xp_value}")
 
     def _load_tile_images(self):
         """Loads tile images based on the dungeon's tileset."""
@@ -176,7 +224,11 @@ class BaseGameplayScene(BaseScene):
 
     def load_enemies(self, enemies_data):
         """Loads enemies from the dungeon data."""
-        self.enemies.empty() # Clear existing enemies
+        if self.enemies_loaded:
+            return
+
+        # Do NOT clear self.enemies here, as it might contain friendly entities
+        # self.enemies.empty() 
         # Load enemy data from enemy_data.json
         enemy_config_path = os.path.join(os.getcwd(), "data", "enemy_data.json")
         try:
@@ -189,15 +241,20 @@ class BaseGameplayScene(BaseScene):
         for enemy_info in enemies_data:
             enemy_type = enemy_info.get('type')
             config = all_enemy_configs.get(enemy_type, {})
-            # Use config values, falling back to enemy_info if config doesn't have it
-            health = enemy_info.get('health', config.get('health', 10))
-            damage = enemy_info.get('damage', config.get('damage', 1))
-            speed = enemy_info.get('speed', config.get('speed', 50))
-            sprite_path = enemy_info.get('sprite_path', config.get('sprite_path', 'graphics/dc-mon/misc/demon_small.png'))
-            attack_range = enemy_info.get('attack_range', config.get('attack_range', 0))
-            attack_cooldown = enemy_info.get('attack_cooldown', config.get('attack_cooldown', 0))
-            projectile_sprite_path = enemy_info.get('projectile_sprite_path', config.get('projectile_sprite_path'))
-            ranged_attack_pattern = enemy_info.get('ranged_attack_pattern', config.get('ranged_attack_pattern', 'single'))
+
+            if not config:
+                print(f"Warning: No config found for enemy type: {enemy_type}")
+                continue
+
+            # Use config values directly
+            health = config.get('health', 10)
+            damage = config.get('damage', 1)
+            speed = config.get('speed', 50)
+            sprite_path = config.get('sprite_path', 'graphics/dc-mon/misc/demon_small.png')
+            attack_range = config.get('attack_range', 0)
+            attack_cooldown = config.get('attack_cooldown', 0)
+            projectile_sprite_path = config.get('projectile_sprite_path')
+            ranged_attack_pattern = config.get('ranged_attack_pattern', 'single')
             xp_value = config.get('xp_value', 0)
 
             enemy = Enemy(
@@ -217,6 +274,7 @@ class BaseGameplayScene(BaseScene):
             )
             self.enemies.add(enemy)
         print(f"BaseGameplayScene: Loaded {len(self.enemies)} enemies.")
+        self.enemies_loaded = True
 
     def debug_log(self):
         if self.frame_count % 60 == 0:  # Log every second (assuming 60 FPS)
@@ -259,13 +317,13 @@ class BaseGameplayScene(BaseScene):
 
         if event.type == pygame.KEYDOWN:
             if event.key == KEY_INVENTORY:
-                self.game.scene_manager.set_scene(STATE_INVENTORY, self.player)
+                self.game.scene_manager.set_scene(STATE_INVENTORY, self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
             elif event.key == KEY_SKILL_TREE:
-                self.game.scene_manager.set_scene(STATE_SKILL_TREE, self.player)
+                self.game.scene_manager.set_scene(STATE_SKILL_TREE, self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
             elif event.key == pygame.K_ESCAPE:
-                self.game.scene_manager.set_scene(STATE_PAUSE_MENU, player=self.player)
+                self.game.scene_manager.set_scene(STATE_PAUSE_MENU, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
             elif event.key == KEY_OPTIONS_MENU:
-                self.game.scene_manager.set_scene(STATE_SETTINGS_MENU, self.player)
+                self.game.scene_manager.set_scene(STATE_SETTINGS_MENU, self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
             elif event.key == pygame.K_PLUS:
                 self.zoom_level += 0.1
             elif event.key == pygame.K_MINUS:
@@ -335,7 +393,7 @@ class BaseGameplayScene(BaseScene):
 
             for portal in self.portals:
                 if isinstance(portal, BossPortal) and portal.rect.collidepoint(world_x, world_y):
-                    self.game.scene_manager.set_scene("boss_room", self.player, self.hud)
+                    self.game.scene_manager.set_scene("boss_room", self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
                     pygame.mixer.music.stop()
                     pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "boss1.mp3"))
                     pygame.mixer.music.play(0)  # Play once
@@ -347,7 +405,7 @@ class BaseGameplayScene(BaseScene):
             self.player.update(dt)
         if self.hud:  # Only update HUD if HUD exists
             self.boss_system_manager.update(dt, self.player) # Update BossSystemManager and pass player
-            self.hud.update(dt, entities)
+            self.hud.update(dt, self.enemies)
 
         self.debug_log()
         self.frame_count += 1
@@ -356,7 +414,11 @@ class BaseGameplayScene(BaseScene):
         if not self.tile_map:
             return
         self.enemies.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
-# Update portals
+        
+        # Update friendly entities
+        self.friendly_entities.update(dt, self.player, self.game.current_scene.tile_map, self.tile_size)
+
+        # Update portals
         # Add a check to ensure self.portals is a sprite group before updating
         if isinstance(self.portals, pygame.sprite.Group):
             self.portals.update(dt)
@@ -387,7 +449,7 @@ class BaseGameplayScene(BaseScene):
             if current_time - self.death_message_start_time > self.death_message_duration:
                 self.display_death_message = False
                 # Respawn the player in spawntown
-                self.game.scene_manager.set_scene("spawn_town")
+                self.game.scene_manager.set_scene("spawn_town", friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
                 if self.player:
                     self.player.current_life = self.player.max_life
                     self.player.current_mana = self.player.max_mana
@@ -453,7 +515,7 @@ class BaseGameplayScene(BaseScene):
                                     tile_x < screen_width and
                                     tile_y < screen_height):
 
-                                # Get the tile image
+                            # Get the tile image
                                 tile_image = self.tile_images.get(tile_type_value)
                                 if tile_image:
                                     scaled_tile_image = pygame.transform.scale(tile_image, (int(self.tile_size * self.zoom_level), int(self.tile_size * self.zoom_level)))
@@ -478,12 +540,15 @@ class BaseGameplayScene(BaseScene):
             # Draw enemies
             for enemy in self.enemies:
                 enemy.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
+            
+            # Draw friendly entities
+            for entity in self.friendly_entities:
+                entity.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
 
-# Draw portals
+            # Draw portals
             for portal in self.portals:
                 # Skip non-Sprite objects and log a warning
                 if not isinstance(portal, pygame.sprite.Sprite):
-                    print(f"BaseGameplayScene: Warning: Non-sprite object found in self.portals is not a sprite group Skipping draw.")
                     continue
                 portal.draw(screen, self.camera_x, self.camera_y, self.zoom_level)
 
@@ -536,4 +601,4 @@ class BaseGameplayScene(BaseScene):
             pygame.time.delay(3000)
 
             # Send the player to SpawnTown
-            self.game.scene_manager.set_scene("spawn_town")
+            self.game.scene_manager.set_scene("spawn_town", friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities

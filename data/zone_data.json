@@ -10,14 +10,6 @@
             ],
             "portals": [
                 {
-                    "target_scene": "fort6",
-                    "location": [
-                        100,
-                        100
-                    ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_labyrinth.png"
-                },
-                {
                     "target_scene": "grass",
                     "location": [
                         1248,
@@ -26,44 +18,36 @@
                     "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_tartarus.png"
                 },
                 {
-                    "target_scene": "gg",
-                    "location": [
-                        1248,
-                        928
-                    ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_cocytus.png"
-                },
-                {
-                    "target_scene": "yt",
-                    "location": [
-                        96,
-                        1472
-                    ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_stone_arch.png"
-                },
-                {
-                    "target_scene": "ll",
-                    "location": [
-                        992,
-                        1280
-                    ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_pandemonium.png"
-                },
-                {
-                    "target_scene": "yes",
-                    "location": [
-                        896,
-                        1472
-                    ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_gehenna.png"
-                },
-                {
-                    "target_scene": "yes2",
+                    "target_scene": "arena",
                     "location": [
                         480,
-                        896
+                        1184
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_entrance.png"
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_transit_pandemonium.png"
+                },
+                {
+                    "target_scene": "arena2",
+                    "location": [
+                        192,
+                        928
+                    ],
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_hell.png"
+                },
+                {
+                    "target_scene": "arena2",
+                    "location": [
+                        864,
+                        128
+                    ],
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/escape_hatch_up.png"
+                },
+                {
+                    "target_scene": "arena3",
+                    "location": [
+                        4736,
+                        3328
+                    ],
+                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_hell.png"
                 }
             ],
             "map_width": 50,
@@ -97,14 +81,10 @@
             "garden": "graphics/dc-dngn/floor/grass_flowers_blue1.png",
             "well": "graphics/dc-dngn/floor/floor_vines0.png"
         },
-        "swamp_cave_tileset": {
-        },
-        "grassland_tileset": {
-        },
-        "ice_cave_tileset": {
-        },
-        "sandstone_tileset": {
-        }
+        "swamp_cave_tileset": {},
+        "grassland_tileset": {},
+        "ice_cave_tileset": {},
+        "sandstone_tileset": {}
     },
     "assets": {
         "portals": {

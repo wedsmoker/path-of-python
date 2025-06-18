@@ -27,7 +27,7 @@ class Projectile(pygame.sprite.Sprite):
                 placeholder.fill((255, 0, 0))  # Red color for missing texture
                 return placeholder
             image = pygame.image.load(full_path).convert_alpha()
-            return pygame.transform.scale(image, (TILE_SIZE // 2, TILE_SIZE // 2)) # Scale down for projectiles
+            return pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE)) # Scale down for projectiles
         except pygame.error as e:
             print(f"Error loading projectile sprite {full_path}: {e}")
             placeholder = pygame.Surface((TILE_SIZE // 2, TILE_SIZE // 2))

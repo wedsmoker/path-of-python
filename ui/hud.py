@@ -34,6 +34,7 @@ class HUD:
 
     def update(self, dt, entities):
         self.minimap.update(entities)
+        self.player.experience = self.player.experience  # Dummy change to force XP redraw
 
     def draw(self, screen):
         # Draw Health Bar

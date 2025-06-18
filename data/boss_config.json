@@ -17,9 +17,9 @@
           "damage": 50,
           "speed": 5,
           "attack_range": 200,
-          "attack_cooldown": 2000,
-          "projectile_sprite_path": "graphics/UNUSED/weapons/orcish_arrow.png",
-          "ranged_attack_pattern": "single",
+          "attack_cooldown": 30,
+          "projectile_sprite_path": "graphics/spells/fire/fireball.png",
+          
           "xp_value": 100
         }
       ]
@@ -41,9 +41,9 @@
           "damage": 60,
           "speed": 4,
           "attack_range": 250,
-          "attack_cooldown": 2500,
-          "projectile_sprite_path": "graphics/UNUSED/weapons/elven_arrow.png",
-          "ranged_attack_pattern": "single",
+          "attack_cooldown": 30,
+          "projectile_sprite_path": "graphics/spells/air/conjure_ball_lightning.png",
+          
           "xp_value": 120
         }
       ]
@@ -65,9 +65,9 @@
           "damage": 70,
           "speed": 3,
           "attack_range": 150,
-          "attack_cooldown": 3000,
-          "projectile_sprite_path": "graphics/UNUSED/weapons/silver_arrow.png",
-          "ranged_attack_pattern": "single",
+          "attack_cooldown": 30,
+          "projectile_sprite_path": "graphics/spells/earth/sandblast.png",
+          
           "xp_value": 140
         }
       ]
@@ -89,9 +89,9 @@
           "damage": 55,
           "speed": 4,
           "attack_range": 220,
-          "attack_cooldown": 2200,
-          "projectile_sprite_path": "graphics/UNUSED/weapons/elven_arrow.png",
-          "ranged_attack_pattern": "single",
+          "attack_cooldown": 30,
+          "projectile_sprite_path": "graphics/spells/air/conjure_ball_lightning.png",
+          
           "xp_value": 130
         }
       ]
@@ -113,9 +113,9 @@
           "damage": 80,
           "speed": 3,
           "attack_range": 280,
-          "attack_cooldown": 2800,
-          "projectile_sprite_path": "graphics/UNUSED/weapons/golden_sword.png",
-          "ranged_attack_pattern": "single",
+          "attack_cooldown": 300,
+          "projectile_sprite_path": "graphics/spells/air/airstrike.png",
+          
           "xp_value": 150
         }
       ]

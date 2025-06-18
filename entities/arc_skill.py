@@ -13,7 +13,7 @@ class ArcSkill:
         self.player = player
         self.arc_chain_lightning_image_path = "graphics/spells/air/chain_lightning.png" # Store path instead of loaded image
         self.chain_range = 500  # Increased distance within which lightning can chain to the next enemy
-        self.arc_speed = 300  # Speed of the visual lightning projectile
+        self.arc_speed = 500  # Speed of the visual lightning projectile
         self.last_used = 0
         self.damage_variation = 5
         self.stun_chance = 0.15

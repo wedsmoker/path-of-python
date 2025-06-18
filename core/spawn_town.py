@@ -18,9 +18,10 @@ from config import settings # Import settings
 from items.weapon import Weapon # Import the Weapon class
 from items.potion import HealthPotion # Import the HealthPotion class
 from ui.shop_window import ShopWindow
+from core.utils import draw_text
 
 class SpawnTown(BaseGameplayScene):
-    def __init__(self, game):
+    def __init__(self, game, player=None, hud=None, friendly_entities=None):
         # Load initial player position from zone_data.json
         initial_player_x = 0
         initial_player_y = 0
@@ -44,10 +45,12 @@ class SpawnTown(BaseGameplayScene):
             self.portals = []
 
         # Instantiate player and HUD here
-        player = Player(game, initial_player_x, initial_player_y)
-        hud = HUD(player, self)
+        if player is None:
+            player = Player(game, initial_player_x, initial_player_y)
+        if hud is None:
+            hud = HUD(player, self)
 
-        super().__init__(game, player, hud, tileset_name=tileset_name) # Pass player and hud to the base class
+        super().__init__(game, player, hud, tileset_name=tileset_name, friendly_entities=friendly_entities) # Pass player, hud, and friendly_entities to the base class
 
         self.name = "SpawnTown"
 
@@ -335,7 +338,7 @@ class SpawnTown(BaseGameplayScene):
                     print(f"Interacted with portal {i}! Changing scene to {self.portals[i]['target_scene']}...") # Debug print
                     # Trigger scene change to the target scene
                     target_scene = self.portals[i]['target_scene']
-                    self.game.scene_manager.set_scene(target_scene, player=self.player, hud=self.hud)
+                    self.game.scene_manager.set_scene(target_scene, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites())
                     return
 
     def update(self, dt):
@@ -372,10 +375,8 @@ class SpawnTown(BaseGameplayScene):
 
 
     def draw(self, screen):
-        print("SpawnTown: draw: Drawing tilemap...") # Debug log
+         # Debug log
         if hasattr(self, 'tile_map') and self.tile_map:
-            print(f"SpawnTown: draw: tilemap is valid. Map dimensions: {self.map_width}x{self.map_height}") # Debug log
-            print(f"SpawnTown: draw: Camera X: {self.camera_x}, Camera Y: {self.camera_y}, Zoom: {self.zoom_level}") # Debug log
             super().draw(screen) # Draw map, player, and HUD from base class
         else:
             print("SpawnTown: draw: WARNING: tile_map is invalid or not set!") # Debug log
@@ -459,11 +460,11 @@ class SpawnTown(BaseGameplayScene):
                     except FileNotFoundError:
                         print(f"SpawnTown: Warning: Could not load portal image: {full_path}")
 
-                    # Move these lines inside the loop
-                    portal_x = portal.get("location", [0, 0])[0]
-                    portal_y = portal.get("location", [0, 0])[1]
-                    portal_rect = pygame.Rect(portal_x, portal_y, 64, 64)  # Example size
-                    self.portal_rects.append(portal_rect)
+                # Move these lines inside the loop
+                portal_x = portal.get("location", [0, 0])[0]
+                portal_y = portal.get("location", [0, 0])[1]
+                portal_rect = pygame.Rect(portal_x, portal_y, 64, 64)  # Example size
+                self.portal_rects.append(portal_rect)
 
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
             print(f"SpawnTown: Warning: Could not load portal data from zone_data.json: {e}")

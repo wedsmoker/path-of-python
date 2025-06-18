@@ -41,41 +41,28 @@
             "class": "ui.menus.PauseMenu"
         },
         {
-            "name": "fort6",
-            "class": "core.dungeons.fort6.fort6"
-        },
-        {
             "name": "grass",
             "class": "core.dungeons.grass.grass"
-        },
-        {
-            "name": "gg",
-            "class": "core.dungeons.gg.gg"
-        },
-        {
-            "name": "yt",
-            "class": "core.dungeons.yt.yt",
-            "dungeon_data_path": "data/dungeons/yt.json"
-        },
-        {
-            "name": "ll",
-            "class": "core.dungeons.ll.ll",
-            "dungeon_data_path": "data/dungeons/ll.json"
-        },
-        {
-            "name": "yes",
-            "class": "core.dungeons.yes.yes",
-            "dungeon_data_path": "data/dungeons/yes.json"
-        },
-        {
-            "name": "yes2",
-            "class": "core.dungeons.yes2.yes2",
-            "dungeon_data_path": "data/dungeons/yes2.json"
         },
         {
             "name": "boss_room",
             "class": "core.boss_scenes.boss_room_scene.BossRoomScene",
             "dungeon_data_path": "data/boss_rooms/generic_boss_layout.json"
+        },
+        {
+            "name": "arena",
+            "class": "core.dungeons.arena.arena",
+            "dungeon_data_path": "data/dungeons/arena.json"
+        },
+        {
+            "name": "arena2",
+            "class": "core.dungeons.arena2.arena2",
+            "dungeon_data_path": "data/dungeons/arena2.json"
+        },
+        {
+            "name": "arena3",
+            "class": "core.dungeons.arena3.arena3",
+            "dungeon_data_path": "data/dungeons/arena3.json"
         }
     ]
 }

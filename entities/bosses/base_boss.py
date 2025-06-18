@@ -34,10 +34,15 @@ class BaseBoss(Enemy):
 
         # Patterned movement
         self.movement_pattern = [(1, 0), (-1, 0), (0, 1), (0, -1)]  # Example pattern (right, left, down, up)
+        self.zigzag_amplitude = 100 # How far the boss moves perpendicular to its main direction
+        self.zigzag_frequency = 0.05 # How often the boss changes its perpendicular direction
+        self.zigzag_time = 0 # To track the sine wave for zigzag movement
         self.pattern_index = 0
         self.pattern_duration = 2  # Follow pattern for 2 seconds
         self.pattern_start_time = 0
         self.is_following_pattern = False
+        self.is_teleporting = False # Corrected initialization
+        self.is_zigzagging = False # Corrected initialization
 
         # Variable Jitter
         self.jitter_intensity = 0.2
@@ -49,7 +54,9 @@ class BaseBoss(Enemy):
         self.attack_cooldown = attack_cooldown # Time in milliseconds between ranged attacks
         self.last_attack_time = pygame.time.get_ticks() # Last time a ranged attack was performed
         self.projectile_sprite_path = projectile_sprite_path
-        self.ranged_attack_pattern = ranged_attack_pattern # e.g., "single", "spread", "burst"
+        # self.ranged_attack_pattern = ranged_attack_pattern # e.g., "single", "spread", "burst" - now dynamic
+        self.available_attack_patterns = ["single", "spread", "burst", "circle", "spiral", "rotating_burst", "wave"] # New: list of patterns
+        self.current_attack_pattern = random.choice(self.available_attack_patterns) # New: current pattern
         self._is_bursting = False
         self._burst_projectiles_fired = 0
         self._last_burst_shot_time = 0
@@ -58,7 +65,7 @@ class BaseBoss(Enemy):
 
     def update(self, dt, player, tile_map, tile_size):
         # Base boss update logic (can call super().update() or override completely)
-        # super().update(dt, player, tile_map, tile_size)
+        super().update(dt, player, tile_map, tile_size)
 
         if not player:
             return
@@ -82,16 +89,20 @@ class BaseBoss(Enemy):
         self.vertical_velocity = min(self.vertical_velocity, 1000)
 
         # Ability triggers (randomly choose an ability)
-        if not self.is_dashing and not self.is_charging and not self.is_following_pattern:
-            ability_choice = random.randint(0, 3)  # 0: Dash, 1: Charge, 2: Pattern, 3: Ranged Attack
+        if not self.is_dashing and not self.is_charging and not self.is_following_pattern and not self.is_teleporting and not self.is_zigzagging:
+            ability_choice = random.randint(0, 5)  # 0: Dash, 1: Charge, 2: Pattern, 3: Ranged Attack, 4: Teleport, 5: ZigZag
             if ability_choice == 0:
                 self.start_dash()
             elif ability_choice == 1:
                 self.start_charge(player)
             elif ability_choice == 2:
                 self.start_pattern()
-            else:
+            elif ability_choice == 3:
                 self._perform_ranged_attack(player)
+            elif ability_choice == 4:
+                self.start_teleport(tile_map, tile_size)
+            elif ability_choice == 5:
+                self.start_zigzag()
 
         # Dash ability update
         if self.is_dashing:
@@ -142,13 +153,22 @@ class BaseBoss(Enemy):
             else:
                 self.is_following_pattern = False
 
-        # Default movement (if not dashing, charging, or following pattern)
+        # Zigzag movement update
+        elif self.is_zigzagging:
+            self._perform_zigzag_movement(dt, player)
+            # Zigzag movement continues until a new ability is chosen, or it hits a wall
+            if self._check_collision(tile_map, tile_size):
+                self.is_zigzagging = False # Stop zigzagging if collision
+
+        # Default movement (if not dashing, charging, following pattern, or zigzagging)
         else:
             # Calculate potential movement
             dx, dy = player.rect.centerx - self.rect.centerx, player.rect.centery - self.rect.centery
             dist = math.hypot(dx, dy)
             if dist > 0:
                 dx, dy = dx / dist, dy / dist
+            else: # If boss is on top of player, don't move
+                dx, dy = 0, 0
 
             # Jittering effect
             jitter_x = random.uniform(-self.jitter_intensity, self.jitter_intensity)
@@ -157,7 +177,12 @@ class BaseBoss(Enemy):
             dy += jitter_y
 
             # Normalize the movement vector after adding jitter
-            move_vector = pygame.math.Vector2(dx, dy).normalize()
+            move_vector = pygame.math.Vector2(dx, dy)
+            if move_vector.length_squared() > 0: # Only normalize if length is not zero
+                move_vector.normalize_ip()
+            else:
+                move_vector = pygame.math.Vector2(0,0) # Keep as zero vector if it was zero
+
             move_x = move_vector.x * self.base_speed * dt
             move_y = move_vector.y * self.base_speed * dt
 
@@ -257,26 +282,94 @@ class BaseBoss(Enemy):
         self.pattern_start_time = pygame.time.get_ticks()
         self.pattern_index = 0
 
+    def start_teleport(self, tile_map, tile_size):
+        """Initiates the teleport ability."""
+        self.is_teleporting = True
+        self._perform_teleport(tile_map, tile_size)
+        self.is_teleporting = False # Teleport is instant, so reset flag immediately
+
+    def start_zigzag(self):
+        """Initiates the zigzag movement."""
+        self.is_zigzagging = True
+        self.zigzag_time = 0 # Reset zigzag time
+
+    def _perform_teleport(self, tile_map, tile_size):
+        """Teleports the boss to a random valid location on the map."""
+        # Find a random valid tile to teleport to
+        valid_positions = []
+        for row_idx, row in enumerate(tile_map):
+            for col_idx, tile_id in enumerate(row):
+                # Assuming 0 is an empty/walkable tile
+                if tile_id == 0:
+                    valid_positions.append((col_idx * tile_size, row_idx * tile_size))
+
+        if valid_positions:
+            new_x, new_y = random.choice(valid_positions)
+            self.rect.x = new_x
+            self.rect.y = new_y
+            print(f"Boss teleported to ({new_x}, {new_y})")
+        else:
+            print("No valid teleport positions found.")
+
+    def _perform_zigzag_movement(self, dt, player):
+        """Moves the boss in a zigzag pattern towards the player."""
+        # Calculate direction towards player
+        dx, dy = player.rect.centerx - self.rect.centerx, player.rect.centery - self.rect.centery
+        dist = math.hypot(dx, dy)
+        if dist > 0:
+            main_direction = pygame.math.Vector2(dx / dist, dy / dist)
+        else:
+            main_direction = pygame.math.Vector2(0, 0) # If boss is on top of player, no main direction
+
+        # Calculate perpendicular direction for zigzag
+        perp_direction = pygame.math.Vector2(-main_direction.y, main_direction.x)
+
+        # Apply sine wave to perpendicular movement
+        self.zigzag_time += dt
+        zigzag_offset = math.sin(self.zigzag_time * self.zigzag_frequency) * self.zigzag_amplitude
+
+        # Combine main direction with zigzag offset
+        move_vector = main_direction * self.base_speed + perp_direction * zigzag_offset
+        if move_vector.length_squared() > 0: # Only normalize if length is not zero
+            move_vector.normalize_ip()
+        else:
+            move_vector = pygame.math.Vector2(0,0) # Keep as zero vector if it was zero
+
+        move_x = move_vector.x * self.base_speed * dt
+        move_y = move_vector.y * self.base_speed * dt
+
+        self.rect.x += move_x
+        self.rect.y += move_y
+
     def _perform_ranged_attack(self, target): # Modified to accept target
         current_time = pygame.time.get_ticks()
         if current_time - self.last_attack_time > self.attack_cooldown:
             if self.projectile_sprite_path:
-                if self.ranged_attack_pattern == "single":
+                # Dynamically choose an attack pattern
+                self.current_attack_pattern = random.choice(self.available_attack_patterns) # Choose a new pattern
+                
+                if self.current_attack_pattern == "single":
                     self._shoot_projectile(target.rect.centerx, target.rect.centery)
                     self.last_attack_time = current_time
-                elif self.ranged_attack_pattern == "spread":
+                elif self.current_attack_pattern == "spread":
                     self._shoot_spread_projectiles(target.rect.centerx, target.rect.centery, num_projectiles=3, angle_spread=30)
                     self.last_attack_time = current_time
-                elif self.ranged_attack_pattern == "burst":
+                elif self.current_attack_pattern == "burst":
                     self._is_bursting = True
                     self._burst_projectiles_fired = 0
                     self._last_burst_shot_time = current_time # Start burst timer
                     # The actual shooting will happen in the update method
-                elif self.ranged_attack_pattern == "circle":
+                elif self.current_attack_pattern == "circle":
                     self._shoot_circle_projectiles(num_projectiles=8, radius=50)
                     self.last_attack_time = current_time
-                elif self.ranged_attack_pattern == "spiral":
+                elif self.current_attack_pattern == "spiral":
                     self._shoot_spiral_projectiles(num_projectiles=15, angle_increment_degrees=20, radius_increment=10)
+                    self.last_attack_time = current_time
+                elif self.current_attack_pattern == "rotating_burst":
+                    self._shoot_rotating_burst_projectiles(num_projectiles=5, rotation_speed=5)
+                    self.last_attack_time = current_time
+                elif self.current_attack_pattern == "wave":
+                    self._shoot_wave_projectiles(num_projectiles=10, wave_amplitude=50, wave_frequency=0.1)
                     self.last_attack_time = current_time
                 # Add more patterns here
 
@@ -324,4 +417,30 @@ class BaseBoss(Enemy):
             target_y = center_y + math.sin(angle) * current_radius
             self._shoot_projectile(target_x, target_y)
 
+    def _shoot_rotating_burst_projectiles(self, num_projectiles, rotation_speed):
+        """Shoots projectiles in a burst that rotates over time."""
+        center_x, center_y = self.rect.centerx, self.rect.centery
+        # Calculate initial angle towards the player
+        initial_angle = math.atan2(self.game.player.rect.centery - center_y, self.game.player.rect.centerx - center_x)
+
+        for i in range(num_projectiles):
+            # Calculate angle for each projectile, adding a rotation component
+            angle = initial_angle + math.radians(rotation_speed * i)
+            target_x = center_x + math.cos(angle) * 1000 # Shoot far away
+            target_y = center_y + math.sin(angle) * 1000
+            self._shoot_projectile(target_x, target_y)
+
+    def _shoot_wave_projectiles(self, num_projectiles, wave_amplitude, wave_frequency):
+        """Shoots projectiles in a wave-like pattern."""
+        center_x, center_y = self.rect.centerx, self.rect.centery
+        # Calculate initial angle towards the player
+        initial_angle = math.atan2(self.game.player.rect.centery - center_y, self.game.player.rect.centerx - center_x)
+
+        for i in range(num_projectiles):
+            # Calculate an offset based on a sine wave
+            offset_angle = wave_amplitude * math.sin(wave_frequency * i)
+            angle = initial_angle + math.radians(offset_angle)
+            target_x = center_x + math.cos(angle) * 1000
+            target_y = center_y + math.sin(angle) * 1000
+            self._shoot_projectile(target_x, target_y)
     # Add any base boss specific methods here (e.g., phase transitions, unique abilities)

@@ -31,7 +31,7 @@ class Enemy(pygame.sprite.Sprite):
         self._burst_projectiles_fired = 0
         self._last_burst_shot_time = 0
         self.burst_projectile_count = 3 # Number of projectiles in a burst
-        self.burst_delay = 100 # Delay between projectiles in a burst (ms)
+        self.burst_delay = 100 # Delay between projectiles in a burst
 
         # Melee attack attributes
         self.melee_range = TILE_SIZE * 1.2 # Melee range, slightly larger than a tile
@@ -39,6 +39,8 @@ class Enemy(pygame.sprite.Sprite):
         self.last_melee_attack_time = pygame.time.get_ticks()
 
         print(f"Enemy initialized at ({x}, {y}) with sprite: {sprite_path}") # Debug print
+        self.last_x = x
+        self.last_y = y
 
     def _load_sprite(self, sprite_path):
         """Loads the enemy sprite, with error handling."""
@@ -71,10 +73,10 @@ class Enemy(pygame.sprite.Sprite):
         damage_text = DamageText(str(int(amount)), self.rect.centerx, self.rect.top, (255, 0, 0))
         self.damage_texts.add(damage_text)
         if self.current_life <= 0:
-            self.kill()  # Remove the enemy from all sprite groups
             print(f"DEBUG: Enemy {self.name} died. Its xp_value is: {self.xp_value}. Player current XP: {self.game.player.experience}")
             print(f"Enemy {self.name} died. Awarding {self.xp_value} XP to player.") # Debug print
             self.game.player.gain_experience(self.xp_value) # Pass xp_value instead of level
+            self.kill() # Remove the enemy from all sprite groups
 
     def _perform_ranged_attack(self, target): # Modified to accept target
         current_time = pygame.time.get_ticks()
