@@ -113,9 +113,9 @@ class BossRoomScene(BaseGameplayScene):
         self.display_warning_message = True
         self.warning_message_start_time = 0
         self.warning_message_alpha = 255  # Initial alpha value for the fade effect
-        self.warning_message_fade_speed = 50  # Adjust the fade speed as needed
-        self.warning_message_duration = 5000  # Duration in milliseconds (5 seconds)
-        self.message_fade_delay = 3000 # Delay before message starts fading
+        self.warning_message_fade_speed = 255  # Adjust the fade speed as needed
+        self.warning_message_duration = 100  # Duration in milliseconds (5 seconds)
+        self.message_fade_delay = 2000 # Delay before message starts fading
         self.message_fade_start_time = 0 # Time when the message should start fading
         self.boss_defeat_message_displayed = False
         self.boss_defeat_message_alpha = 255
