@@ -80,7 +80,8 @@
       "cooldown": 5.0,
       "cast_time": 1.0,
       "minion_duration": 10.0,
-      "minion_count": 1
+      "minion_count": 1,
+      "skeleton_speed": 250
     },
     {
       "id": "molten_shell",
