@@ -3,7 +3,7 @@ from config.constants import (
     KEY_SKILL_1, KEY_SKILL_2, KEY_SKILL_3, KEY_SKILL_4,
     KEY_POTION_1, KEY_POTION_2, KEY_POTION_3, KEY_POTION_4,
     KEY_INVENTORY, KEY_SKILL_TREE, KEY_INTERACT,
-    KEY_RIGHT_MOUSE, KEY_PAGE_UP, KEY_PAGE_DOWN, KEY_DEV_INVENTORY # Added KEY_DEV_INVENTORY
+    KEY_RIGHT_MOUSE, KEY_PAGE_UP, KEY_PAGE_DOWN, KEY_DEV_INVENTORY, KEY_SKILL_5, KEY_SKILL_6 # Added KEY_DEV_INVENTORY, KEY_SKILL_5, KEY_SKILL_6
 )
 
 class InputHandler:
@@ -70,6 +70,8 @@ class InputHandler:
         if self.is_mouse_button_just_pressed(KEY_RIGHT_MOUSE): return 4
         if self.is_key_just_pressed(KEY_PAGE_UP): return 5
         if self.is_key_just_pressed(KEY_PAGE_DOWN): return 6
+        if self.is_mouse_button_just_pressed(KEY_SKILL_5): return 5
+        if self.is_mouse_button_just_pressed(KEY_SKILL_6): return 6
         return None
 
     def get_potion_key_pressed(self):
@@ -102,6 +104,9 @@ class InputHandler:
     def is_mouse_button_7_just_pressed(self):
         """Checks if mouse button 7 is pressed."""
         return self.is_mouse_button_just_pressed(7)
+    def is_mouse_button_7_just_released(self):
+        """Checks if mouse button 7 is released in the current frame."""
+        return self.is_mouse_button_just_released(7)
 
     def reset_inputs(self):
         """Resets single-frame input states at the end of a new frame/loop."""

@@ -40,6 +40,10 @@ class PauseMenu(BaseScene):
             SCREEN_WIDTH // 2 - button_width // 2, start_y + 4 * spacing, button_width, button_height,
             "Exit Game", lambda: self.game.quit_game()
         ))
+        self.buttons.append(Button(
+            SCREEN_WIDTH // 2 - button_width // 2, start_y + 5 * spacing, button_width, button_height,
+            "Return to Title", lambda: self.game.scene_manager.set_scene("TitleScreen")
+        ))
 
     def enter(self):
         self.game.logger.info("Entering Pause Menu.")

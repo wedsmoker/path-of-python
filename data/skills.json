@@ -3,13 +3,18 @@
     {
       "id": "fireball",
       "name": "Fireball",
-      "description": "Launches a fiery projectile that explodes on impact.",
+      "description": "Launches a fiery projectile that explodes on impact, leaving burning ground.",
       "type": "spell",
       "tags": ["fire", "projectile", "aoe"],
       "mana_cost": 8,
       "base_damage": {"min": 10, "max": 15, "type": "fire"},
       "cooldown": 0,
-      "cast_time": 0.5
+      "cast_time": 0.5,
+      "explosion_radius": 75,
+      "burning_ground_duration": 5.0,
+      "burning_ground_damage": {"min": 3, "max": 5, "type": "fire"},
+      "burning_ground_tick_interval": 1.0,
+      "burning_ground_chance_to_ignite": 0.75
     },
     {
       "id": "cleave",
@@ -77,10 +82,10 @@
       "type": "spell",
       "tags": ["minion", "summon"],
       "mana_cost": 20,
-      "cooldown": 5.0,
+      "cooldown": 1.5,
       "cast_time": 1.0,
       "minion_duration": 10.0,
-      "minion_count": 1,
+      "minion_count": 30,
       "skeleton_speed": 250
     },
     {
@@ -117,6 +122,35 @@
       "cooldown": 0,
       "cast_time": 0.7,
       "chain_count": 4
+    },
+    {
+      "id": "cyclone",
+      "name": "Cyclone",
+      "description": "Spins rapidly, hitting all enemies in a circle repeatedly while draining mana.",
+      "type": "attack",
+      "tags": ["melee", "aoe", "physical", "channel"],
+      "mana_cost": 10,
+      "base_damage": {"min": 10, "max": 20, "type": "physical"},
+      "cooldown": 0,
+      "channel_cost_per_second": 5,
+      "hit_interval": 0.2
+    },
+    {
+      "id": "summon_spiders",
+      "name": "Summon Spiders",
+      "description": "Summons multiple temporary spider minions to fight for you, slowing and poisoning enemies.",
+      "type": "spell",
+      "tags": ["minion", "summon", "poison", "slow"],
+      "mana_cost": 30,
+      "cooldown": 10.0,
+      "cast_time": 1.5,
+      "minion_duration": 15.0,
+      "minion_count": 30,
+      "minion_health_multiplier": 0.5,
+      "minion_attack_slow_duration": 2.0,
+      "minion_attack_slow_amount": 0.3,
+      "minion_poison_duration": 3.0,
+      "minion_poison_damage": {"min": 2, "max": 4, "type": "chaos"}
     }
   ],
   "support_gems": [

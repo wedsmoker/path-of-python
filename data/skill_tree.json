@@ -71,8 +71,53 @@
       "name": "Arc",
       "description": "Chains electricity to strike multiple enemies.",
       "cost": 10,
-      "key_binding": "KEY_RIGHT_MOUSE",
+      "key_binding": "KEY_SKILL_5",
       "icon": "graphics/spells/air/chain_lightning.png",
+      "dependencies": []
+    },
+    {
+      "id": "cleave",
+      "name": "Cleave",
+      "description": "A powerful melee attack that strikes all enemies in a wide arc.",
+      "cost": 12,
+      "key_binding": "KEY_SKILL_5",
+      "icon": "graphics/spells/melee/cleave.png",
+      "dependencies": []
+    },
+    {
+      "id": "cyclone",
+      "name": "Cyclone",
+      "description": "Spins rapidly, dealing continuous damage to nearby enemies.",
+      "cost": 15,
+      "key_binding": "KEY_SKILL_6",
+      "icon": "graphics/spells/melee/cyclone.png",
+      "dependencies": []
+    },
+    {
+      "id": "fireball",
+      "name": "Fireball",
+      "description": "Launches a fiery projectile that explodes on impact.",
+      "cost": 10,
+      "key_binding": "KEY_SKILL_6",
+      "icon": "graphics/spells/fire/fireball.png",
+      "dependencies": []
+    },
+    {
+      "id": "summon_skeleton",
+      "name": "Summon Skeleton",
+      "description": "Summons an undead skeleton to fight by your side.",
+      "cost": 20,
+      "key_binding": "KEY_SKILL_6",
+      "icon": "graphics/spells/necromancy/summon_skeleton.png",
+      "dependencies": []
+    },
+    {
+      "id": "summon_spiders",
+      "name": "Summon Spiders",
+      "description": "Summons a swarm of venomous spiders to attack your foes.",
+      "cost": 25,
+      "key_binding": "KEY_SKILL_5",
+      "icon": "graphics/spells/necromancy/summon_spiders.png",
       "dependencies": []
     }
   ]

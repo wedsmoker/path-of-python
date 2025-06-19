@@ -77,13 +77,24 @@ class ArcSkill:
             print(f"Error: Arc image file not found: {path}")
             return None
 
-    def activate(self):
+    def can_cast(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_used < self.cooldown:
+            return False
+        if not self.player.has_skill("arc"):
+            return False
+        if self.player.current_mana < self.mana_cost:
+            return False
+        return True
+
+    def activate(self, mouse_pos=None): # Added mouse_pos parameter
         """Activates the Arc skill, creating initial projectiles that chain to strike multiple enemies."""
+        print("ArcSkill.activate() called!") # Added print statement
         current_time = pygame.time.get_ticks()
         if current_time - self.last_used < self.cooldown:
             print("Arc skill is on cooldown!")
             return
-
+        
         if not self.player.has_skill("arc"):
             print("Cannot activate Arc skill: Skill not unlocked!")
             return
@@ -197,6 +208,12 @@ class ArcSkill:
                 current_target # The current target becomes the previous target for the next projectile
             )
             self.player.game.current_scene.projectiles.add(new_arc_projectile)
+
+    def update(self, dt):
+        """Updates the Arc skill's state, primarily handling cooldowns."""
+        # No specific continuous effects for Arc, but cooldown needs to be managed.
+        # The actual projectiles are managed by the game's projectile group.
+        pass # Placeholder for now, can add more complex logic later if needed
 
 class ArcProjectile(Projectile):
     def __init__(self, game, x, y, target_x, target_y, speed, damage, sprite_path, arc_skill, start_pos=None, chain_count=0, previous_target=None):

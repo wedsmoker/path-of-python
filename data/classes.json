@@ -1,0 +1,47 @@
+{
+  "stalker": {
+    "name": "Stalker",
+    "skills": ["cleave", "cyclone"],
+    "description": "A master of close combat, dealing devastating blows.",
+    "base_sprite": "graphics/player/base/vampire_m.png",
+    "stats": {
+      "base_strength": 12,
+      "base_dexterity": 15,
+      "base_intelligence": 8,
+      "base_vitality": 10,
+      "max_life": 120,
+      "max_energy_shield": 30,
+      "max_mana": 80
+    }
+  },
+  "technomancer": {
+    "name": "Technomancer",
+    "skills": ["arc", "fireball"],
+    "description": "Wields arcane energies to unleash powerful spells.",
+    "base_sprite": "graphics/player/base/merfolk_f.png",
+    "stats": {
+      "base_strength": 8,
+      "base_dexterity": 10,
+      "base_intelligence": 15,
+      "base_vitality": 10,
+      "max_life": 100,
+      "max_energy_shield": 60,
+      "max_mana": 120
+    }
+  },
+  "hordemonger": {
+    "name": "Hordemonger",
+    "skills": ["summon_spiders", "summon_skeleton"],
+    "description": "Commands legions of undead and arachnid minions.",
+    "base_sprite": "graphics/player/base/demonspawn_black_m.png",
+    "stats": {
+      "base_strength": 10,
+      "base_dexterity": 8,
+      "base_intelligence": 10,
+      "base_vitality": 15,
+      "max_life": 150,
+      "max_energy_shield": 40,
+      "max_mana": 100
+    }
+  }
+}

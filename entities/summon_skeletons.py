@@ -12,12 +12,12 @@ class SummonSkeletons:
         self.skeleton_image_path = "graphics/dc-mon/undead/skeletons/skeleton_humanoid_small.png"
         self.wraith_image_path = "graphics/dc-mon/undead/shadow_wraith.png"  # Path to the wraith image
         self.summon_range = 2 * TILE_SIZE
-        self.max_skeletons = 10  # Maximum number of skeletons
+        # self.max_skeletons = 50  # Maximum number of skeletons
         self.skeleton_health = 30
         self.skeleton_damage = 5
         self.skeleton_speed = 50
         self.last_used = 0
-        self.cooldown = 1000  # 1 second cooldown
+        self.cooldown = 500  # .5 second cooldown
         # self.active_skeletons = [] # Removed: Keep track of active skeletons - now managed by scene's friendly_entities
 
         # Load skill data from JSON
@@ -39,16 +39,16 @@ class SummonSkeletons:
             if summon_skeletons_data:
                 self.mana_cost = summon_skeletons_data.get("mana_cost", 20)
                 self.cooldown = summon_skeletons_data.get("cooldown", 1) * 1000  # Convert to milliseconds
-                self.max_skeletons = summon_skeletons_data.get("max_skeletons", 10)
+                self.max_skeletons = summon_skeletons_data.get("max_skeletons", 999)
                 self.skeleton_health = summon_skeletons_data.get("skeleton_health", 30)
                 self.skeleton_damage = summon_skeletons_data.get("skeleton_damage", 5)
                 self.skeleton_speed = summon_skeletons_data.get("skeleton_speed", 50)
                 print(f"Summon Skeletons skill data loaded: mana_cost={self.mana_cost}, cooldown={self.cooldown}, max_skeletons={self.max_skeletons}, skeleton_health={self.skeleton_health}, skeleton_damage={self.skeleton_damage}, skeleton_speed={self.skeleton_speed}")
-            else:
+            # else:
                 print("Summon Skeletons skill data not found in skills.json. Using default values.")
                 self.mana_cost = 20
                 self.cooldown = 1000
-                self.max_skeletons = 10
+                self.max_skeletons = 999
                 self.skeleton_health = 30
                 self.skeleton_damage = 5
                 self.skeleton_speed = 50
@@ -56,7 +56,7 @@ class SummonSkeletons:
             print(f"Error: skills.json not found at {skills_file_path}. Using default Summon Skeletons skill values.")
             self.mana_cost = 20
             self.cooldown = 1000
-            self.max_skeletons = 10
+            self.max_skeletons = 999
             self.skeleton_health = 30
             self.skeleton_damage = 5
             self.skeleton_speed = 50
@@ -64,33 +64,32 @@ class SummonSkeletons:
             print(f"Error decoding skills.json at {skills_file_path}. Using default Summon Skeletons skill values.")
             self.mana_cost = 20
             self.cooldown = 1000
-            self.max_skeletons = 10
+            self.max_skeletons = 999
             self.skeleton_health = 30
             self.skeleton_damage = 5
             self.skeleton_speed = 50
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
 
+    def can_cast(self):
+        """Checks if the skill can be cast (mana, cooldown, max skeletons)."""
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_used < self.cooldown:
+            return False
+        if not self.player.has_skill("summon_skeleton"):
+            return False
+        if self.player.current_mana < self.mana_cost:
+            return False
+        # if len(self.player.game.current_scene.friendly_entities) >= self.max_skeletons:
+            return False
+        return True
+
     def activate(self, x, y):
         """Activates the Summon Skeletons skill, summoning a random number of skeletons (1-3) to fight for the player."""
         print("SummonSkeletons.activate() called!")  # Add print statement
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_used < self.cooldown:
-            print("Summon Skeletons skill is on cooldown!")
-            return
-
-        if not self.player.has_skill("summon_skeletons"):
-            print("Cannot activate Summon Skeletons skill: Skill not unlocked!")
-            return
-
-        if self.player.current_mana < self.mana_cost:
-            print("Cannot activate Summon Skeletons skill: Not enough mana!")
-            return
-
-        # Check if maximum skeletons are already active
-        # Use the friendly_entities group from the current scene
-        if len(self.player.game.current_scene.friendly_entities) >= self.max_skeletons:
-            print("Cannot summon more skeletons! Maximum reached.")
+        if not self.can_cast(): # Use the new can_cast method
+            print("Cannot activate Summon Skeletons skill: Conditions not met (cooldown, mana, or max skeletons).")
             return
 
         # Deduct mana cost
@@ -106,14 +105,14 @@ class SummonSkeletons:
 
         # Summon the determined number of skeletons, respecting the max limit
         for _ in range(num_to_summon):
-            if len(self.player.game.current_scene.friendly_entities) < self.max_skeletons:
+            # if len(self.player.game.current_scene.friendly_entities) < self.max_skeletons:
                 # Summon skeleton with a small random offset
-                offset_x = random.randint(-int(TILE_SIZE * 0.75), int(TILE_SIZE * 0.75)) # Increased offset range
-                offset_y = random.randint(-int(TILE_SIZE * 0.75), int(TILE_SIZE * 0.75)) # Increased offset range
-                self._summon_skeleton(x + offset_x, y + offset_y)
-            else:
-                print("Maximum skeletons reached during summoning sequence.")
-                break # Stop summoning if max limit is hit
+            offset_x = random.randint(-int(TILE_SIZE * 0.75), int(TILE_SIZE * 0.75)) # Increased offset range
+            offset_y = random.randint(-int(TILE_SIZE * 0.75), int(TILE_SIZE * 0.75)) # Increased offset range
+            self._summon_skeleton(x + offset_x, y + offset_y)
+            # else:
+                # print("Maximum skeletons reached during summoning sequence.")
+                # break # Stop summoning if max limit is hit
 
     def _summon_skeleton(self, x, y):
         """Summons a single skeleton at the specified location."""
@@ -122,8 +121,8 @@ class SummonSkeletons:
         # Calculate scaled stats based on player level
         player_level = self.player.level
         scaled_health = self.skeleton_health + (player_level - 1) * 5  # Example: +5 health per level
-        scaled_damage = self.skeleton_damage + (player_level - 1) * 1  # Example: +1 damage per level
-        scaled_speed = self.skeleton_speed + (player_level - 2) * 2  # Example: +2 speed per level (start scaling from level 2)
+        scaled_damage = self.skeleton_damage + (player_level - 1) * 10  # Example: +10 damage per level
+        scaled_speed = self.skeleton_speed + (player_level - 2) * 5  # Example: +5 speed per level (start scaling from level 2)
         
         # Ensure stats don't go below base values for level 1
         scaled_health = max(self.skeleton_health, scaled_health)
@@ -134,6 +133,7 @@ class SummonSkeletons:
         skeleton = Skeleton(self.player.game, x, y, scaled_health, scaled_damage, scaled_speed, self.skeleton_image_path, self, player_level=player_level) # Pass self (SummonSkeletons instance) as owner
         # Add skeleton to the scene's friendly_entities group
         self.player.game.current_scene.friendly_entities.add(skeleton)
+        self.player.game.current_scene.enemies.add(skeleton)  # Add skeleton to enemies group so they can be targeted
         # self.active_skeletons.append(skeleton) # Removed: now managed by scene's friendly_entities
         print("Summoned a skeleton!")
 
@@ -148,6 +148,10 @@ class SummonSkeletons:
         if skeleton in self.player.game.current_scene.friendly_entities:
             self.player.game.current_scene.friendly_entities.remove(skeleton)
             print(f"Removed a skeleton from active list. Current active: {len(self.player.game.current_scene.friendly_entities)}")
+
+    def update(self, dt):
+        """Updates the SummonSkeletons skill's state, primarily handling cooldowns."""
+        pass # Placeholder for now, can add more complex logic later if needed
 
 
 class Skeleton(Enemy):
@@ -228,7 +232,8 @@ class Skeleton(Enemy):
                 self.rect.y += move_y
                 if self._check_collision(tile_map, tile_size):
                     self.rect.y = original_y  # Rollback if collision
-        else:
+        
+        if not nearest_enemy:
             # Calculate distance to player
             dx, dy = player.rect.centerx - self.rect.centerx, player.rect.centery - self.rect.centery
             dist = math.hypot(dx, dy)

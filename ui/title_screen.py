@@ -14,7 +14,7 @@ class TitleScreen(BaseScene):
         self.title_font = pygame.font.SysFont("Courier New", UI_FONT_SIZE_LARGE * 2)
         self.start_button = Button(
             SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50, 200, 50,
-            "Start Game", lambda: self.game.scene_manager.set_scene("intro_scene")  # Changed to intro_scene
+            "Start Game", lambda: self.game.scene_manager.set_scene("character_selection")  # Changed to intro_scene
         )
         self.info_button = Button(
             SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 110, 200, 50,

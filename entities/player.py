@@ -8,12 +8,16 @@ import random
 from config.constants import TILE_SIZE, PLAYER_SPEED
 from entities.arc_skill import ArcSkill
 from entities.summon_skeletons import SummonSkeletons  # Import SummonSkeletons
+from entities.cleave_skill import CleaveSkill # Import CleaveSkill
+from entities.cyclone_skill import CycloneSkill # Import CycloneSkill
+from entities.fireball_skill import FireballSkill # Import FireballSkill
+from entities.summon_spiders import SummonSpiders # Import SummonSpiders
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, class_name="knight"):
+    def __init__(self, game, x, y, class_name="knight", initial_stats=None):
         super().__init__()
         self.game = game
-        self.class_name = class_name
+        self.class_name = class_name # Initialize with a default or passed class_name
         self.x = x
         self.y = y
         self.speed = PLAYER_SPEED  # Adjust as needed
@@ -29,7 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.footstep_interval = 100  # milliseconds between footsteps
         self.last_footstep_time = pygame.time.get_ticks()
 
-        # Load player sprites
+        # Load player sprites - these will be updated by set_class
         self.head1_sprite = get_player_head_sprite(class_name)
         self.hand1_sprite = get_player_hand_sprite(class_name)
         self.leg1_sprite = get_player_leg_sprite(class_name)
@@ -89,12 +93,16 @@ class Player(pygame.sprite.Sprite):
             "max_mana": self.max_mana,
         }
 
+        # Apply initial stats if provided
+        if initial_stats:
+            self.apply_stats(initial_stats)
+
         from items.inventory import Inventory
         self.inventory = Inventory(self.game, 20) # Initialize inventory with a capacity of 20 slots
 
         # Load skill data from JSON
         self.skills = self.load_skills('data/skill_tree.json')
-        self.unlocked_skills = ["summon_skeletons"] # List to store unlocked skill IDs
+        self.unlocked_skills = [] # Initialize as empty, will be populated by set_class
         self.skill_key_bindings = {}
 
         # Create skill key bindings
@@ -107,9 +115,61 @@ class Player(pygame.sprite.Sprite):
         self.damage_duration = 100  # milliseconds
 
         # Skill-specific attributes
-        # self.arc_chain_lightning_image = pygame.image.load("graphics/spells/air/chain_lightning.png").convert_alpha() if os.path.exists("graphics/spells/air/chain_lightning.png") else None
         self.arc_skill = ArcSkill(self)
         self.summon_skeletons_skill = SummonSkeletons(self)  # Initialize SummonSkeletons skill
+        self.cleave_skill = CleaveSkill(self) # Initialize CleaveSkill
+        self.cyclone_skill = CycloneSkill(self) # Initialize CycloneSkill
+        self.fireball_skill = FireballSkill(self) # Initialize FireballSkill
+        self.summon_spiders_skill = SummonSpiders(self) # Initialize SummonSpiders
+
+    def apply_stats(self, stats_dict):
+        """Applies a dictionary of stats to the player."""
+        for stat_key, value in stats_dict.items():
+            if hasattr(self, stat_key):
+                setattr(self, stat_key, value)
+                self.stats[stat_key] = value
+        # Ensure current life, mana, energy shield are capped at max
+        self.current_life = self.max_life
+        self.current_mana = self.max_mana
+        self.current_energy_shield = self.max_energy_shield
+
+    def set_class(self, class_name, class_stats=None):
+        """Sets the player's class and updates their sprites and initial skills."""
+        self.class_name = class_name
+        self.game.logger.info(f"Player class set to: {self.class_name}")
+
+        # Update player sprites based on the new class
+        self.head1_sprite = get_player_head_sprite(class_name)
+        self.hand1_sprite = get_player_hand_sprite(class_name)
+        self.leg1_sprite = get_player_leg_sprite(class_name)
+        self.base_sprite = get_player_sprite(class_name)
+
+        # Recombine sprites
+        self.image = pygame.Surface([TILE_SIZE, TILE_SIZE], pygame.SRCALPHA)
+        self.image.blit(self.base_sprite, (0, 0))
+        self.image.blit(self.leg1_sprite, (0, 0))
+        self.image.blit(self.hand1_sprite, (0, 0))
+        self.image.blit(self.head1_sprite, (0, 0))
+
+        # Apply class-specific stats
+        if class_stats:
+            self.apply_stats(class_stats)
+
+        # Update unlocked skills based on class
+        if class_name == "stalker":
+            self.unlocked_skills = ["cleave", "cyclone"]
+        elif class_name == "technomancer":
+            self.unlocked_skills = ["arc", "fireball"]
+        elif class_name == "hordemonger":
+            self.unlocked_skills = ["summon_skeleton", "summon_spiders"]
+        else:
+            self.unlocked_skills = [] # Default or error case
+
+        self.skill_key_bindings = {}
+        for skill in self.skills:
+            if "key_binding" in skill and skill["id"] in self.unlocked_skills:
+                self.skill_key_bindings[skill["key_binding"]] = skill["id"]
+
 
     def load_skills(self, json_path):
         """Loads skill data from a JSON file."""
@@ -131,6 +191,20 @@ class Player(pygame.sprite.Sprite):
         if not self.has_skill(skill_id):
             return False
 
+        if skill_id == "cleave":
+            return self.cleave_skill.can_cast()
+        elif skill_id == "cyclone":
+            return self.cyclone_skill.can_cast()
+        elif skill_id == "arc":
+            return self.arc_skill.can_cast()
+        elif skill_id == "summon_skeleton":
+            return self.summon_skeletons_skill.can_cast()
+        elif skill_id == "fireball":
+            return self.fireball_skill.can_cast()
+        elif skill_id == "summon_spiders":
+            return self.summon_spiders_skill.can_cast()
+
+        # Fallback for skills not explicitly handled above (e.g., passive skills from skill_tree.json)
         skill = next((s for s in self.skills if s['id'] == skill_id), None)
         if skill is None:
             return False
@@ -140,11 +214,33 @@ class Player(pygame.sprite.Sprite):
 
         return True
 
-    def activate_skill(self, skill_id):
+    def activate_skill(self, skill_id, mouse_pos=None):
         """Activates the skill and applies its effects."""
         if not self.can_activate_skill(skill_id):
             return False
 
+        if skill_id == "cleave":
+            self.cleave_skill.activate()
+            return True
+        elif skill_id == "cyclone":
+            self.cyclone_skill.activate()
+            return True
+        elif skill_id == "arc":
+            self.arc_skill.activate()
+            return True
+        elif skill_id == "summon_skeleton":
+            if mouse_pos:
+                self.summon_skeletons_skill.activate(mouse_pos[0], mouse_pos[1])
+            return True
+        elif skill_id == "fireball":
+            if mouse_pos:
+                self.fireball_skill.activate(mouse_pos[0], mouse_pos[1])
+            return True
+        elif skill_id == "summon_spiders":
+            self.summon_spiders_skill.activate() # Removed mouse_pos arguments
+            return True
+
+        # Fallback for skills not explicitly handled above (e.g., passive skills from skill_tree.json)
         skill = next((s for s in self.skills if s['id'] == skill_id), None)
         if skill is None:
             return False
@@ -185,6 +281,7 @@ class Player(pygame.sprite.Sprite):
         effect_sprite.rect = effect_sprite.image.get_rect(center=self.rect.center)
 
         self.game.current_scene.effects.add(effect_sprite)
+        return True
 
     def set_target(self, world_x, world_y):
         # Set the target directly to world coordinates
@@ -283,6 +380,7 @@ class Player(pygame.sprite.Sprite):
         self.stats["max_life"] = self.max_life
         self.stats["max_mana"] = self.max_mana
         self.stats["max_energy_shield"] = self.max_energy_shield
+    
     def activate_arc(self):
         """Activates the Arc skill, chaining electricity to strike multiple enemies."""
         self.arc_skill.activate()
@@ -483,10 +581,13 @@ class Player(pygame.sprite.Sprite):
             if current_time - self.damage_start_time > self.damage_duration:
                 self.is_taking_damage = False
 
-        # Handle skill activation - REMOVE THIS
-        # keys = pygame.key.get_pressed()
-        # if keys[pygame.K_PAGEDOWN]:
-        #     self.activate_arc()
+        # Update active skills
+        self.cleave_skill.update(dt)
+        self.cyclone_skill.update(dt)
+        self.arc_skill.update(dt)
+        self.summon_skeletons_skill.update(dt)
+        self.fireball_skill.update(dt)
+        self.summon_spiders_skill.update(dt)
 
     def create_footstep(self):
         # Load a random cloud_magic_trail image
@@ -528,4 +629,9 @@ class Player(pygame.sprite.Sprite):
             # Add more special handling for other stats if needed
             print(f"Player stat '{stat_key}' updated to {new_value}")
         else:
-            print(f"Warning: Player does not have stat '{stat_key}'.")
+            pass
+    
+    def deactivate_skill(self, skill_id):
+        """Deactivates the specified skill."""
+        if skill_id == "cyclone":
+            self.cyclone_skill.deactivate()

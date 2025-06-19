@@ -38,6 +38,26 @@ class Enemy(pygame.sprite.Sprite):
         self.melee_cooldown = 1000 # 1 second cooldown for melee attacks
         self.last_melee_attack_time = pygame.time.get_ticks()
 
+        # Status effects
+        self.ignited = False
+        self.ignite_start_time = 0
+        self.ignite_duration = 0
+        self.ignite_damage_per_tick = 0 # Placeholder, can be dynamic
+        self.last_ignite_tick = 0
+        self.ignite_tick_interval = 1000 # 1 second per tick
+
+        self.slowed = False
+        self.slow_start_time = 0
+        self.slow_duration = 0
+        self.slow_amount = 0 # Percentage reduction in speed (e.g., 0.5 for 50% slow)
+
+        self.poisoned = False
+        self.poison_start_time = 0
+        self.poison_duration = 0
+        self.poison_damage_per_tick = 0
+        self.last_poison_tick = 0
+        self.poison_tick_interval = 1000 # 1 second per tick
+
         print(f"Enemy initialized at ({x}, {y}) with sprite: {sprite_path}") # Debug print
         self.last_x = x
         self.last_y = y
@@ -77,6 +97,65 @@ class Enemy(pygame.sprite.Sprite):
             print(f"Enemy {self.name} died. Awarding {self.xp_value} XP to player.") # Debug print
             self.game.player.gain_experience(self.xp_value) # Pass xp_value instead of level
             self.kill() # Remove the enemy from all sprite groups
+
+    def apply_ignite(self, duration):
+        """Applies the ignite status effect to the enemy."""
+        self.ignited = True
+        self.ignite_start_time = pygame.time.get_ticks()
+        self.ignite_duration = duration * 1000 # Convert to milliseconds
+        # For simplicity, using a fixed damage per tick for now. Can be made dynamic.
+        self.ignite_damage_per_tick = 5 # Example damage per tick
+        self.last_ignite_tick = self.ignite_start_time
+        print(f"Enemy {self.name} ignited for {duration} seconds.")
+
+    def _update_ignite_effect(self):
+        """Updates the ignite status effect, applying damage over time."""
+        if self.ignited:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.ignite_start_time > self.ignite_duration:
+                self.ignited = False # Ignite effect wears off
+                print(f"Enemy {self.name} ignite effect wore off.")
+            elif current_time - self.last_ignite_tick > self.ignite_tick_interval:
+                self.take_damage(self.ignite_damage_per_tick)
+                self.last_ignite_tick = current_time
+                print(f"Enemy {self.name} took {self.ignite_damage_per_tick} ignite damage.")
+
+    def apply_slow(self, amount, duration):
+        """Applies the slow status effect to the enemy."""
+        self.slowed = True
+        self.slow_start_time = pygame.time.get_ticks()
+        self.slow_duration = duration * 1000 # Convert to milliseconds
+        self.slow_amount = amount # e.g., 0.5 for 50% slow
+        print(f"Enemy {self.name} slowed by {amount*100}% for {duration} seconds.")
+
+    def _update_slow_effect(self):
+        """Updates the slow status effect."""
+        if self.slowed:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.slow_start_time > self.slow_duration:
+                self.slowed = False # Slow effect wears off
+                print(f"Enemy {self.name} slow effect wore off.")
+
+    def apply_poison(self, damage_per_tick, duration):
+        """Applies the poison status effect to the enemy."""
+        self.poisoned = True
+        self.poison_start_time = pygame.time.get_ticks()
+        self.poison_duration = duration * 1000 # Convert to milliseconds
+        self.poison_damage_per_tick = damage_per_tick
+        self.last_poison_tick = self.poison_start_time
+        print(f"Enemy {self.name} poisoned for {duration} seconds, {damage_per_tick} damage per tick.")
+
+    def _update_poison_effect(self):
+        """Updates the poison status effect, applying damage over time."""
+        if self.poisoned:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.poison_start_time > self.poison_duration:
+                self.poisoned = False # Poison effect wears off
+                print(f"Enemy {self.name} poison effect wore off.")
+            elif current_time - self.last_poison_tick > self.poison_tick_interval:
+                self.take_damage(self.poison_damage_per_tick)
+                self.last_poison_tick = current_time
+                print(f"Enemy {self.name} took {self.poison_damage_per_tick} poison damage.")
 
     def _perform_ranged_attack(self, target): # Modified to accept target
         current_time = pygame.time.get_ticks()
@@ -144,27 +223,28 @@ class Enemy(pygame.sprite.Sprite):
             target_y = center_y + math.sin(angle) * current_radius
             self._shoot_projectile(target_x, target_y)
 
-    def _find_nearest_friendly_skeleton(self, finding_range):
-        """Find the nearest friendly skeleton to attack within the finding range."""
+    def _find_nearest_friendly_minion(self, finding_range):
+        """Find the nearest friendly minion (skeleton or spider) to attack within the finding range."""
         from entities.summon_skeletons import Skeleton # Import Skeleton here to avoid circular dependency
-        nearest_skeleton = None
+        from entities.summon_spiders import Spider # Import Spider here to avoid circular dependency
+        nearest_minion = None
         min_distance = float('inf')
 
         # Iterate through all sprites in the enemies group
         for sprite in self.game.current_scene.enemies:
-            # Check if the sprite is a Skeleton and is friendly
-            if isinstance(sprite, Skeleton) and hasattr(sprite, 'is_friendly') and sprite.is_friendly:
-                # Calculate distance to the skeleton
+            # Check if the sprite is a Skeleton or Spider and is friendly
+            if (isinstance(sprite, Skeleton) or isinstance(sprite, Spider)) and hasattr(sprite, 'is_friendly') and sprite.is_friendly:
+                # Calculate distance to the minion
                 dx, dy = sprite.rect.centerx - self.rect.centerx, sprite.rect.centery - self.rect.centery
                 dist = math.hypot(dx, dy)
 
-                # Check if the skeleton is within the finding range and is closer than the current nearest
+                # Check if the minion is within the finding range and is closer than the current nearest
                 if dist < min_distance and dist <= finding_range:
                     min_distance = dist
-                    nearest_skeleton = sprite
+                    nearest_minion = sprite
 
-        # Return the nearest friendly skeleton found, or None if none are within range
-        return nearest_skeleton
+        # Return the nearest friendly minion found, or None if none are within range
+        return nearest_minion
 
     def update(self, dt, player, tile_map, tile_size): # Removed nearest_skeleton parameter
         # Debug print to check if update is called for any enemy
@@ -174,6 +254,13 @@ class Enemy(pygame.sprite.Sprite):
             return
 
         current_time = pygame.time.get_ticks()
+
+        # Update ignite effect
+        self._update_ignite_effect()
+        # Update slow effect
+        self._update_slow_effect()
+        # Update poison effect
+        self._update_poison_effect()
 
         # Handle burst attack sequence
         if self._is_bursting:
@@ -190,13 +277,13 @@ class Enemy(pygame.sprite.Sprite):
         # Update damage texts
         self.damage_texts.update(dt)
 
-        # Find nearest friendly skeleton within a certain range (e.g., enemy's attack_range or a dedicated targeting range)
+        # Find nearest friendly minion within a certain range (e.g., enemy's attack_range or a dedicated targeting range)
         # Assuming enemies have a targeting range, let's use attack_range for now
         targeting_range = self.attack_range if self.attack_range > 0 else TILE_SIZE * 15 # Use attack range or a default
-        nearest_skeleton = self._find_nearest_friendly_skeleton(targeting_range)
+        nearest_minion = self._find_nearest_friendly_minion(targeting_range)
 
-        # Determine the target: prioritize nearest skeleton if found, otherwise target the player
-        target = nearest_skeleton if nearest_skeleton else player
+        # Determine the target: prioritize nearest minion if found, otherwise target the player
+        target = nearest_minion if nearest_minion else player
 
         # Calculate distance to the determined target
         dx, dy = target.rect.centerx - self.rect.centerx, target.rect.centery - self.rect.centery

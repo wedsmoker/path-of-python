@@ -56,6 +56,15 @@ class HUD:
         self.minimap.draw(screen)
         # Draw Level/Experience Gauge
         self._draw_experience_gauge(screen)
+        # Draw Summon Spiders Cooldown Gauge only if player has the skill
+        if self.player.has_skill("summon_spiders"):
+            self._draw_skill_cooldown_gauge(screen, self.player.summon_spiders_skill, "Summon Spiders", SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 100)
+        # Draw Summon Skeletons Cooldown Gauge only if player has the skill
+        if self.player.has_skill("summon_skeleton"):
+            self._draw_skill_cooldown_gauge(screen, self.player.summon_skeletons_skill, "Summon Skeletons", SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT - 70)
+
+        # Draw Minion Counts
+        self._draw_minion_counts(screen)
 
     def _draw_bar(self, screen, x, y, width, height, current_value, max_value, color, label):
         # Background bar
@@ -133,3 +142,52 @@ class HUD:
         xp_remaining = xp_for_next_level - self.player.experience
         text = f"Level: {self.player.level} | XP: {int(self.player.experience)}/{int(xp_for_next_level)} ({int(xp_remaining)} left)"
         draw_text(screen, text, UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, gauge_x + gauge_width // 2, gauge_y + gauge_height // 2, align="center")
+
+    def _draw_skill_cooldown_gauge(self, screen, skill_instance, skill_name, x, y, width=300, height=25):
+        current_time = pygame.time.get_ticks()
+        time_since_last_use = current_time - skill_instance.last_used
+        
+        # Background bar
+        pygame.draw.rect(screen, UI_BACKGROUND_COLOR, (x, y, width, height))
+
+        # Foreground bar (cooldown progress)
+        if time_since_last_use < skill_instance.cooldown:
+            cooldown_progress = time_since_last_use / skill_instance.cooldown
+            fill_width = cooldown_progress * width
+            pygame.draw.rect(screen, (255, 165, 0), (x, y, fill_width, height)) # Orange for cooldown
+
+            # Cooldown text
+            remaining_time_ms = skill_instance.cooldown - time_since_last_use
+            remaining_time_s = max(0, remaining_time_ms / 1000)
+            text = f"{skill_name} Cooldown: {remaining_time_s:.1f}s"
+        else:
+            text = f"{skill_name} Ready!"
+            pygame.draw.rect(screen, GREEN, (x, y, width, height)) # Green when ready
+
+        # Border
+        pygame.draw.rect(screen, UI_PRIMARY_COLOR, (x, y, width, height), 2)
+
+        # Text
+        draw_text(screen, text, UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, x + width // 2, y + height // 2, align="center")
+    def _draw_minion_counts(self, screen):
+        minion_count_x = SCREEN_WIDTH - 10
+        minion_count_y = SCREEN_HEIGHT - 100
+        
+        # Get active friendly entities from the current scene
+        friendly_entities = self.player.game.current_scene.friendly_entities
+
+        spider_count = 0
+        skeleton_count = 0
+
+        for entity in friendly_entities:
+            if hasattr(entity, 'owner') and entity.owner == self.player.summon_spiders_skill:
+                spider_count += 1
+            elif hasattr(entity, 'owner') and entity.owner == self.player.summon_skeletons_skill:
+                skeleton_count += 1
+
+        if self.player.has_skill("summon_spiders"):
+            draw_text(screen, f"Spiders: {spider_count}", UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, minion_count_x, minion_count_y, align="bottomright")
+            minion_count_y -= 20 # Move up for next count
+
+        if self.player.has_skill("summon_skeleton"):
+            draw_text(screen, f"Skeletons: {skeleton_count}", UI_FONT_SIZE_DEFAULT - 4, UI_PRIMARY_COLOR, minion_count_x, minion_count_y, align="bottomright")

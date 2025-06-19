@@ -43,6 +43,7 @@ LAYER_UI = 7
 # Game States (for scene_manager)
 STATE_TITLE_SCREEN = "title_screen"
 STATE_GAMEPLAY = "gameplay"
+STATE_CHARACTER_SELECTION = "character_selection"
 STATE_INVENTORY = "inventory"
 STATE_SKILL_TREE = "skill_tree"
 STATE_PAUSE_MENU = "pause_menu"
@@ -59,6 +60,8 @@ KEY_SKILL_4 = pygame.K_r
 KEY_RIGHT_MOUSE = pygame.BUTTON_RIGHT
 KEY_PAGE_UP = pygame.K_PAGEUP
 KEY_PAGE_DOWN = pygame.K_PAGEDOWN
+KEY_SKILL_5 = 6 # Mouse Button 6
+KEY_SKILL_6 = 7 # Mouse Button 7
 KEY_POTION_1 = pygame.K_1
 KEY_POTION_2 = pygame.K_2
 KEY_POTION_3 = pygame.K_3

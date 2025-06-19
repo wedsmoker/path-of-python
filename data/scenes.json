@@ -5,6 +5,10 @@
             "class": "ui.title_screen.TitleScreen"
         },
         {
+            "name": "character_selection",
+            "class": "core.CharacterSelectionScene.CharacterSelectionScene"
+        },
+        {
             "name": "info_screen",
             "class": "ui.title_screen.InfoScreen"
         },

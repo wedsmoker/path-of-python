@@ -4,7 +4,7 @@
       "name": "Goblin King",
       "sprite": "graphics/dc-mon/holy/apis.png",
       "stats": {
-        "health": 500,
+        "health": 5000,
         "damage": 50,
         "speed": 5
       },
@@ -13,10 +13,10 @@
         {
           "type": "goblin_king",
           "sprite_path": "graphics/dc-mon/holy/apis.png",
-          "health": 500,
+          "health": 5000,
           "damage": 50,
           "speed": 5,
-          "attack_range": 200,
+          "attack_range": 800,
           "attack_cooldown": 30,
           "projectile_sprite_path": "graphics/spells/fire/fireball.png",
           
@@ -28,7 +28,7 @@
       "name": "Ice Elemental",
       "sprite": "graphics/dc-mon/holy/cherub.png",
       "stats": {
-        "health": 600,
+        "health": 6000,
         "damage": 60,
         "speed": 4
       },
@@ -37,10 +37,10 @@
         {
           "type": "ice_elemental",
           "sprite_path": "graphics/dc-mon/holy/cherub.png",
-          "health": 600,
+          "health": 6000,
           "damage": 60,
           "speed": 4,
-          "attack_range": 250,
+          "attack_range": 1000,
           "attack_cooldown": 30,
           "projectile_sprite_path": "graphics/spells/air/conjure_ball_lightning.png",
           
@@ -52,7 +52,7 @@
       "name": "Sandstone Golem",
       "sprite": "graphics/dc-mon/holy/eastern_dragon.png",
       "stats": {
-        "health": 800,
+        "health": 8000,
         "damage": 70,
         "speed": 3
       },
@@ -61,10 +61,10 @@
         {
           "type": "sandstone_golem",
           "sprite_path": "graphics/dc-mon/holy/eastern_dragon.png",
-          "health": 800,
+          "health": 8000,
           "damage": 70,
           "speed": 3,
-          "attack_range": 150,
+          "attack_range": 600,
           "attack_cooldown": 30,
           "projectile_sprite_path": "graphics/spells/earth/sandblast.png",
           
@@ -76,7 +76,7 @@
       "name": "Swamp Thing",
       "sprite": "graphics/dc-mon/holy/ophan.png",
       "stats": {
-        "health": 700,
+        "health": 7000,
         "damage": 55,
         "speed": 4
       },
@@ -85,10 +85,10 @@
         {
           "type": "swamp_thing",
           "sprite_path": "graphics/dc-mon/holy/ophan.png",
-          "health": 700,
+          "health": 7000,
           "damage": 55,
           "speed": 4,
-          "attack_range": 220,
+          "attack_range": 880,
           "attack_cooldown": 30,
           "projectile_sprite_path": "graphics/spells/air/conjure_ball_lightning.png",
           
@@ -100,7 +100,7 @@
       "name": "Crystal Guardian",
       "sprite": "graphics/dc-mon/holy/paladin.png",
       "stats": {
-        "health": 900,
+        "health": 9000,
         "damage": 80,
         "speed": 3
       },
@@ -109,10 +109,10 @@
         {
           "type": "crystal_guardian",
           "sprite_path": "graphics/dc-mon/holy/paladin.png",
-          "health": 900,
+          "health": 9000,
           "damage": 80,
           "speed": 3,
-          "attack_range": 280,
+          "attack_range": 1120,
           "attack_cooldown": 300,
           "projectile_sprite_path": "graphics/spells/air/airstrike.png",
           

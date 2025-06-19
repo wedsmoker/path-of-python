@@ -9,7 +9,8 @@ from ui.hud import HUD
 from config.constants import (
     KEY_INVENTORY, KEY_SKILL_TREE, KEY_INTERACT, KEY_OPTIONS_MENU,
     STATE_INVENTORY, STATE_SKILL_TREE, STATE_PAUSE_MENU, STATE_SETTINGS_MENU, TILE_SIZE,
-    KEY_RIGHT_MOUSE, KEY_SKILL_1, KEY_SKILL_2, KEY_SKILL_3, KEY_SKILL_4, KEY_PAGE_UP, KEY_PAGE_DOWN
+    KEY_RIGHT_MOUSE, KEY_SKILL_1, KEY_SKILL_2, KEY_SKILL_3, KEY_SKILL_4, KEY_PAGE_UP, KEY_PAGE_DOWN,
+    KEY_SKILL_5, KEY_SKILL_6 # Added KEY_SKILL_5, KEY_SKILL_6
 )
 import math # Import math for distance calculation
 
@@ -36,6 +37,7 @@ class BaseGameplayScene(BaseScene):
         self.frame_count = 0
         self.name = None # Initialize name attribute
         self.friendly_entities = pygame.sprite.Group() # Initialize friendly entities group
+        self.death_sequence_initiated = False
 
         self.player = player  # Player is now passed in or remains None
         self.hud = hud 
@@ -356,6 +358,7 @@ class BaseGameplayScene(BaseScene):
                             break # Interact with only one NPC at a time
 
         if event.type == pygame.MOUSEBUTTONDOWN:
+            print(f"Mouse button down event. Button: {event.button}")
             if event.button == pygame.BUTTON_RIGHT:
                 # Get the mouse position in world coordinates
                 world_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
@@ -366,22 +369,41 @@ class BaseGameplayScene(BaseScene):
                         self.player.current_mana -= 15 # Deduct mana cost
                     else:
                         print("Not enough mana to blink!")
-            elif self.game.input_handler.is_backpage_key_pressed():
-                if self.player:
-                    self.player.activate_arc()
-            elif self.game.input_handler.is_mouse_button_7_just_pressed():
-                if self.player:
-                    # Get the mouse position in world coordinates
-                    world_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
-                    world_y = (event.pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
-                    self.player.activate_summon_skeletons(world_x, world_y)
             elif event.button == 1: # Left-click
                 # Get the mouse position in world coordinates
                 world_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
                 world_y = (event.pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
                 if self.player:
                     self.player.set_target(world_x, world_y)
+            else: # Handle other mouse buttons for skills
+                skill_key_constant = None
+                if event.button == KEY_SKILL_5: # Mouse Button 6
+                    skill_key_constant = "KEY_SKILL_5"
+                elif event.button == KEY_SKILL_6: # Mouse Button 7
+                    skill_key_constant = "KEY_SKILL_6"
 
+                if skill_key_constant and self.player:
+                    # Find the skill ID associated with this key binding
+                    skill_id_to_activate = self.player.skill_key_bindings.get(skill_key_constant)
+                    
+                    if skill_id_to_activate:
+                        world_mouse_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
+                        world_mouse_y = (event.pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
+                        self.player.activate_skill(skill_id_to_activate, mouse_pos=(world_mouse_x, world_mouse_y))
+
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            # Handle skill deactivation on mouse button release
+            skill_key_constant = None
+            if event.button == KEY_SKILL_6: # Mouse Button 7
+                skill_key_constant = "KEY_SKILL_6"
+
+            if skill_key_constant and self.player:
+                # Find the skill ID associated with this key binding
+                skill_id_to_deactivate = self.player.skill_key_bindings.get(skill_key_constant)
+                
+                if skill_id_to_deactivate:
+                    self.player.deactivate_skill(skill_id_to_deactivate)
         # Check for interaction with Portals
         if event.type == pygame.MOUSEBUTTONDOWN:
             world_x = -1
@@ -403,6 +425,9 @@ class BaseGameplayScene(BaseScene):
     def update(self, dt, entities=None):
         if self.player:  # Only update player if player exists
             self.player.update(dt)
+            # Removed the continuous activation of cyclone here
+            # if self.game.input_handler.mouse_buttons_pressed.get(7, False):
+            #     self.player.activate_skill("summon_spiders")
         if self.hud:  # Only update HUD if HUD exists
             self.boss_system_manager.update(dt, self.player) # Update BossSystemManager and pass player
             self.hud.update(dt, self.enemies)
@@ -444,12 +469,12 @@ class BaseGameplayScene(BaseScene):
         # as it was causing restricted movement when the actual map was larger.
 
 
-        if hasattr(self, 'display_death_message') and self.display_death_message:
+        if hasattr(self.game, 'display_death_message') and self.display_death_message:
             current_time = pygame.time.get_ticks()
             if current_time - self.death_message_start_time > self.death_message_duration:
                 self.display_death_message = False
                 # Respawn the player in spawntown
-                self.game.scene_manager.set_scene("spawn_town", friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
+                
                 if self.player:
                     self.player.current_life = self.player.max_life
                     self.player.current_mana = self.player.max_mana
@@ -568,7 +593,8 @@ class BaseGameplayScene(BaseScene):
         else:
             hud_drawn = False
 
-        if hasattr(self, 'display_death_message') and self.display_death_message:
+        if hasattr(self, 'display_death_message') and self.display_death_message and not self.death_sequence_initiated:
+            self.death_sequence_initiated = True
             # Load the defeat window image
             try:
                 defeat_image = pygame.image.load(os.path.join(os.getcwd(), "graphics", "gui", "window_defeat.png")).convert_alpha()
@@ -602,3 +628,8 @@ class BaseGameplayScene(BaseScene):
 
             # Send the player to SpawnTown
             self.game.scene_manager.set_scene("spawn_town", friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
+            if self.player:
+                self.player.current_life = self.player.max_life
+                self.player.current_mana = self.player.max_mana
+                self.display_death_message = False
+                self.death_sequence_initiated = False
