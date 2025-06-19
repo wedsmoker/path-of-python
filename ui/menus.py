@@ -42,7 +42,7 @@ class PauseMenu(BaseScene):
         ))
         self.buttons.append(Button(
             SCREEN_WIDTH // 2 - button_width // 2, start_y + 5 * spacing, button_width, button_height,
-            "Return to Title", lambda: self.game.scene_manager.set_scene("TitleScreen")
+            "Return to Title", lambda: self.game.scene_manager.set_scene("title_screen")
         ))
 
     def enter(self):
