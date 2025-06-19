@@ -20,6 +20,58 @@ from items.potion import HealthPotion # Import the HealthPotion class
 from ui.shop_window import ShopWindow
 from core.utils import draw_text
 
+# Function to create an NPC with random sprites
+def create_npc(game, x, y, name, dialogue_id):
+    head_dir = os.path.join(os.getcwd(), "graphics", "player", "head")
+    legs_dir = os.path.join(os.getcwd(), "graphics", "player", "legs")
+    hand1_dir = os.path.join(os.getcwd(), "graphics", "player", "hand1")
+
+    head_sprites = [f for f in os.listdir(head_dir) if os.path.isfile(os.path.join(head_dir, f))]
+    legs_sprites = [f for f in os.listdir(legs_dir) if os.path.isfile(os.path.join(legs_dir, f))]
+    hand1_sprites = [f for f in os.listdir(hand1_dir) if os.path.isfile(os.path.join(hand1_dir, f))]
+
+    head_sprite = random.choice(head_sprites) if head_sprites else None
+    # legs_sprite = random.choice(legs_sprites) if legs_sprites else None # REMOVE LEGS SPRITE
+    legs_sprite = None # REMOVE LEGS SPRITE
+    hand1_sprite = random.choice(hand1_sprites) if hand1_sprites else None
+
+    # Combine the sprites into a single surface
+    npc_image = pygame.Surface((TILE_SIZE, TILE_SIZE * 2), pygame.SRCALPHA)  # Assuming 32x64 is a reasonable size
+
+    try:
+        base_sprite = pygame.image.load(os.path.join(os.getcwd(), "graphics", "player", "base", "human_m.png")).convert_alpha()
+        base_sprite = pygame.transform.scale(base_sprite, (TILE_SIZE, TILE_SIZE))
+        npc_image.blit(base_sprite, (0, 0))
+
+        if legs_sprite:
+            legs_path = os.path.join(legs_dir, legs_sprite)
+            legs = pygame.image.load(legs_path).convert_alpha()
+            legs = pygame.transform.scale(legs, (TILE_SIZE, TILE_SIZE))
+            npc_image.blit(legs, (0, TILE_SIZE))
+
+        if head_sprite:
+            head_path = os.path.join(head_dir, head_sprite)
+            head = pygame.image.load(head_path).convert_alpha()
+            head = pygame.transform.scale(head, (TILE_SIZE, TILE_SIZE))
+            npc_image.blit(head, (0, 0))
+
+        if hand1_sprite:
+            hand1_path = os.path.join(hand1_dir, hand1_sprite)
+            hand1 = pygame.image.load(hand1_path).convert_alpha()
+            hand1 = pygame.transform.scale(hand1, (TILE_SIZE, TILE_SIZE))
+            npc_image.blit(hand1, (0, int(TILE_SIZE / 2))) # Blit hand1 below head
+
+    except FileNotFoundError as e:
+        print(f"Error loading NPC sprite: {e}")
+        npc_image.fill((255, 0, 255))  # Magenta for missing texture
+    except Exception as e:
+        print(f"An unexpected error occurred loading NPC sprite: {e}")
+        npc_image.fill((255, 0, 255)) # Magenta for error
+
+    npc = NPC(game, x, y, TILE_SIZE, TILE_SIZE, (0, 255, 0), name, dialogue_id)
+    
+    return npc
+
 class SpawnTown(BaseGameplayScene):
     def __init__(self, game, player=None, hud=None, friendly_entities=None):
         # Load initial player position from zone_data.json
@@ -81,68 +133,23 @@ class SpawnTown(BaseGameplayScene):
         self.pathfinding = Pathfinding(game)  # Pass the game object to Pathfinding
 
         self.npcs = pygame.sprite.Group()
+        # Add procedurally generated NPCs to the scene
+        for entity_data in all_map_data.get('entities', []):
+            if entity_data['type'] == 'npc':
+                npc = create_npc(game, entity_data['x'] * TILE_SIZE, entity_data['y'] * TILE_SIZE, entity_data['name'], entity_data['dialogue_id'])
+                self.npcs.add(npc)
+        print(f"SpawnTown: Received {len(all_map_data.get('entities', []))} entities from map generator.")
+        print(f"SpawnTown: Added {len(self.npcs)} NPCs to self.npcs group.")
         self.effects = pygame.sprite.Group() # Add effects group
 
-        # Function to create an NPC with random sprites
-        def create_npc(x, y, name, dialogue_id):
-            head_dir = os.path.join(os.getcwd(), "graphics", "player", "head")
-            legs_dir = os.path.join(os.getcwd(), "graphics", "player", "legs")
-            hand1_dir = os.path.join(os.getcwd(), "graphics", "player", "hand1")
-
-            head_sprites = [f for f in os.listdir(head_dir) if os.path.isfile(os.path.join(head_dir, f))]
-            legs_sprites = [f for f in os.listdir(legs_dir) if os.path.isfile(os.path.join(legs_dir, f))]
-            hand1_sprites = [f for f in os.listdir(hand1_dir) if os.path.isfile(os.path.join(hand1_dir, f))]
-
-            head_sprite = random.choice(head_sprites) if head_sprites else None
-            # legs_sprite = random.choice(legs_sprites) if legs_sprites else None # REMOVE LEGS SPRITE
-            legs_sprite = None # REMOVE LEGS SPRITE
-            hand1_sprite = random.choice(hand1_sprites) if hand1_sprites else None
-
-            # Combine the sprites into a single surface
-            npc_image = pygame.Surface((TILE_SIZE, TILE_SIZE * 2), pygame.SRCALPHA)  # Assuming 32x64 is a reasonable size
-
-            try:
-                base_sprite = pygame.image.load(os.path.join(os.getcwd(), "graphics", "player", "base", "human_m.png")).convert_alpha()
-                base_sprite = pygame.transform.scale(base_sprite, (TILE_SIZE, TILE_SIZE))
-                npc_image.blit(base_sprite, (0, 0))
-
-                if legs_sprite:
-                    legs_path = os.path.join(legs_dir, legs_sprite)
-                    legs = pygame.image.load(legs_path).convert_alpha()
-                    legs = pygame.transform.scale(legs, (TILE_SIZE, TILE_SIZE))
-                    npc_image.blit(legs, (0, TILE_SIZE))
-
-                if head_sprite:
-                    head_path = os.path.join(head_dir, head_sprite)
-                    head = pygame.image.load(head_path).convert_alpha()
-                    head = pygame.transform.scale(head, (TILE_SIZE, TILE_SIZE))
-                    npc_image.blit(head, (0, 0))
-
-                if hand1_sprite:
-                    hand1_path = os.path.join(hand1_dir, hand1_sprite)
-                    hand1 = pygame.image.load(hand1_path).convert_alpha()
-                    hand1 = pygame.transform.scale(hand1, (TILE_SIZE, TILE_SIZE))
-                    npc_image.blit(hand1, (0, int(TILE_SIZE / 2))) # Blit hand1 below head
-
-            except FileNotFoundError as e:
-                print(f"Error loading NPC sprite: {e}")
-                npc_image.fill((255, 0, 255))  # Magenta for missing texture
-            except Exception as e:
-                print(f"An unexpected error occurred loading NPC sprite: {e}")
-                npc_image.fill((255, 0, 255)) # Magenta for error
-
-            npc = NPC(game, x, y, TILE_SIZE, TILE_SIZE * 2, (0, 255, 0), name, dialogue_id)
-            npc.image = npc_image
-            return npc
-
         # Create some NPCs
-        npc1 = create_npc(600, 400, "Bob the Bold", "bob_dialogue")
+        npc1 = create_npc(game, 600, 400, "Bob the Bold", "bob_dialogue")
         self.npcs.add(npc1)
 
-        npc2 = create_npc(700, 500, "Alice the Agile", "alice_dialogue")
+        npc2 = create_npc(game, 700, 500, "Alice the Agile", "alice_dialogue")
         self.npcs.add(npc2)
 
-        npc3 = create_npc(800, 400, "Charlie the Calm", "charlie_dialogue")
+        npc3 = create_npc(game, 800, 400, "Charlie the Calm", "charlie_dialogue")
         self.npcs.add(npc3)
         self.charlie = npc3 # Store charlie for shop positioning
 

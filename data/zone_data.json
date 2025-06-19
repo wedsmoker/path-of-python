@@ -15,7 +15,7 @@
                         1248,
                         544
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_tartarus.png"
+                    "graphic": "graphics/dc-dngn/gateways/dngn_enter_tartarus.png"
                 },
                 {
                     "target_scene": "arena",
@@ -23,7 +23,7 @@
                         480,
                         1184
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_transit_pandemonium.png"
+                    "graphic": "graphics/dc-dngn/gateways/dngn_transit_pandemonium.png"
                 },
                 {
                     "target_scene": "arena2",
@@ -31,7 +31,7 @@
                         192,
                         928
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_hell.png"
+                    "graphic": "graphics/dc-dngn/gateways/dngn_enter_hell.png"
                 },
                 {
                     "target_scene": "arena2",
@@ -39,7 +39,7 @@
                         864,
                         128
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/escape_hatch_up.png"
+                    "graphic": "graphics/dc-dngn/gateways/escape_hatch_up.png"
                 },
                 {
                     "target_scene": "arena3",
@@ -47,7 +47,31 @@
                         4736,
                         3328
                     ],
-                    "graphic": "C:/Users/Admin/python/Path of Python/graphics/dc-dngn/gateways/dngn_enter_hell.png"
+                    "graphic": "graphics/dc-dngn/gateways/dngn_enter_hell.png"
+                },
+                {
+                    "target_scene": "noobzone",
+                    "location": [
+                        128,
+                        1952
+                    ],
+                    "graphic": "graphics/dc-dngn/gateways/stone_stairs_down.png"
+                },
+                {
+                    "target_scene": "funz",
+                    "location": [
+                        576,
+                        1376
+                    ],
+                    "graphic": "graphics/dc-dngn/gateways/dngn_return.png"
+                },
+                {
+                    "target_scene": "UltraDungeon",
+                    "location": [
+                        3872,
+                        3552
+                    ],
+                    "graphic": "graphics/dc-dngn/gateways/escape_hatch_down.png"
                 }
             ],
             "map_width": 50,
@@ -69,9 +93,9 @@
             "sand": "graphics/dc-dngn/floor/sandstone_floor0.png",
             "water": "graphics/dc-dngn/water/dngn_deep_water.png",
             "forest": "graphics/dc-dngn/floor/dirt0.png",
-            "building": "graphics/dc-dngn/floor/marble_floor1.png",
+            "building": "graphics/dc-dngn/wall/brick_dark0.png",
             "street": "graphics/dc-dngn/floor/cobble_blood1.png",
-            "rubble": "graphics/dc-dngn/floor/rough_red0.png",
+            "rubble": "graphics/dc-dngn/wall/dngn_metal_wall_cracked.png",
             "path": "graphics/dc-dngn/floor/floor_sand_stone0.png",
             "cobblestone": "graphics/dc-dngn/floor/cobble_blood4.png",
             "mountain": "graphics/dc-dngn/wall/stone_dark0.png",

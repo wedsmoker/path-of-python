@@ -1,6 +1,6 @@
 {
   "floor": "graphics/dc-dngn/floor/marble_floor1.png",
-  "wall": "graphics/dc-dngn/wall/marble_wall1.png",
+  "wall": "graphics/dc-dngn/wall/dngn_green_crystal_wall.png",
   "portal": "graphics/title.png",
   "decoration": "graphics/dc-dngn/dngn_sparkling_fountain.png",
   "unknown": "graphics/title.png"

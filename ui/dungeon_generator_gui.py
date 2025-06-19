@@ -44,88 +44,113 @@ class DungeonGeneratorGUI:
         self.tileset_combo.set("default")
         self.tileset_combo.grid(row=2, column=1)
 
+        # --- Start of changes for scrollable enemy list ---
         self.enemy_types_label = ttk.Label(self.root, text="Enemy Types:")
+        self.enemy_types_label.grid(row=3, column=0, sticky=tk.NW)
+
+        self.enemy_scroll_container = ttk.Frame(self.root, borderwidth=2, relief="groove")
+        self.enemy_scroll_container.grid(row=3, column=1, columnspan=2, sticky="nsew", padx=5, pady=5)
+        
+        # Configure grid weights for the scroll container to expand
+        self.root.grid_rowconfigure(3, weight=1)
+        self.root.grid_columnconfigure(1, weight=1)
+
+        self.enemy_canvas = tk.Canvas(self.enemy_scroll_container, borderwidth=0, background="#f0f0f0")
+        self.enemy_scrollbar = ttk.Scrollbar(self.enemy_scroll_container, orient="vertical", command=self.enemy_canvas.yview)
+        self.enemy_canvas.configure(yscrollcommand=self.enemy_scrollbar.set)
+        
+        self.enemy_scrollbar.pack(side="right", fill="y")
+        self.enemy_canvas.pack(side="left", fill="both", expand=True)
+
+        self.enemy_checkbox_inner_frame = ttk.Frame(self.enemy_canvas)
+        self.enemy_canvas.create_window((0, 0), window=self.enemy_checkbox_inner_frame, anchor="nw")
+        
+        self.enemy_checkbox_inner_frame.bind("<Configure>", lambda e: self.enemy_canvas.configure(scrollregion=self.enemy_canvas.bbox("all")))
+
         # Load enemy types dynamically from enemy_data.json
         enemy_data = load_enemy_data('data/enemy_data.json')
         self.enemy_types_options = list(enemy_data.keys())
         self.enemy_types_vars = {}
-        current_row = 3 # Checkboxes start at row 3
-        num_columns = 2 # Number of columns for enemy checkboxes
-        num_enemy_types = len(self.enemy_types_options)
-        num_enemy_rows = math.ceil(num_enemy_types / num_columns) # Calculate rows needed for enemies
+        num_columns = 2 # Number of columns for enemy checkboxes within the scrollable frame
 
         for i, enemy_type in enumerate(self.enemy_types_options):
             var = tk.BooleanVar()
             self.enemy_types_vars[enemy_type] = var
-            checkbox = tk.Checkbutton(self.root, text=enemy_type, variable=var)
-            checkbox.grid(row=current_row + (i // num_columns), column=1 + (i % num_columns), sticky=tk.W)
+            checkbox = tk.Checkbutton(self.enemy_checkbox_inner_frame, text=enemy_type, variable=var, wraplength=150, justify=tk.LEFT)
+            checkbox.grid(row=i // num_columns, column=i % num_columns, sticky=tk.W, padx=2, pady=1)
+        # --- End of changes for scrollable enemy list ---
         
-        # Adjust row for num_enemies_label based on number of enemy types
+        # Adjusted row for num_enemies_label based on the fixed height of the scrollable enemy list
+        # The scrollable container is at row 3 and takes up a visual height equivalent to 5 rows.
+        # So, the next element starts at row 3 + 5 = 8.
+        next_start_row = 8 
+
         self.num_enemies_label = ttk.Label(self.root, text="Number of Enemies:")
-        self.num_enemies_label.grid(row=current_row + num_enemy_rows, column=0)
+        self.num_enemies_label.grid(row=next_start_row, column=0)
         self.num_enemies_entry = ttk.Entry(self.root)
         self.num_enemies_entry.insert(0, "5") # Default to 5 enemies
-        self.num_enemies_entry.grid(row=current_row + num_enemy_rows, column=1)
-
+        self.num_enemies_entry.grid(row=next_start_row, column=1)
 
         self.dungeon_name_label = ttk.Label(self.root, text="Dungeon Name:")
-        self.dungeon_name_label.grid(row=5 + num_enemy_rows, column=0) # Adjusted row
+        self.dungeon_name_label.grid(row=next_start_row + 1, column=0)
         self.dungeon_name_entry = ttk.Entry(self.root)
         self.dungeon_name_entry.insert(0, "New Dungeon")
-        self.dungeon_name_entry.grid(row=5 + num_enemy_rows, column=1) # Adjusted row
+        self.dungeon_name_entry.grid(row=next_start_row + 1, column=1)
 
         self.portal_graphic_label = ttk.Label(self.root, text="Portal Graphic:")
-        self.portal_graphic_label.grid(row=6 + num_enemy_rows, column=0) # Adjusted row
+        self.portal_graphic_label.grid(row=next_start_row + 2, column=0)
         self.portal_graphic_button = ttk.Button(self.root, text="Browse", command=self.browse_portal_graphic)
-        self.portal_graphic_button.grid(row=6 + num_enemy_rows, column=1) # Adjusted row
+        self.portal_graphic_button.grid(row=next_start_row + 2, column=1)
         self.portal_graphic_path = tk.StringVar()
 
         self.map_algorithm_label = ttk.Label(self.root, text="Map Algorithm:")
-        self.map_algorithm_label.grid(row=7 + num_enemy_rows, column=0) # Adjusted row
+        self.map_algorithm_label.grid(row=next_start_row + 3, column=0)
         self.map_algorithm_options = ["perlin_noise", "room_based"]
         self.map_algorithm_combo = ttk.Combobox(self.root, values=self.map_algorithm_options)
         self.map_algorithm_combo.set("perlin_noise")
-        self.map_algorithm_combo.grid(row=7 + num_enemy_rows, column=1) # Adjusted row
+        self.map_algorithm_combo.grid(row=next_start_row + 3, column=1)
 
         self.portal_placement_label = ttk.Label(self.root, text="Portal Placement:")
-        self.portal_placement_label.grid(row=8 + num_enemy_rows, column=0) # Adjusted row
+        self.portal_placement_label.grid(row=next_start_row + 4, column=0)
         self.portal_placement_options = ["random", "specific"]
         self.portal_placement_combo = ttk.Combobox(self.root, values=self.portal_placement_options)
         self.portal_placement_combo.set("random")
-        self.portal_placement_combo.grid(row=8 + num_enemy_rows, column=1) # Adjusted row
+        self.portal_placement_combo.grid(row=next_start_row + 4, column=1)
         self.portal_placement_combo.bind("<<ComboboxSelected>>", self.update_portal_coordinates)
 
         self.portal_x_label = ttk.Label(self.root, text="Portal X:")
-        self.portal_x_label.grid(row=9 + num_enemy_rows, column=0) # Adjusted row
+        self.portal_x_label.grid(row=next_start_row + 5, column=0)
         self.portal_x_entry = ttk.Entry(self.root)
-        self.portal_x_entry.grid(row=9 + num_enemy_rows, column=1) # Adjusted row
+        self.portal_x_entry.grid(row=next_start_row + 5, column=1)
         self.portal_y_label = ttk.Label(self.root, text="Portal Y:")
-        self.portal_y_label.grid(row=10 + num_enemy_rows, column=0) # Adjusted row
+        self.portal_y_label.grid(row=next_start_row + 6, column=0)
         self.portal_y_entry = ttk.Entry(self.root)
-        self.portal_y_entry.grid(row=10 + num_enemy_rows, column=1) # Adjusted row
+        self.portal_y_entry.grid(row=next_start_row + 6, column=1)
         self.update_portal_coordinates()
 
         self.decorations_label = ttk.Label(self.root, text="Decorations:")
-        self.decorations_label.grid(row=11 + num_enemy_rows, column=0) # Adjusted row
+        self.decorations_label.grid(row=next_start_row + 7, column=0)
         self.decorations_options = ["graphics/dc-dngn/dngn_sparkling_fountain", "graphics/dc-dngn/dngn_orcish_idol"]  # Add more decorations here
         self.decorations_vars = {}
         for i, decoration in enumerate(self.decorations_options):
             var = tk.BooleanVar()
             self.decorations_vars[decoration] = var
             checkbox = tk.Checkbutton(self.root, text=decoration, variable=var)
-            checkbox.grid(row=11 + num_enemy_rows + i, column=1, sticky=tk.W) # Adjusted row offset
+            checkbox.grid(row=next_start_row + 7 + i, column=1, sticky=tk.W)
 
         self.perlin_noise_threshold_label = ttk.Label(self.root, text="Perlin Noise Threshold:")
-        self.perlin_noise_threshold_label.grid(row=13 + num_enemy_rows, column=0) # Adjusted row
+        self.perlin_noise_threshold_label.grid(row=next_start_row + 9, column=0)
         self.perlin_noise_threshold_entry = ttk.Entry(self.root)
         self.perlin_noise_threshold_entry.insert(0, "0.0")
-        self.perlin_noise_threshold_entry.grid(row=13 + num_enemy_rows, column=1) # Adjusted row
+        self.perlin_noise_threshold_entry.grid(row=next_start_row + 9, column=1)
 
         self.generate_button = ttk.Button(self.root, text="Generate Dungeon", command=self.generate_dungeon)
-        self.generate_button.grid(row=14 + num_enemy_rows, column=0, columnspan=2) # Adjusted row
+        self.generate_button.grid(row=next_start_row + 10, column=0, columnspan=2)
 
+        # Adjusted rowspan to cover all controls from row 0 to the last control (generate_button at next_start_row + 10)
+        # Total rows = (next_start_row + 10) - 0 + 1 = next_start_row + 11 = 8 + 11 = 19
         self.dungeon_frame = ttk.Frame(self.root)
-        self.dungeon_frame.grid(row=0, column=2, rowspan=15 + num_enemy_rows) # Adjusted rowspan
+        self.dungeon_frame.grid(row=0, column=2, rowspan=next_start_row + 11)
 
         self.canvas = tk.Canvas(self.dungeon_frame, width=600, height=400)
         self.canvas.pack()
@@ -136,7 +161,7 @@ class DungeonGeneratorGUI:
         self.canvas.bind("<Button-1>", self.place_object)
 
         self.toolbar_frame = ttk.Frame(self.root)
-        self.toolbar_frame.grid(row=0, column=3, rowspan=15 + num_enemy_rows, sticky=tk.NS) # Adjusted rowspan
+        self.toolbar_frame.grid(row=0, column=3, rowspan=next_start_row + 11, sticky=tk.NS)
 
         self.portal_button = ttk.Button(self.toolbar_frame, text="Place Portal", command=self.select_portal)
         self.portal_button.pack(pady=5)

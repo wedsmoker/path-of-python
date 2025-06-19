@@ -10,17 +10,37 @@ class NPC(pygame.sprite.Sprite):
         self.dialogue_id = dialogue_id
         self.in_dialogue = False
 
-        # Load random merfolk sprite
-        merfolk_sprites = [
-            "merfolk_aquamancer.png",
-            "merfolk_fighter.png",
-            "merfolk_impaler.png",
-            "merfolk_javelineer.png",
-            "merfolk_plain.png"
-        ]
-        merfolk_path = os.path.join(os.getcwd(), "graphics", "dc-mon", random.choice(merfolk_sprites))
-        if os.path.exists(merfolk_path):
-            self.image = pygame.image.load(merfolk_path).convert_alpha()
+        # Define sprite paths
+        yaktaur_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon")
+        merfolk_path_base = os.path.join(os.getcwd(), "graphics", "dc-mon")
+
+        # Hardcode specific sprites for named NPCs
+        if self.name == "Bob the Bold":
+            sprite_filename = "stone_giant.png"
+            sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
+        elif self.name == "Alice the Agile":
+            sprite_filename = "deep_elf_mage.png"
+            sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
+        elif self.name == "Charlie the Calm":
+            sprite_filename = "deformed_elf.png"
+            sprite_path = os.path.join(yaktaur_path_base, sprite_filename)
+        else:
+            # Load random merfolk sprite for other NPCs
+            merfolk_sprites = [
+                "merfolk_aquamancer.png",
+                "merfolk_fighter.png",
+                "merfolk_impaler.png",
+                "merfolk_javelineer.png",
+                "merfolk_plain.png",
+                "eye_of_draining.png",
+                "shining_eye.png",
+                "eye_of_devastation.png",
+            ]
+            sprite_filename = random.choice(merfolk_sprites)
+            sprite_path = os.path.join(merfolk_path_base, sprite_filename)
+
+        if os.path.exists(sprite_path):
+            self.image = pygame.image.load(sprite_path).convert_alpha()
             self.image = pygame.transform.scale(self.image, (width, height))
         else:
             # Fallback to colored rectangle if sprite not found

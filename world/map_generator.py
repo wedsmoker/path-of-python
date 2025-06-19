@@ -1,5 +1,6 @@
 import random
 import noise
+import json # Import json
 
 class MapGenerator:
     """Generates procedural maps for the game."""
@@ -58,19 +59,36 @@ class MapGenerator:
                 tile_type = map_data[y][x]
 
                 # Spawn entities based on terrain type
-                if tile_type == 'grass' and random.random() < 0.05:
+                if tile_type == 'grass' and random.random() < 0.1:
                     entities.append({
                         'type': 'enemy',
                         'x': x,
                         'y': y,
                         'name': 'Forest Goblin'
                     })
-                elif tile_type == 'grass' and random.random() < 0.1:
+                elif tile_type == 'grass' and random.random() < 0.05: # Reduced chance for more sparse population
                     entities.append({
                         'type': 'npc',
                         'x': x,
                         'y': y,
-                        'name': 'Villager'
+                        'name': 'Villager',
+                        'dialogue_id': 'villager_dialogue'
+                    })
+                elif tile_type == 'street' and random.random() < 0.03: # Reduced chance
+                    entities.append({
+                        'type': 'npc',
+                        'x': x,
+                        'y': y,
+                        'name': 'Merchant',
+                        'dialogue_id': 'merchant_dialogue'
+                    })
+                elif tile_type == 'market' and random.random() < 0.02: # Reduced chance
+                    entities.append({
+                        'type': 'npc',
+                        'x': x,
+                        'y': y,
+                        'name': 'Town Crier',
+                        'dialogue_id': 'town_crier_dialogue'
                     })
 
         return entities
@@ -194,7 +212,7 @@ class MapGenerator:
     def generate_roads(self, map_data):
         """Generate roads on the map."""
         roads = []
-        num_roads = 5  # Number of roads to generate
+        num_roads = 20  # Number of roads to generate
 
         for _ in range(num_roads):
             start_x, start_y = random.randint(0, self.width - 1), random.randint(0, self.height - 1)
@@ -254,9 +272,13 @@ class MapGenerator:
 class SpawnTownMapGenerator(MapGenerator):
     """Generates procedural maps for the spawntown."""
 
+    def __init__(self, width, height, seed=None):
+        super().__init__(width, height, seed)
+        # Removed dialogue data loading from here as it's not needed for NPC creation anymore.
+
     def generate_map(self):
         """Generate a procedural map for spawntown."""
-        map_data = []
+        tile_map = []
         for y in range(self.height):
             row = []
             for x in range(self.width):
@@ -283,7 +305,7 @@ class SpawnTownMapGenerator(MapGenerator):
                     tile_type = 'cobblestone'
                 elif noise_value < 0.0:
                     tile_type = 'house'
-                elif noise_value < 0.1:
+                elif noise_value < 0.15:
                     tile_type = 'building'
                 elif noise_value < 0.2:
                     tile_type = 'street'
@@ -296,14 +318,14 @@ class SpawnTownMapGenerator(MapGenerator):
                 elif noise_value < 0.6:
                     tile_type = 'well'
                 elif noise_value < 0.7:
-                    tile_type = 'rubble'
+                    tile_type = 'grass'
                 else:
-                    tile_type = 'mountain'
+                    tile_type = 'rubble'
 
                 row.append(tile_type)
-            map_data.append(row)
+            tile_map.append(row)
 
-        return map_data
+        return tile_map
 
     def generate_entities(self, map_data):
         """Generate entities (enemies, NPCs, etc.) on the map."""
@@ -314,26 +336,32 @@ class SpawnTownMapGenerator(MapGenerator):
                 tile_type = map_data[y][x]
 
                 # Spawn entities based on terrain type
-                if tile_type == 'grass' and random.random() < 0.1:
+                if tile_type == 'grass' and random.random() < 0.01: # Increased chance for testing
                     entities.append({
                         'type': 'npc',
                         'x': x,
                         'y': y,
-                        'name': 'Villager'
+                        'name': 'Villager',
+                        'dialogue_id': 'villager_dialogue' # Reverted to main dialogue ID
                     })
-                elif tile_type == 'street' and random.random() < 0.2:
+                elif tile_type == 'street' and random.random() < 0.01: # Increased chance for testing
                     entities.append({
                         'type': 'npc',
                         'x': x,
                         'y': y,
-                        'name': 'Merchant'
+                        'name': 'Merchant',
+                        'dialogue_id': 'merchant_dialogue' # Reverted to main dialogue ID
                     })
-                elif tile_type == 'market' and random.random() < 0.3:
+                elif tile_type == 'market' and random.random() < 0.01: # Increased chance for testing
                     entities.append({
                         'type': 'npc',
                         'x': x,
                         'y': y,
-                        'name': 'Town Crier'
+                        'name': 'Town Crier',
+                        'dialogue_id': 'town_crier_dialogue' # Reverted to main dialogue ID
                     })
+                # Ensure no enemies are spawned in spawntown
+                # No enemy spawning logic here, as per requirement.
 
+        print(f"SpawnTownMapGenerator: Generated {len(entities)} entities.")
         return entities

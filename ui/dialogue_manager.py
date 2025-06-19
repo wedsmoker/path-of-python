@@ -1,6 +1,7 @@
 import json
 import pygame
 from core.utils import draw_text
+import random # Import random
 
 class DialogueManager:
     """Manages the game's branching dialogue system."""
@@ -19,15 +20,37 @@ class DialogueManager:
         except FileNotFoundError:
             print("ERROR: dialogue.json not found.")
             self.dialogue_data = {"dialogues": {}}
-        except json.JSONDecodeError:
+        except json.JSONDecode_Error:
             print("ERROR: Could not decode dialogue.json. Check for JSON syntax errors.")
             self.dialogue_data = {"dialogues": {}}
+        try:
+            with open('data/spawntown_generated_npcs_dialogue.json', 'r') as f:
+                generated_dialogue_data = json.load(f)
+            # Merge the generated NPC dialogue into the main dialogue data
+            if "dialogues" in generated_dialogue_data:
+                self.dialogue_data["dialogues"].update(generated_dialogue_data["dialogues"])
+        except FileNotFoundError:
+            print("WARNING: spawntown_generated_npcs_dialogue.json not found. Procedurally generated NPCs may not have dialogue.")
+        except json.JSONDecodeError:
+            print("ERROR: Could not decode spawntown_generated_npcs_dialogue.json. Check for JSON syntax errors.")
 
     def start_dialogue(self, dialogue_id):
         """Starts a new dialogue tree."""
         dialogue_tree = self.dialogue_data["dialogues"].get(dialogue_id)
         if dialogue_tree:
-            self.current_dialogue_node = dialogue_tree["nodes"].get(dialogue_tree["start_node"])
+            # Check if this is a procedurally generated NPC dialogue
+            if dialogue_id in ["villager_dialogue", "merchant_dialogue", "town_crier_dialogue"]:
+                # Randomly select one node from the available nodes
+                nodes = list(dialogue_tree["nodes"].keys())
+                if nodes:
+                    random_node_id = random.choice(nodes)
+                    self.current_dialogue_node = dialogue_tree["nodes"].get(random_node_id)
+                else:
+                    print(f"WARNING: No nodes found for generated NPC dialogue ID '{dialogue_id}'.")
+                    self.current_dialogue_node = None
+            else:
+                # For other dialogue types, use the defined start_node
+                self.current_dialogue_node = dialogue_tree["nodes"].get(dialogue_tree["start_node"])
         else:
             print(f"WARNING: Dialogue ID '{dialogue_id}' not found.")
             self.current_dialogue_node = None

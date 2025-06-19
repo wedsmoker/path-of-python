@@ -67,6 +67,21 @@
             "name": "arena3",
             "class": "core.dungeons.arena3.arena3",
             "dungeon_data_path": "data/dungeons/arena3.json"
+        },
+        {
+            "name": "noobzone",
+            "class": "core.dungeons.noobzone.noobzone",
+            "dungeon_data_path": "data/dungeons/noobzone.json"
+        },
+        {
+            "name": "funz",
+            "class": "core.dungeons.funz.funz",
+            "dungeon_data_path": "data/dungeons/funz.json"
+        },
+        {
+            "name": "UltraDungeon",
+            "class": "core.dungeons.UltraDungeon.UltraDungeon",
+            "dungeon_data_path": "data/dungeons/UltraDungeon.json"
         }
     ]
 }
