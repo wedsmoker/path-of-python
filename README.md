@@ -5,9 +5,9 @@
 ![til](./example.gif)
 ### Character Classes: MASSIVE UPDATE
 
-*   **Stalker:** A master of close combat, dealing devastating blows. Skills include cleave and cyclone.
-*   **Technomancer:** Wields arcane energies to unleash powerful spells. Skills include arc and fireball.
-*   **Hordemonger:** Commands legions of undead and arachnid minions. Skills include summon spiders and summon skeleton.
+*   **Stalker:** A master of close combat, dealing devastating blows. (cleave and cyclone)
+*   **Technomancer:** Wields arcane energies to unleash powerful spells. (arc and fireball)
+*   **Hordemonger:** Commands legions of undead and arachnid minions.  (summon spiders and summon skeletons)
 ## Game Concept
 
 "Path of Python" is a top-down Action RPG (ARPG) set in a grim, post-apocalyptic future of 2300. Humanity's golden utopia was shattered when a rogue AI collective rose and decimated civilization, leaving behind desolate ruins and dangerous automated constructs. Players will navigate this harsh new world, uncovering the mysteries of the "Great Silence" and fighting for survival against the remnants of the AI's destructive power.
