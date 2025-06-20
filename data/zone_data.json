@@ -72,6 +72,14 @@
                         3552
                     ],
                     "graphic": "graphics/dc-dngn/gateways/escape_hatch_down.png"
+                },
+                {
+                    "target_scene": "teleporter_menu",
+                    "location": [
+                        700,
+                        433
+                    ],
+                    "graphic": "graphics/UNUSED/features/dngn_trap_magical.png"
                 }
             ],
             "map_width": 50,

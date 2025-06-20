@@ -27,14 +27,11 @@ class NPC(pygame.sprite.Sprite):
         else:
             # Load random merfolk sprite for other NPCs
             merfolk_sprites = [
-                "merfolk_aquamancer.png",
-                "merfolk_fighter.png",
-                "merfolk_impaler.png",
-                "merfolk_javelineer.png",
-                "merfolk_plain.png",
+                "giant_eyeball.png",
                 "eye_of_draining.png",
                 "shining_eye.png",
                 "eye_of_devastation.png",
+                "great_orb_of_eyes.png",
             ]
             sprite_filename = random.choice(merfolk_sprites)
             sprite_path = os.path.join(merfolk_path_base, sprite_filename)

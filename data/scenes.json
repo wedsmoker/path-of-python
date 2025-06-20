@@ -37,6 +37,11 @@
             "class": "core.swamp_cave_dungeon.SwampCaveDungeon"
         },
         {
+            "name": "quest_001_dungeon",
+            "class": "core.quest_001_scene.Quest001Scene",
+            "dungeon_data_path": "data/quest_001_tilemap.json"
+        },    
+        {
             "name": "gameplay",
             "class": "world.zone.GameplayScene"
         },

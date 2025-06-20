@@ -72,8 +72,8 @@ class CharacterSelectionScene(BaseScene):
         self.confirm_animation_active = False
         self.animation_start_time = 0
         self.animation_duration = 4000 # Total animation time in ms
-        self.screen_shake_intensity = 10 # Increased intensity
-        self.screen_shake_duration = 700 # Duration of screen shake
+        self.screen_shake_intensity = 40 # Increased intensity
+        self.screen_shake_duration = 1000 # Duration of screen shake
         self.electricity_effects = pygame.sprite.Group()
         self.unselected_character_indices = [] # Store indices of unselected characters
         self.selected_character_walk_out_start_time = 0 # Start walking out after 1 second
@@ -103,39 +103,25 @@ class CharacterSelectionScene(BaseScene):
         # Create a darkened version of the room graphic
         self.darkened_room_graphic = self.room_graphic.copy()
         dark_overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        dark_overlay.fill((0, 0, 0, 250)) # Black with 250 alpha for even more significant darkening
+        dark_overlay.fill((0, 0, 0, 150)) # Black with 250 alpha for even more significant darkening
         self.darkened_room_graphic.blit(dark_overlay, (0, 0))
 
         # Load generic helmet sprite (VR helmet)
         generic_helmet_sprite = pygame.image.load("graphics/player/head/full_black.png").convert_alpha()
-        generic_helmet_sprite = pygame.transform.scale(generic_helmet_sprite, (200, 100)) # Scale to desired size
+        generic_helmet_sprite = pygame.transform.scale(generic_helmet_sprite, (400, 200)) # Scale to desired size
 
         for class_name, data in self.classes.items():
             # Load base sprite from the path specified in classes.json
             base_sprite_path = data.get("base_sprite")
             if base_sprite_path:
                 base_sprite = pygame.image.load(base_sprite_path).convert_alpha()
-                base_sprite = pygame.transform.scale(base_sprite, (100, 150))
+                base_sprite = pygame.transform.scale(base_sprite, (200, 300))
                 data["base_sprite_image"] = base_sprite # Store the loaded image
             else:
-                data["base_sprite_image"] = pygame.Surface((100, 150), pygame.SRCALPHA) # Placeholder
+                data["base_sprite_image"] = pygame.Surface((200, 300), pygame.SRCALPHA) # Placeholder
             
             # Create full sprite (base sprite + specific weapon/item)
             full_sprite_surface = data["base_sprite_image"].copy() # Start with the specific base sprite
-            
-            # Load and blit specific items for full sprite
-            if class_name == "stalker":
-                weapon_sprite = pygame.image.load("graphics/player/hand1/war_axe.png").convert_alpha()
-                weapon_sprite = pygame.transform.scale(weapon_sprite, (50, 50)) # Adjust size as needed
-                full_sprite_surface.blit(weapon_sprite, (25, 75)) # Position relative to character
-            elif class_name == "technomancer":
-                item_sprite = pygame.image.load("graphics/player/hand2/misc/book_blue.png").convert_alpha()
-                item_sprite = pygame.transform.scale(item_sprite, (50, 50))
-                full_sprite_surface.blit(item_sprite, (25, 75))
-            elif class_name == "hordemonger":
-                item_sprite = pygame.image.load("graphics/player/hand2/misc/dagger.png").convert_alpha()
-                item_sprite = pygame.transform.scale(item_sprite, (50, 50))
-                full_sprite_surface.blit(item_sprite, (25, 75))
             
             data["full_sprite"] = full_sprite_surface
 
@@ -149,9 +135,9 @@ class CharacterSelectionScene(BaseScene):
         spacing = SCREEN_WIDTH // (num_classes + 1)
         
         for i, class_name in enumerate(self.classes):
-            x = spacing * (i + 1) - 50 # Center the 100px wide sprite
-            y = SCREEN_HEIGHT // 2 - 75 # Center the 150px tall sprite
-            self.character_positions.append(pygame.Rect(x, y, 100, 150))
+            x = spacing * (i + 1) - 100 # Center the 200px wide sprite
+            y = SCREEN_HEIGHT - 600 # Center the 300px tall sprite
+            self.character_positions.append(pygame.Rect(x, y, 200, 300))
 
     def handle_event(self, event):
         if self.confirm_animation_active:
@@ -190,7 +176,15 @@ class CharacterSelectionScene(BaseScene):
                 char_rect = self.character_positions[index]
                 # Spawn electricity at the head of the unselected characters
                 self.electricity_effects.add(ElectricityEffect(char_rect.centerx, char_rect.top + 20)) # Approx head position
-            
+                # Add more electricity effects around the body
+                self.electricity_effects.add(ElectricityEffect(char_rect.centerx - 20, char_rect.centery))
+                self.electricity_effects.add(ElectricityEffect(char_rect.centerx + 20, char_rect.centery))
+                self.electricity_effects.add(ElectricityEffect(char_rect.centerx, char_rect.bottom - 20))
+                self.electricity_effects.add(ElectricityEffect(char_rect.centerx - 30, char_rect.centery - 30))
+                self.electricity_effects.add(ElectricityEffect(char_rect.centerx + 30, char_rect.centery + 30))
+                self.electricity_effects.add(ElectricityEffect(char_rect.centerx - 10, char_rect.bottom - 10))
+                self.electricity_effects.add(ElectricityEffect(char_rect.centerx + 10, char_rect.top + 10))
+
             # Initialize selected character's helmet lift offset for the confirmation animation
             self.selected_char_helmet_lift_offset = self.helmet_lift_offset[self.selected_class]
         else:
@@ -283,9 +277,9 @@ class CharacterSelectionScene(BaseScene):
             if self.confirm_animation_active:
                 if class_name == self.selected_class:
                     # Draw full sprite
-                    screen.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + draw_offset_y))
+                    screen.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + 50 + draw_offset_y))
                     # Draw helmet with the new, higher animated offset for selected character
-                    helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 70 - self.selected_char_helmet_lift_offset + draw_offset_y)) # Adjusted initial Y
+                    helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 120 - self.selected_char_helmet_lift_offset + draw_offset_y)) # Adjusted initial Y
                     screen.blit(data["helmet_sprite"], helmet_rect.topleft)
                 # Unselected characters are handled by electricity effects, no need to draw their sprites here
             else:
@@ -294,16 +288,22 @@ class CharacterSelectionScene(BaseScene):
                 
                 if self.hovered_class == class_name:
                     # Draw full sprite
-                    screen.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + draw_offset_y))
+                    screen.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + 50 + draw_offset_y))
                     # Draw helmet with animated offset (hover)
-                    helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 120 - helmet_y_offset + draw_offset_y)) # Adjusted initial Y
+                    helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 170 - helmet_y_offset + draw_offset_y)) # Adjusted initial Y
                     screen.blit(data["helmet_sprite"], helmet_rect.topleft)
                 else:
                     # Draw base sprite
                     screen.blit(data["base_sprite_image"], (char_rect.x + draw_offset_x, char_rect.y + draw_offset_y))
                     # Draw helmet with animated offset (non-hover)
-                    helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 120 - helmet_y_offset + draw_offset_y)) # Adjusted initial Y
+                    helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 200 - helmet_y_offset + draw_offset_y)) # Adjusted initial Y
                     screen.blit(data["helmet_sprite"], helmet_rect.topleft)
+
+            if not self.confirm_animation_active:
+                name_font = pygame.font.Font(None, 72) # Create a font object
+                name_text = name_font.render(class_name, True, (255, 255, 0)) # Render the text
+                name_rect = name_text.get_rect(center=(char_rect.centerx + draw_offset_x, char_rect.top - 50 + draw_offset_y)) # Position the text
+                screen.blit(name_text, name_rect.topleft) # Draw the text
 
         # Draw selected character border (only in normal state)
         if not self.confirm_animation_active and self.selected_character_rect:

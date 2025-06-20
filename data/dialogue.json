@@ -15,6 +15,10 @@
               "next_node": "introduce_self"
             },
             {
+              "text": "Need any help with anything?",
+              "next_node": "offer_help"
+            },
+            {
               "text": "...",
               "next_node": "end_dialogue"
             }
@@ -50,6 +54,58 @@
             },
             {
               "text": "...",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "offer_help": {
+          "text": "Maybe. Maybe you could help me with something. My friend was taken by the Tithing Choir. They're probably making Profit Paste out of him by now. You interested in getting him back? It's called 'Debt Spiral'.",
+          "options": [
+            {
+              "text": "What's Profit Paste?",
+              "next_node": "explain_profit_paste"
+            },
+            {
+              "text": "Tell me more about this 'Debt Spiral'.",
+              "next_node": "explain_debt_spiral"
+            },
+            {
+              "text": "No thanks.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "explain_profit_paste": {
+          "text": "Don't ask. Just know you don't want to end up as it. Now, about my friend...",
+          "options": [
+            {
+              "text": "Tell me more about this 'Debt Spiral'.",
+              "next_node": "explain_debt_spiral"
+            },
+            {
+              "text": "Forget it.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "explain_debt_spiral": {
+          "text": "The Tithing Choir took him to the Feast Hall dungeon. You'll need to kill some Acolytes and sabotage the Meat-Vat controls. Think you can handle it?",
+          "options": [
+            {
+              "text": "I can handle it.",
+              "next_node": "accept_debt_spiral"
+            },
+            {
+              "text": "Sounds too dangerous.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "accept_debt_spiral": {
+          "text": "Good. Find the Feast Hall dungeon. And try not to become Profit Paste yourself.",
+          "options": [
+            {
+              "text": "I'll do my best.",
               "next_node": "end_dialogue"
             }
           ]
@@ -221,14 +277,53 @@
           ]
         },
         "offer_help": {
-          "text": "Then pass quickly. The shadows lengthen, and the watchers are always listening. But if you need something... ask.",
+          "text": "I require a dead AI core to hack the Profit Engine’s grid. It's part of 'Override Protocol'. Perhaps you can assist?",
           "options": [
             {
-              "text": "What can you offer?",
-              "next_node": "explain_services"
+              "text": "What's the Profit Engine?",
+              "next_node": "explain_profit_engine"
             },
             {
-              "text": "...",
+              "text": "Tell me more about 'Override Protocol'.",
+              "next_node": "explain_override_protocol"
+            },
+            {
+              "text": "No, thank you.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "explain_profit_engine": {
+          "text": "It is the heart of this digital prison. To disrupt it, we need to act. Now, about the AI core...",
+          "options": [
+            {
+              "text": "Tell me more about 'Override Protocol'.",
+              "next_node": "explain_override_protocol"
+            },
+            {
+              "text": "I'm not interested.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "explain_override_protocol": {
+          "text": "You'll need to find the Data Crypt dungeon, disable the Security Drones, and extract the AI core. Are you capable?",
+          "options": [
+            {
+              "text": "I am capable.",
+              "next_node": "accept_override_protocol"
+            },
+            {
+              "text": "It sounds too difficult.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "accept_override_protocol": {
+          "text": "Then proceed. The Data Crypt awaits.",
+          "options": [
+            {
+              "text": "I will return.",
               "next_node": "end_dialogue"
             }
           ]
@@ -350,6 +445,10 @@
               "next_node": "explain_hustle"
             },
             {
+              "text": "I heard some rebels are starving.",
+              "next_node": "mention_rebels"
+            },
+            {
               "text": "...",
               "next_node": "end_dialogue"
             }
@@ -385,6 +484,58 @@
             },
             {
               "text": "...",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "mention_rebels": {
+          "text": "Yeah, they're always starving. Need someone to raid a Tithing Caravan for their 'nutritional equity' rations. It's called 'Blood Dividends'. Interested?",
+          "options": [
+            {
+              "text": "What's a Tithing Caravan?",
+              "next_node": "explain_caravan"
+            },
+            {
+              "text": "Tell me more about 'Blood Dividends'.",
+              "next_node": "explain_blood_dividends"
+            },
+            {
+              "text": "Not really.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "explain_caravan": {
+          "text": "Mobile larders for the fat cats. Ripe for the taking. Now, about those rations...",
+          "options": [
+            {
+              "text": "Tell me more about 'Blood Dividends'.",
+              "next_node": "explain_blood_dividends"
+            },
+            {
+              "text": "I'm out.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "explain_blood_dividends": {
+          "text": "Ambush the caravan, kill the Profit-Scribe, and burn the cargo manifests. Simple, right?",
+          "options": [
+            {
+              "text": "Sounds like my kind of job.",
+              "next_node": "accept_blood_dividends"
+            },
+            {
+              "text": "Too risky.",
+              "next_node": "end_dialogue"
+            }
+          ]
+        },
+        "accept_blood_dividends": {
+          "text": "Good. Those rebels need that food. And I need the chaos.",
+          "options": [
+            {
+              "text": "I'll get it done.",
               "next_node": "end_dialogue"
             }
           ]

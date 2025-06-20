@@ -4,7 +4,7 @@ import math
 from entities.npc import NPC # Import NPC class
 
 class Minimap:
-    def __init__(self, player, entities, scene, minimap_size=(250, 250), nearby_radius=600):
+    def __init__(self, player, entities, scene, minimap_size=(250, 250), nearby_radius=100):
         self.player = player
         self.entities = entities # This will need to be updated by the scene
         self.scene = scene # Store the scene
@@ -57,30 +57,31 @@ class Minimap:
 
                 pygame.draw.circle(self.image, color, (int(minimap_x), int(minimap_y)), 3) # Draw entity dot
 
-        # Draw dungeon portal arrows
+        # Draw dungeon portal arrows (only for the teleporter menu portal)
         if hasattr(self.scene, 'portals'):
             for portal in self.scene.portals:
-                portal_x = portal.get("location", [0, 0])[0]
-                portal_y = portal.get("location", [0, 0])[1]
-                portal_pos = (portal_x, portal_y)
-                player_pos = (self.player.rect.centerx, self.player.rect.centery)
-                relative_pos = (portal_pos[0] - player_pos[0], portal_pos[1] - player_pos[1])
+                if portal.get('target_scene') == "teleporter_menu": # Only draw the teleporter portal
+                    portal_x = portal.get("location", [0, 0])[0]
+                    portal_y = portal.get("location", [0, 0])[1]
+                    portal_pos = (portal_x, portal_y)
+                    player_pos = (self.player.rect.centerx, self.player.rect.centery)
+                    relative_pos = (portal_pos[0] - player_pos[0], portal_pos[1] - player_pos[1])
 
-                # Normalize the relative position
-                distance = math.dist(player_pos, portal_pos)
-                if distance > 0:
-                    normalized_pos = (relative_pos[0] / distance, relative_pos[1] / distance)
-                else:
-                    normalized_pos = (0, 0)
+                    # Normalize the relative position
+                    distance = math.dist(player_pos, portal_pos)
+                    if distance > 0:
+                        normalized_pos = (relative_pos[0] / distance, relative_pos[1] / distance)
+                    else:
+                        normalized_pos = (0, 0)
 
-                # Scale the normalized position to the minimap size
-                arrow_x = player_pos_on_minimap[0] + normalized_pos[0] * (self.minimap_size[0] / 2)
-                arrow_y = player_pos_on_minimap[1] + normalized_pos[1] * (self.minimap_size[1] / 2)
+                    # Scale the normalized position to the minimap size
+                    arrow_x = player_pos_on_minimap[0] + normalized_pos[0] * (self.minimap_size[0] / 2)
+                    arrow_y = player_pos_on_minimap[1] + normalized_pos[1] * (self.minimap_size[1] / 2)
 
-                # Draw the arrow regardless of whether it's within the minimap bounds
-                arrow_color = (255, 100, 0)  # Orange arrow for portal
-                arrow_points = self._get_arrow_points(player_pos_on_minimap, (int(arrow_x), int(arrow_y)), 10)
-                pygame.draw.polygon(self.image, arrow_color, arrow_points)
+                    # Draw the arrow regardless of whether it's within the minimap bounds
+                    arrow_color = (255, 100, 0)  # Orange arrow for portal
+                    arrow_points = self._get_arrow_points(player_pos_on_minimap, (int(arrow_x), int(arrow_y)), 10)
+                    pygame.draw.polygon(self.image, arrow_color, arrow_points)
 
         # Draw NPC arrows
         for npc in self.scene.npcs:

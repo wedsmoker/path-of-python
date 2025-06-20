@@ -19,6 +19,7 @@ from items.weapon import Weapon # Import the Weapon class
 from items.potion import HealthPotion # Import the HealthPotion class
 from ui.shop_window import ShopWindow
 from core.utils import draw_text
+from ui.teleporter_menu import TeleporterMenu
 
 # Function to create an NPC with random sprites
 def create_npc(game, x, y, name, dialogue_id):
@@ -58,8 +59,7 @@ def create_npc(game, x, y, name, dialogue_id):
         if hand1_sprite:
             hand1_path = os.path.join(hand1_dir, hand1_sprite)
             hand1 = pygame.image.load(hand1_path).convert_alpha()
-            hand1 = pygame.transform.scale(hand1, (TILE_SIZE, TILE_SIZE))
-            npc_image.blit(hand1, (0, int(TILE_SIZE / 2))) # Blit hand1 below head
+            hand1 = pygame.transform.scale(hand1, (0, int(TILE_SIZE / 2))) # Blit hand1 below head
 
     except FileNotFoundError as e:
         print(f"Error loading NPC sprite: {e}")
@@ -143,13 +143,13 @@ class SpawnTown(BaseGameplayScene):
         self.effects = pygame.sprite.Group() # Add effects group
 
         # Create some NPCs
-        npc1 = create_npc(game, 600, 400, "Bob the Bold", "bob_dialogue")
+        npc1 = create_npc(game, 600, 333, "Bob the Bold", "bob_dialogue")
         self.npcs.add(npc1)
 
-        npc2 = create_npc(game, 700, 500, "Alice the Agile", "alice_dialogue")
+        npc2 = create_npc(game, 800, 333, "Alice the Agile", "alice_dialogue")
         self.npcs.add(npc2)
 
-        npc3 = create_npc(game, 800, 400, "Charlie the Calm", "charlie_dialogue")
+        npc3 = create_npc(game, 700, 533, "Charlie the Calm", "charlie_dialogue")
         self.npcs.add(npc3)
         self.charlie = npc3 # Store charlie for shop positioning
 
@@ -192,6 +192,7 @@ class SpawnTown(BaseGameplayScene):
         self.load_portal_data()
         self.ui_elements = [] # List to store UI elements
         self.shop_window = None # Initialize shop_window to None
+        self.teleporter_menu = None
         self.player.money = 100 # Starting money
         self.shop_message = None
 
@@ -283,6 +284,38 @@ class SpawnTown(BaseGameplayScene):
         """Adds a UI element to the list of elements to be drawn."""
         self.ui_elements.append(element)
 
+    def open_teleporter_menu(self):
+        """Opens the teleporter menu."""
+        dungeon_scenes_data = []
+        for portal in self.portals:
+            target_scene_name = portal.get('target_scene')
+            graphic_path = portal.get('graphic')
+
+            # Find the full scene data from game.scenes_data
+            scene_entry = next((s for s in self.game.scenes_data['scenes'] if s['name'] == target_scene_name), None)
+
+            # Only include portals that are not the teleporter menu itself
+            # and have a corresponding scene entry with dungeon_data_path
+            if target_scene_name and target_scene_name != "teleporter_menu" and scene_entry and scene_entry.get('dungeon_data_path'):
+                dungeon_scenes_data.append({
+                    'name': target_scene_name,
+                    'graphic': graphic_path,
+                    'dungeon_data_path': scene_entry['dungeon_data_path'] # Include the dungeon_data_path
+                })
+        
+        # Calculate the teleporter menu position (center of the screen)
+        menu_x = (settings.SCREEN_WIDTH - 400) // 2
+        menu_y = (settings.SCREEN_HEIGHT - 300) // 2
+
+        self.teleporter_menu = TeleporterMenu(menu_x, menu_y, dungeon_scenes_data, self.game)
+        self.teleporter_menu.is_open = True
+
+    def close_teleporter_menu(self):
+        """Closes the teleporter menu."""
+        if self.teleporter_menu:
+            self.teleporter_menu.is_open = False
+            self.teleporter_menu = None
+
     def handle_event(self, event):
         # Open shop window if dialogue option is chosen
         for npc in self.npcs:
@@ -309,6 +342,14 @@ class SpawnTown(BaseGameplayScene):
                     else:
                         print("Not enough money!")
                         self.shop_message = "Not enough money!"
+        if self.teleporter_menu:
+            teleporter_action = self.teleporter_menu.handle_event(event)
+            if teleporter_action == "close":
+                self.close_teleporter_menu()
+                return
+            elif teleporter_action:
+                # Teleport to the selected dungeon scene
+                self.game.scene_manager.set_scene(teleporter_action, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites())
                 return
 
 
@@ -342,10 +383,12 @@ class SpawnTown(BaseGameplayScene):
                                                  portal_rect.height * self.zoom_level)
 
                 if portal_screen_rect.collidepoint(event.pos):
-                    print(f"Interacted with portal {i}! Changing scene to {self.portals[i]['target_scene']}...") # Debug print
-                    # Trigger scene change to the target scene
                     target_scene = self.portals[i]['target_scene']
-                    self.game.scene_manager.set_scene(target_scene, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites())
+                    print(f"Interacted with portal {i}! Target scene: {target_scene}...") # Debug print
+                    if target_scene == "teleporter_menu":
+                        self.open_teleporter_menu()
+                    else:
+                        self.game.scene_manager.set_scene(target_scene, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites())
                     return
 
     def update(self, dt):
@@ -405,20 +448,21 @@ class SpawnTown(BaseGameplayScene):
             effect_screen_y = (effect.rect.y - self.camera_y) * self.zoom_level
             screen.blit(effect.image, (effect_screen_x, effect_screen_y))
 
-        # Draw the dungeon portals
+        # Draw the teleporter portal only
         for i, portal_rect in enumerate(self.portal_rects):
-            portal_screen_x = (portal_rect.x - self.camera_x) * self.zoom_level
-            portal_screen_y = (portal_rect.y - self.camera_y) * self.zoom_level
-            scaled_portal_width = int(portal_rect.width * self.zoom_level)
-            scaled_portal_height = int(portal_rect.height * self.zoom_level)
-            scaled_portal_rect = pygame.Rect(portal_screen_x, portal_screen_y, scaled_portal_width, scaled_portal_height)
+            if self.portals[i]['target_scene'] == "teleporter_menu":
+                portal_screen_x = (portal_rect.x - self.camera_x) * self.zoom_level
+                portal_screen_y = (portal_rect.y - self.camera_y) * self.zoom_level
+                scaled_portal_width = int(portal_rect.width * self.zoom_level)
+                scaled_portal_height = int(portal_rect.height * self.zoom_level)
+                scaled_portal_rect = pygame.Rect(portal_screen_x, portal_screen_y, scaled_portal_width, scaled_portal_height)
 
-            portal_image = self.portal_images.get(self.portals[i]['target_scene'])
-            if portal_image:
-                scaled_portal_image = pygame.transform.scale(portal_image, (scaled_portal_width, scaled_portal_height))
-                screen.blit(scaled_portal_image, (portal_screen_x, portal_screen_y))
-            else:
-                pygame.draw.rect(screen, (255, 0, 0), scaled_portal_rect) # Red placeholder
+                portal_image = self.portal_images.get(self.portals[i]['target_scene'])
+                if portal_image:
+                    scaled_portal_image = pygame.transform.scale(portal_image, (scaled_portal_width, scaled_portal_height))
+                    screen.blit(scaled_portal_image, (portal_screen_x, portal_screen_y))
+                else:
+                    pygame.draw.rect(screen, (255, 0, 0), scaled_portal_rect) # Red placeholder
 
         # Display messages
         font = pygame.font.Font(None, 50)
@@ -430,6 +474,8 @@ class SpawnTown(BaseGameplayScene):
             text_surface = font.render("Right click to blink...", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
             screen.blit(text_surface, text_rect)
+        if self.teleporter_menu:
+            self.teleporter_menu.draw(screen)
         elif self.display_message3:
             text_surface = font.render("Mouse side button to attack...", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))

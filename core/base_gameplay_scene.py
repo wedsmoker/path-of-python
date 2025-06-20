@@ -54,6 +54,7 @@ class BaseGameplayScene(BaseScene):
             self.npcs = [
                 {"name": "Old Scavenger", "tile_x": 10, "tile_y": 10, "dialogue_id": "old_scavenger_intro"}
             ]
+            self.decorations = []
             # If dungeon_data is provided, attempt to load enemies
             if self.dungeon_data and not self.enemies_loaded:
                 self.load_enemies(self.dungeon_data.get('enemies', []))
@@ -104,6 +105,7 @@ class BaseGameplayScene(BaseScene):
 
             # Load enemies if present in dungeon_data
             if not self.enemies_loaded:
+                self.load_decorations(self.dungeon_data.get('decorations', []))
                 self.load_enemies(self.dungeon_data.get('enemies', []))
         
         if friendly_entities: # Add friendly entities if passed
@@ -276,7 +278,28 @@ class BaseGameplayScene(BaseScene):
             )
             self.enemies.add(enemy)
         print(f"BaseGameplayScene: Loaded {len(self.enemies)} enemies.")
-        self.enemies_loaded = True
+    def load_decorations(self, decorations_data):
+        """Loads decorations from the dungeon data."""
+        for decoration_info in decorations_data:
+            decoration_type = decoration_info.get('type')
+            x = decoration_info.get('x')
+            y = decoration_info.get('y')
+            sprite_path = decoration_info.get('sprite_path')
+
+            try:
+                full_path = os.path.join(os.getcwd(), sprite_path)
+                image = pygame.image.load(full_path).convert_alpha()
+                self.decorations.append({
+                    'type': decoration_type,
+                    'x': x,
+                    'y': y,
+                    'image': image
+                })
+            except pygame.error as e:
+                print(f"BaseGameplayScene: Warning: Could not load decoration image {sprite_path}: {e}")
+
+        print(f"BaseGameplayScene: Loaded {len(self.decorations)} decorations.")
+        self.decorations_loaded = True
 
     def debug_log(self):
         if self.frame_count % 60 == 0:  # Log every second (assuming 60 FPS)
@@ -513,6 +536,12 @@ class BaseGameplayScene(BaseScene):
 
 
     def draw(self, screen):
+# Draw decorations
+        for decoration in self.decorations:
+            screen_x = decoration['x'] * self.tile_size - self.camera_x * self.zoom_level
+            screen_y = decoration['y'] * self.tile_size - self.camera_y * self.zoom_level
+            scaled_image = pygame.transform.scale(decoration['image'], (int(decoration['image'].get_width() * self.zoom_level), int(decoration['image'].get_height() * self.zoom_level)))
+            screen.blit(scaled_image, (screen_x, screen_y))
         hud_drawn = False
         if hasattr(self.game, 'current_scene'):
             # Draw the map (tiles)

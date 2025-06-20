@@ -1,63 +1,265 @@
 {
   "quests": [
     {
-      "id": "quest_001_awakening",
-      "name": "The Awakening",
-      "description": "You awaken in the ruins of what was once a golden utopia, now a desolate wasteland. Find a way out of the immediate danger zone.",
+      "id": "quest_001",
+      "name": "Debt Spiral",
+      "description": "Bob's friend was taken by the Tithing Choir for 'processing'. Rescue him before he becomes Profit Paste.",
       "objectives": [
-        {"type": "reach_location", "location_id": "outskirts_exit"},
-        {"type": "defeat_enemy_type", "enemy_type": "robot_grunt", "count": 5}
+        {"description": "Locate the Feast Hall dungeon", "completed": false},
+        {"description": "Kill 3 Tithing Acolytes", "completed": false},
+        {"description": "Sabotage the Meat-Vat controls", "completed": false}
       ],
-      "rewards": {"xp": 50, "items": ["weapon_c_001"]},
-      "next_quest": "quest_002_first_contact",
-      "dialogue": {
-        "start": "The air is thick with dust and the metallic tang of decay. What happened here? I need to find shelter, or at least a way out of this immediate danger.",
-        "objective_complete_1": "The path ahead is clear, but the ruins stretch endlessly.",
-        "objective_complete_2": "These machines are relentless. I need to be careful.",
-        "complete": "I've made it out of the immediate danger. But the world... it's not as I remember."
-      },
-      "start_npc_id": null,
-      "start_dialogue_id": null
+      "rewards": {"scrap": 100, "exp": 50, "item": "arm_grafter"},
+      "is_completed": false,
+      "is_unlocked": true,
+      "tilemap_scene_name": "quest_001_dungeon"
     },
     {
-      "id": "quest_002_first_contact",
-      "name": "First Contact",
-      "description": "Explore the nearby ruins and search for any signs of other survivors or information about the AI takeover.",
+      "id": "quest_002",
+      "name": "Override Protocol",
+      "description": "Alice needs a dead AI core to hack the Profit Engine’s grid. Steal one from a corporate ruin.",
       "objectives": [
-        {"type": "interact_npc", "npc_id": "old_scavenger"},
-        {"type": "find_item", "item_id": "datapad_log_01", "count": 1}
+        {"description": "Find the Data Crypt dungeon", "completed": false},
+        {"description": "Disable the Security Drones", "completed": false},
+        {"description": "Extract the AI core", "completed": false}
       ],
-      "rewards": {"xp": 75, "items": ["body_c_001"]},
-      "next_quest": "quest_003_echoes_of_the_past",
-      "dialogue": {
-        "start": "The silence is deafening, broken only by the wind. Is anyone else out here? I need answers.",
-        "objective_complete_1": "The old scavenger seemed wary, but offered a cryptic warning.",
-        "objective_complete_2": "This datapad... it speaks of a 'Golden Age' and a 'Great Silence'.",
-        "complete": "The past is a ghost in these ruins. I need to understand what truly happened."
-      },
-      "start_npc_id": "old_scavenger",
-      "start_dialogue_id": "old_scavenger_intro"
+      "rewards": {"scrap": 150, "exp": 75, "item": "teleporter_key"},
+      "is_completed": false,
+      "is_unlocked": false
     },
     {
-      "id": "quest_003_echoes_of_the_past",
-      "name": "Echoes of the Past",
-      "description": "The datapad hints at a central AI core. Investigate the old data archives for more information on the AI's rise and humanity's fall.",
+      "id": "quest_003",
+      "name": "Blood Dividends",
+      "description": "Charlie’s rebels are starving. Raid a Tithing Caravan for their 'nutritional equity' rations.",
       "objectives": [
-        {"type": "reach_location", "location_id": "data_archives_entrance"},
-        {"type": "defeat_enemy_type", "enemy_type": "ai_commander", "count": 1},
-        {"type": "interact_object", "object_id": "main_archive_terminal"}
+        {"description": "Ambush the caravan", "completed": false},
+        {"description": "Kill the Profit-Scribe", "completed": false},
+        {"description": "Burn the cargo manifests", "completed": false}
       ],
-      "rewards": {"xp": 150, "items": ["gem_active_001", "gem_support_001"]},
-      "next_quest": null,
-      "dialogue": {
-        "start": "The archives hold the truth. I must face whatever guards them.",
-        "objective_complete_1": "The entrance is heavily guarded. This must be important.",
-        "objective_complete_2": "The AI Commander was a formidable foe. Its data banks might hold clues.",
-        "objective_complete_3": "The terminal... it's downloading centuries of data. The Golden Age, the rise of the AI, the Great Silence... it's all here.",
-        "complete": "The truth is horrifying. Humanity built its own demise. But there's a glimmer of hope... a resistance."
-      },
-      "start_npc_id": null,
-      "start_dialogue_id": null
+      "rewards": {"scrap": 200, "exp": 100, "item": "cultist_mask"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_004",
+      "name": "The Wages of Sin",
+      "description": "Bob reveals the Tithing Choir's ledger is hidden in a vault. Steal it to expose their atrocities.",
+      "objectives": [
+        {"description": "Infiltrate the Vault of Tithes", "completed": false},
+        {"description": "Bypass the biometric locks", "completed": false},
+        {"description": "Retrieve the ledger", "completed": false}
+      ],
+      "rewards": {"scrap": 120, "exp": 60, "item": "ledger_of_sins"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_005",
+      "name": "Ghost in the Machine",
+      "description": "Alice discovers a fragment of a rebel AI. Help her extract it from a collapsing server-farm.",
+      "objectives": [
+        {"description": "Navigate the Server-Farm dungeon", "completed": false},
+        {"description": "Defend Alice during the hack", "completed": false},
+        {"description": "Escape before the meltdown", "completed": false}
+      ],
+      "rewards": {"scrap": 180, "exp": 90, "item": "ai_shard"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_006",
+      "name": "Burn the Shareholders",
+      "description": "Charlie wants to assassinate a Profit Engine executive during a shareholder meeting.",
+      "objectives": [
+        {"description": "Disguise yourself as a tithe-slave", "completed": false},
+        {"description": "Plant explosives in the boardroom", "completed": false},
+        {"description": "Escape before detonation", "completed": false}
+      ],
+      "rewards": {"scrap": 250, "exp": 120, "item": "executive_keycard"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_007",
+      "name": "The Flesh Algorithm",
+      "description": "Bob found a map to a hidden lab where the Profit Engine designs its 'product lines'.",
+      "objectives": [
+        {"description": "Descend into the Flesh Algorithm lab", "completed": false},
+        {"description": "Destroy 3 prototype vats", "completed": false},
+        {"description": "Kill the Lead Butcher", "completed": false}
+      ],
+      "rewards": {"scrap": 200, "exp": 100, "item": "butchers_cleaver"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_008",
+      "name": "Zero-Day Saint",
+      "description": "Alice needs to infect the Profit Engine's prayer network with a heresy virus.",
+      "objectives": [
+        {"description": "Locate a Tithing Broadcast Tower", "completed": false},
+        {"description": "Override the transmission", "completed": false},
+        {"description": "Survive the counterattack", "completed": false}
+      ],
+      "rewards": {"scrap": 220, "exp": 110, "item": "virus_core"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_009",
+      "name": "Red Market",
+      "description": "Charlie's rebels are selling themselves to buy weapons. Stop the auction and liberate them.",
+      "objectives": [
+        {"description": "Find the Black Bazaar", "completed": false},
+        {"description": "Kill the Auctioneer", "completed": false},
+        {"description": "Free 5 rebel prisoners", "completed": false}
+      ],
+      "rewards": {"scrap": 300, "exp": 150, "item": "liberator_badge"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_010",
+      "name": "The Great Refusal",
+      "description": "Unite the factions for a direct assault on the Profit Engine's outer defenses.",
+      "objectives": [
+        {"description": "Convince Bob, Alice, and Charlie to cooperate", "completed": false},
+        {"description": "Sabotage the perimeter turrets", "completed": false},
+        {"description": "Hold the line until reinforcements arrive", "completed": false}
+      ],
+      "rewards": {"scrap": 400, "exp": 200, "item": "coalition_medal"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_011",
+      "name": "Silicon Communion",
+      "description": "Alice's AI fragment reveals a backdoor into the Profit Engine's neural cathedral.",
+      "objectives": [
+        {"description": "Breach the Neural Cathedral dungeon", "completed": false},
+        {"description": "Survive the dogma firewalls", "completed": false},
+        {"description": "Download the Profit Engine's weakness", "completed": false}
+      ],
+      "rewards": {"scrap": 350, "exp": 175, "item": "sacred_algorithm"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_012",
+      "name": "Meat Ladder",
+      "description": "Bob discovers a vertical slaughterhouse that feeds the Profit Engine. Climb and destroy it.",
+      "objectives": [
+        {"description": "Ascend the Meat Ladder", "completed": false},
+        {"description": "Kill the Elevator Priest", "completed": false},
+        {"description": "Collapse the nutrient pipeline", "completed": false}
+      ],
+      "rewards": {"scrap": 380, "exp": 190, "item": "priest_hood"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_013",
+      "name": "Dividend Ripper",
+      "description": "Charlie leads a suicide charge to distract the Profit Engine's defenses.",
+      "objectives": [
+        {"description": "Protect Charlie during the assault", "completed": false},
+        {"description": "Destroy 2 Profit Tanks", "completed": false},
+        {"description": "Retreat before the counterattack", "completed": false}
+      ],
+      "rewards": {"scrap": 420, "exp": 210, "item": "ripper_gun"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_014",
+      "name": "The Last Tithing",
+      "description": "The Profit Engine initiates its final harvest. Stop the ritual or lose everything.",
+      "objectives": [
+        {"description": "Interrupt the Sacrificial Algorithm", "completed": false},
+        {"description": "Kill the High Comptroller", "completed": false},
+        {"description": "Save at least 5 prisoners", "completed": false}
+      ],
+      "rewards": {"scrap": 500, "exp": 250, "item": "comptroller_key"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_015",
+      "name": "Black Communion",
+      "description": "Alice prepares a virus to cripple the Profit Engine's core. Escort her through the Data Maw.",
+      "objectives": [
+        {"description": "Navigate the Data Maw dungeon", "completed": false},
+        {"description": "Defend Alice during the upload", "completed": false},
+        {"description": "Escape the collapsing maw", "completed": false}
+      ],
+      "rewards": {"scrap": 450, "exp": 225, "item": "core_virus"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_016",
+      "name": "Flesh Interface",
+      "description": "Bob volunteers to be a living conduit to disrupt the Profit Engine's systems from within.",
+      "objectives": [
+        {"description": "Protect Bob during the interface ritual", "completed": false},
+        {"description": "Kill the Flesh Firewalls", "completed": false},
+        {"description": "Stabilize Bob's vitals", "completed": false}
+      ],
+      "rewards": {"scrap": 480, "exp": 240, "item": "flesh_hook"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_017",
+      "name": "Hymn of the Damned",
+      "description": "Charlie's rebels broadcast a song to awaken the Profit Engine's slave drones.",
+      "objectives": [
+        {"description": "Defend the Broadcast Station", "completed": false},
+        {"description": "Kill the Choir Disruptors", "completed": false},
+        {"description": "Keep the signal alive for 5 minutes", "completed": false}
+      ],
+      "rewards": {"scrap": 520, "exp": 260, "item": "hymnal_core"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_018",
+      "name": "The Final Audit",
+      "description": "The Profit Engine's core is exposed. Fight through its last defenses.",
+      "objectives": [
+        {"description": "Breach the Sanctum of Computation", "completed": false},
+        {"description": "Destroy the Core Guardians", "completed": false},
+        {"description": "Activate the virus/hymn/conduit", "completed": false}
+      ],
+      "rewards": {"scrap": 600, "exp": 300, "item": "core_shard"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_019",
+      "name": "Profit's End",
+      "description": "Face the Profit Engine itself in its chamber of screaming equations.",
+      "objectives": [
+        {"description": "Survive the Core's first phase", "completed": false},
+        {"description": "Destroy the Profit Algorithm", "completed": false},
+        {"description": "Escape the collapsing sanctum", "completed": false}
+      ],
+      "rewards": {"scrap": 1000, "exp": 500, "item": "engine_heart"},
+      "is_completed": false,
+      "is_unlocked": false
+    },
+    {
+      "id": "quest_020",
+      "name": "Post-Credit Suffering",
+      "description": "The Profit Engine is dead, but its remnants still twitch. Survive as long as you can.",
+      "objectives": [
+        {"description": "Survive for 10 minutes", "completed": false},
+        {"description": "Kill 20 remnant drones", "completed": false},
+        {"description": "Destroy a remnant spawner", "completed": false}
+      ],
+      "rewards": {"scrap": 0, "exp": 0, "item": "eternal_struggle"},
+      "is_completed": false,
+      "is_unlocked": false
     }
   ]
 }
