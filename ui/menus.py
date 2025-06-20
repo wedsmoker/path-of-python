@@ -29,6 +29,10 @@ class PauseMenu(BaseScene):
             "Inventory", lambda: self.game.scene_manager.set_scene(STATE_INVENTORY, self.game.spawn_town.player)
         ))
         self.buttons.append(Button(
+            SCREEN_WIDTH // 2 - button_width // 2, start_y + 2 * spacing, button_width, button_height,
+            "Save / Load", lambda: self.game.scene_manager.set_scene("save_menu")
+        ))
+        self.buttons.append(Button(
             SCREEN_WIDTH // 2 - button_width // 2, start_y + 3 * spacing, button_width, button_height,
             "Settings", lambda: self.game.scene_manager.set_scene(STATE_SETTINGS_MENU, self.game.spawn_town.player)
         ))

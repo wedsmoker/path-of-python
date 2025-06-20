@@ -20,12 +20,16 @@ class TitleScreen(BaseScene):
             SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 110, 200, 50,
             "Info", lambda: self.game.scene_manager.set_scene("info_screen")
         )
-        self.dungeon_maker_button = Button(
+        self.load_character_button = Button(
             SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 170, 200, 50,
+            "Load Game", lambda: self.game.scene_manager.set_scene("save_menu")
+        )
+        self.dungeon_maker_button = Button(
+            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 230, 200, 50,
             "Dungeon Maker", self.open_dungeon_generator
         )
         self.exit_button = Button(
-            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 230, 200, 50,
+            SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 290, 200, 50,
             "Exit Game", lambda: (pygame.quit(), sys.exit())
         )
         self.volume_slider = VolumeSlider(
@@ -67,6 +71,7 @@ class TitleScreen(BaseScene):
     def handle_event(self, event):
         self.start_button.handle_event(event)
         self.info_button.handle_event(event)
+        self.load_character_button.handle_event(event)
         self.dungeon_maker_button.handle_event(event)
         self.exit_button.handle_event(event)
         self.volume_slider.handle_event(event)
@@ -125,6 +130,7 @@ class TitleScreen(BaseScene):
 
         self.start_button.draw(screen)
         self.info_button.draw(screen)
+        self.load_character_button.draw(screen)
         self.dungeon_maker_button.draw(screen)
         self.exit_button.draw(screen)
 

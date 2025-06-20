@@ -87,6 +87,10 @@
             "name": "UltraDungeon",
             "class": "core.dungeons.UltraDungeon.UltraDungeon",
             "dungeon_data_path": "data/dungeons/UltraDungeon.json"
+        },
+        {
+            "name": "save_menu",
+            "class": "ui.save_menu.SaveMenu"
         }
     ]
 }
