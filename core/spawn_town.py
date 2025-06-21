@@ -325,7 +325,7 @@ class SpawnTown(BaseGameplayScene):
 
         super().handle_event(event) # Call base class event handler
 
-        if self.shop_window:
+        if self.shop_window and self.shop_window.is_open:
             shop_action = self.shop_window.handle_event(event) # Handle shop window events
             if shop_action == "close":
                 self.close_shop_window()
@@ -390,6 +390,11 @@ class SpawnTown(BaseGameplayScene):
                     else:
                         self.game.scene_manager.set_scene(target_scene, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites())
                     return
+
+        # Pass event to minimap
+        if self.hud and self.hud.minimap:
+            minimap_rect = self.hud.minimap.rect
+            self.hud.minimap.handle_event(event, minimap_rect)
 
     def update(self, dt):
         current_time = pygame.time.get_ticks()

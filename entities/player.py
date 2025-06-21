@@ -600,7 +600,10 @@ class Player(pygame.sprite.Sprite):
         self.game.current_scene.effects.add(footstep_sprite)
 
     def draw(self, screen):
-        screen.blit(self.image, (self.rect.x - self.game.current_scene.camera_x, self.rect.y - self.game.current_scene.camera_y))
+        screen_x = (self.rect.x - self.game.current_scene.camera_x) * self.game.current_scene.zoom_level
+        screen_y = (self.rect.y - self.game.current_scene.camera_y) * self.game.current_scene.zoom_level
+        scaled_image = pygame.transform.scale(self.image, (int(self.width * self.game.current_scene.zoom_level), int(self.height * self.game.current_scene.zoom_level)))
+        screen.blit(scaled_image, (screen_x, screen_y))
 
         if self.is_taking_damage:
             # Create a red surface

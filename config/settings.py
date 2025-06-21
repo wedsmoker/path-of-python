@@ -11,6 +11,7 @@ VSYNC = True
 
 # Physics and Movement
 PLAYER_SPEED = 200 # Pixels per second
+TILE_SIZE = 32 # Size of each tile in pixels
 
 # UI Appearance Settings
 UI_FONT = "Arial"

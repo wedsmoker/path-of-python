@@ -33,7 +33,7 @@ class HUD:
             return {"skills": []}
 
     def update(self, dt, entities):
-        self.minimap.update(entities)
+        self.minimap.update(entities, self.player.game.current_scene)
         self.player.experience = self.player.experience  # Dummy change to force XP redraw
 
     def draw(self, screen):

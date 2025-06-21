@@ -10,7 +10,7 @@ class CycloneSkill:
         self.id = "cyclone"
         self.name = "Cyclone"
         self.description = "Spins rapidly, hitting all enemies in a circle repeatedly while draining mana."
-        self.mana_cost = 10 # Initial cost from data/skills.json
+        self.mana_cost = 10 + (player.level * 5)  # Initial cost + level scaling
         self.base_damage = {"min": 10, "max": 20, "type": "physical"} # From data/skills.json
         self.cooldown = 0 # From data/skills.json
         self.channel_cost_per_second = self.player.max_mana * 0.20 # 20% of max mana per second (updated from 0.05)
@@ -103,6 +103,16 @@ class CycloneSkill:
         hit_enemies = set()
         player_center = self.player.rect.center
         print(f"Player center: {player_center}")
+
+        # Projectile blocking logic
+        for projectile in self.game.current_scene.projectiles:
+            projectile_center = projectile.rect.center
+            distance = math.hypot(player_center[0] - projectile_center[0], player_center[1] - projectile_center[1])
+            if distance <= self.radius:
+                print(f"Cyclone blocked projectile!")
+                projectile.kill()  # Remove the projectile from all sprite groups
+                continue # Skip enemy hits if a projectile was blocked
+
         for enemy in self.game.current_scene.enemies:
             enemy_center = enemy.rect.center
             distance = math.hypot(player_center[0] - enemy_center[0], player_center[1] - enemy_center[1])

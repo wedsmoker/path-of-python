@@ -194,6 +194,21 @@ class CharacterSelectionScene(BaseScene):
         current_time = pygame.time.get_ticks()
 
         if self.confirm_animation_active:
+# New flickering light effect logic
+            if not self.flickering_now:
+                if current_time - self.last_flicker_time > self.flicker_trigger_interval:
+                    # Randomly decide if a flicker should start
+                    if random.random() < 0.2: # Increased chance to start a flicker
+                        self.flickering_now = True
+                        self.flicker_alpha = self.flicker_max_alpha # Instantly bright
+                        self.last_flicker_time = current_time
+            else:
+                # Decay the flicker alpha
+                self.flicker_alpha -= self.flicker_decay_rate * dt / 1000.0 # dt is in ms, convert to seconds
+                if self.flicker_alpha <= 0:
+                    self.flicker_alpha = 0
+                    self.flickering_now = False
+                    self.last_flicker_time = current_time # Reset timer for next potential flicker
             elapsed_animation_time = current_time - self.animation_start_time
 
             # Screen Shake
@@ -227,7 +242,7 @@ class CharacterSelectionScene(BaseScene):
                     selected_class_data = self.classes[self.selected_class]
                     self.game.player.set_class(self.selected_class, selected_class_data.get("stats", {}))
                 self.game.scene_manager.set_scene("intro_scene")
-        else:
+
             # New flickering light effect logic
             if not self.flickering_now:
                 if current_time - self.last_flicker_time > self.flicker_trigger_interval:
@@ -244,6 +259,7 @@ class CharacterSelectionScene(BaseScene):
                     self.flickering_now = False
                     self.last_flicker_time = current_time # Reset timer for next potential flicker
 
+        else:
             # Existing helmet lift animation (for hover)
             for class_name in self.classes:
                 if self.hovered_class == class_name:
@@ -257,6 +273,14 @@ class CharacterSelectionScene(BaseScene):
                         if self.helmet_lift_offset[class_name] < 0:
                             self.helmet_lift_offset[class_name] = 0
 
+    def draw_helmet_wires(self, screen, char_rect, helmet_y_offset, draw_offset_x, draw_offset_y):
+        """Draws colored lines (wires) above the helmet."""
+        color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))  # Random color for each wire
+        start_x = char_rect.centerx
+        start_y = char_rect.top + 20 # Lower the starting point
+        end_x = start_x
+        end_y = 0
+        pygame.draw.line(screen, color, (start_x, start_y - helmet_y_offset), (end_x, end_y), 2)
     def draw(self, screen):
         # Apply screen shake offset if active
         draw_offset_x = self.shake_offset_x if self.confirm_animation_active else 0
@@ -280,6 +304,7 @@ class CharacterSelectionScene(BaseScene):
                     screen.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + 50 + draw_offset_y))
                     # Draw helmet with the new, higher animated offset for selected character
                     helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 120 - self.selected_char_helmet_lift_offset + draw_offset_y)) # Adjusted initial Y
+                    self.draw_helmet_wires(screen, char_rect, self.selected_char_helmet_lift_offset, draw_offset_x, draw_offset_y)
                     screen.blit(data["helmet_sprite"], helmet_rect.topleft)
                 # Unselected characters are handled by electricity effects, no need to draw their sprites here
             else:
@@ -291,12 +316,14 @@ class CharacterSelectionScene(BaseScene):
                     screen.blit(data["full_sprite"], (char_rect.x + draw_offset_x, char_rect.y + 50 + draw_offset_y))
                     # Draw helmet with animated offset (hover)
                     helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 170 - helmet_y_offset + draw_offset_y)) # Adjusted initial Y
+                    self.draw_helmet_wires(screen, char_rect, helmet_y_offset, draw_offset_x, draw_offset_y)
                     screen.blit(data["helmet_sprite"], helmet_rect.topleft)
                 else:
                     # Draw base sprite
                     screen.blit(data["base_sprite_image"], (char_rect.x + draw_offset_x, char_rect.y + draw_offset_y))
                     # Draw helmet with animated offset (non-hover)
                     helmet_rect = data["helmet_sprite"].get_rect(midbottom=(char_rect.centerx + draw_offset_x, char_rect.top + 200 - helmet_y_offset + draw_offset_y)) # Adjusted initial Y
+                    self.draw_helmet_wires(screen, char_rect, helmet_y_offset, draw_offset_x, draw_offset_y)
                     screen.blit(data["helmet_sprite"], helmet_rect.topleft)
 
             if not self.confirm_animation_active:
@@ -317,25 +344,26 @@ class CharacterSelectionScene(BaseScene):
             self.confirm_button.draw(screen)
             pygame.draw.rect(screen, (200, 200, 200), self.info_section_rect, 2) # Light grey border
 
-            # Display info based on hovered or selected class
-            display_class_data = None
-            if self.hovered_class:
-                display_class_data = self.classes[self.hovered_class]
-            elif self.selected_class:
-                display_class_data = self.classes[self.selected_class]
+        # Display info based on hovered or selected class
+        display_class_data = None
+        if self.hovered_class:
+            display_class_data = self.classes[self.hovered_class]
+        elif self.selected_class:
+            display_class_data = self.classes[self.selected_class]
 
-            if display_class_data:
-                # Display class name in info section
-                name_text = self.font.render(f"Class: {display_class_data['name']}", True, (255, 255, 255))
-                screen.blit(name_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 10))
+        if display_class_data:
+            # Display class name in info section
+            name_text = self.font.render(f"Class: {display_class_data['name']}", True, (255, 255, 255))
+            screen.blit(name_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 10))
 
-                # Display skills
+            # Display skills
+            if display_class_data and 'skills' in display_class_data:
                 skills_text = self.font.render(f"Skills: {', '.join(display_class_data['skills'])}", True, (255, 255, 255))
                 screen.blit(skills_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 50))
 
-                # Display description
-                description_text = self.font.render(f"Description: {display_class_data['description']}", True, (255, 255, 255))
-                screen.blit(description_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 90))
+            # Display description
+            description_text = self.font.render(f"Description: {display_class_data['description']}", True, (255, 255, 255))
+            screen.blit(description_text, (self.info_section_rect.x + 10, self.info_section_rect.y + 90))
 
         # Draw electricity effects (always, if active)
         self.electricity_effects.draw(screen)

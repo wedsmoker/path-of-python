@@ -176,6 +176,7 @@ class BaseGameplayScene(BaseScene):
                         #        color = faded_image.get_at((i, j))
                         #        new_color = (color[0], color[1], color[2], 0)  # Fully transparent
                         #        faded_image.set_at((i, j), new_color)
+                        #faded_image.set_at((i, j), new_color)
                         #self.faded_tile_images[tile_name] = faded_image
 
                         # print(f"BaseGameplayScene: Loaded tile image: {tile_name} from {full_path}")  # Added logging
@@ -209,7 +210,7 @@ class BaseGameplayScene(BaseScene):
                         #    for j in range(faded_image.get_height()):
                         #        color = faded_image.get_at((i, j))
                         #        new_color = (color[0], color[1], color[2], 0)  # Fully transparent
-                        #        faded_image.set_at((i, j), new_color)
+                        #faded_image.set_at((i, j), new_color)
                         #self.faded_tile_images[tile_name] = faded_image
 
                         # print(f"BaseGameplayScene: Loaded tile image: {tile_name} from {full_path}")  # Added logging
@@ -382,6 +383,10 @@ class BaseGameplayScene(BaseScene):
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             print(f"Mouse button down event. Button: {event.button}")
+            if event.button == 4:  # Scrolling up
+                self.zoom_level += 0.1
+            elif event.button == 5:  # Scrolling down
+                self.zoom_level -= 0.1
             if event.button == pygame.BUTTON_RIGHT:
                 # Get the mouse position in world coordinates
                 world_x = (event.pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
@@ -427,7 +432,7 @@ class BaseGameplayScene(BaseScene):
                 
                 if skill_id_to_deactivate:
                     self.player.deactivate_skill(skill_id_to_deactivate)
-        # Check for interaction with Portals
+# Check for interaction with Portals
         if event.type == pygame.MOUSEBUTTONDOWN:
             world_x = -1
             world_y = -1
@@ -444,16 +449,17 @@ class BaseGameplayScene(BaseScene):
                     pygame.mixer.music.play(0)  # Play once
                     pygame.mixer.music.queue(os.path.join(os.getcwd(), "data", "boss.mp3"))  # Play the boss music in a loop
                     return  # Interact with only one portal at a time
-
+        # Pass event to minimap
+        if self.hud and self.hud.minimap:
+            minimap_rect = self.hud.minimap.rect
+            self.hud.minimap.handle_event(event, minimap_rect)
     def update(self, dt, entities=None):
         if self.player:  # Only update player if player exists
             self.player.update(dt)
-            # Removed the continuous activation of cyclone here
-            # if self.game.input_handler.mouse_buttons_pressed.get(7, False):
-            #     self.player.activate_skill("summon_spiders")
         if self.hud:  # Only update HUD if HUD exists
             self.boss_system_manager.update(dt, self.player) # Update BossSystemManager and pass player
-            self.hud.update(dt, self.enemies)
+            entities_to_pass = entities if entities is not None else self.enemies
+            self.hud.update(dt, entities_to_pass)
 
         self.debug_log()
         self.frame_count += 1
@@ -503,25 +509,27 @@ class BaseGameplayScene(BaseScene):
                     self.player.current_mana = self.player.max_mana
 
 
-        # Limit zoom level
-        self.zoom_level = max(0.5, min(self.zoom_level, 2.0))
+        # Store the previous zoom level
+        previous_zoom_level = self.zoom_level
 
-        # Limit camera offset
-        self.camera_offset_x = max(-200, min(self.camera_offset_x, 200))
-        self.camera_offset_y = max(-200, min(self.camera_offset_y, 200))
+        # Limit zoom level
+        self.zoom_level = max(1, min(self.zoom_level, 5))
 
         # Calculate camera position
         if self.player:  # Only calculate camera if player exists
+            # Calculate the zoom factor
+            zoom_factor = previous_zoom_level / self.zoom_level
+
+            # Calculate the new camera position
             self.camera_x = self.player.rect.centerx - (self.game.settings.SCREEN_WIDTH / 2) / self.zoom_level + self.camera_offset_x
             self.camera_y = self.player.rect.centery - (self.game.settings.SCREEN_HEIGHT / 2) / self.zoom_level + self.camera_offset_y
+
+            # Adjust camera position based on zoom factor
+            self.camera_x = (self.player.rect.centerx - self.game.settings.SCREEN_WIDTH / 2) + (self.camera_x - (self.player.rect.centerx - self.game.settings.SCREEN_WIDTH / 2)) * zoom_factor + self.camera_offset_x
+            self.camera_y = (self.player.rect.centery - self.game.settings.SCREEN_HEIGHT / 2) + (self.camera_y - (self.player.rect.centery - self.game.settings.SCREEN_HEIGHT / 2)) * zoom_factor + self.camera_offset_y
         else:
             self.camera_x = 0
             self.camera_y = 0
-        # else:
-        #     self.camera_x = 0
-        #     self.camera_y = 0
-        # else:
-        #     pass
 
         # Clamp camera position to map boundaries
         min_x = 0
