@@ -5,6 +5,7 @@
 * mouse side buttons for 2 skills
   
 ![til](./example4.gif)
+![til](./example5.gif)
 ![til](./example2.gif)
 ![til](./example3.gif)
 ![til](./example.gif)
