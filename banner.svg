@@ -1,0 +1,46 @@
+<svg width="800" height="200" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="200" rx="8" fill="#0c0f0d"/>
+
+  <!-- tile grid -->
+  <g stroke="#1a221c" stroke-width="1">
+    <path d="M0 40h800M0 80h800M0 120h800M0 160h800"/>
+    <path d="M40 0v200M80 0v200M120 0v200M160 0v200M200 0v200M240 0v200M280 0v200M320 0v200M360 0v200M400 0v200M440 0v200M480 0v200M520 0v200M560 0v200M600 0v200M640 0v200M680 0v200M720 0v200M760 0v200"/>
+  </g>
+
+  <!-- winding tile path -->
+  <g fill="#1f3d2a">
+    <rect x="42" y="162" width="36" height="36"/>
+    <rect x="82" y="162" width="36" height="36"/>
+    <rect x="82" y="122" width="36" height="36"/>
+    <rect x="122" y="122" width="36" height="36"/>
+    <rect x="162" y="122" width="36" height="36"/>
+    <rect x="162" y="82" width="36" height="36"/>
+    <rect x="202" y="82" width="36" height="36"/>
+    <rect x="202" y="42" width="36" height="36"/>
+    <rect x="242" y="42" width="36" height="36"/>
+    <rect x="282" y="42" width="36" height="36"/>
+  </g>
+  <g fill="#2c5a3c">
+    <rect x="562" y="162" width="36" height="36"/>
+    <rect x="602" y="162" width="36" height="36"/>
+    <rect x="642" y="162" width="36" height="36"/>
+    <rect x="642" y="122" width="36" height="36"/>
+    <rect x="682" y="122" width="36" height="36"/>
+    <rect x="682" y="82" width="36" height="36"/>
+    <rect x="722" y="82" width="36" height="36"/>
+    <rect x="722" y="42" width="36" height="36"/>
+  </g>
+  <!-- player tile -->
+  <rect x="322" y="42" width="36" height="36" fill="#46b86a"/>
+  <!-- teleport target -->
+  <rect x="482" y="162" width="36" height="36" fill="none" stroke="#46b86a" stroke-width="2" stroke-dasharray="6 4"/>
+
+  <!-- title -->
+  <text x="400" y="108" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace" font-size="44" font-weight="700" fill="#e6efe8" letter-spacing="4">PATH OF PYTHON</text>
+  <text x="400" y="140" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace" font-size="15" fill="#5e7a68" letter-spacing="6">A POST-APOCALYPTIC ARPG</text>
+
+  <!-- cursor -->
+  <rect x="664" y="76" width="14" height="32" fill="#46b86a">
+    <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.5;0.5;1" dur="1.2s" repeatCount="indefinite"/>
+  </rect>
+</svg>
