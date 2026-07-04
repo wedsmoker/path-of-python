@@ -40,6 +40,11 @@ class IntroScene(BaseScene):
                 
                 if not self.dialogue_manager.is_dialogue_active() and not self.fading:
                     self.fading = True
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
+            if not self.fading:
+                self.dialogue_manager.handle_click(event.pos)
+                if not self.dialogue_manager.is_dialogue_active():
+                    self.fading = True
 
     def draw(self, screen):
         screen.fill(self.background_color)

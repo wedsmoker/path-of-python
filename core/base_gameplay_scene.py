@@ -326,6 +326,8 @@ class BaseGameplayScene(BaseScene):
                     self.game.dialogue_manager.choose_option(3)
                 elif event.key == pygame.K_ESCAPE: # Added to close dialogue
                     self.game.dialogue_manager.end_dialogue()
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
+                self.game.dialogue_manager.handle_click(event.pos)
             return  # Consume event if dialogue is active
 
         if event.type == pygame.KEYDOWN:

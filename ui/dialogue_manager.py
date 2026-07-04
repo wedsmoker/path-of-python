@@ -16,6 +16,7 @@ class DialogueManager:
         self.font_options = pygame.font.Font(None, 32)  # Slightly smaller for options
         self.animation_time = 0
         self.chars_visible = 0  # For typewriter effect
+        self.option_rects = []  # Clickable hitboxes for the current options, set each draw()
 
     def load_dialogue_data(self):
         """Loads dialogue data from the JSON file."""
@@ -140,6 +141,14 @@ class DialogueManager:
                 return tree_id
         return None
 
+    def handle_click(self, pos):
+        """Handles a mouse click at screen position `pos`. Returns True if it hit an option."""
+        for i, rect in enumerate(self.option_rects):
+            if rect.collidepoint(pos):
+                self.choose_option(i)
+                return True
+        return False
+
     def is_dialogue_active(self):
         """Checks if dialogue is currently active."""
         return self.current_dialogue_node is not None
@@ -191,14 +200,27 @@ class DialogueManager:
         option_x = self.game.settings.SCREEN_WIDTH // 2
         option_y = option_area_top + (self.game.settings.SCREEN_HEIGHT // 4) - (total_options_height // 2)
 
+        mouse_pos = pygame.mouse.get_pos()
+        self.option_rects = []
+
         for i, option in enumerate(options):
+            option_center_y = option_y + (i * option_spacing)
+
+            # Stable hitbox (no jitter) used for hover/click detection
+            option_rect = pygame.Rect(0, 0, self.game.settings.SCREEN_WIDTH - (2 * text_margin), option_spacing)
+            option_rect.center = (option_x, option_center_y)
+            self.option_rects.append(option_rect)
+            is_hovered = option_rect.collidepoint(mouse_pos)
+
             # Random jitter for hacker effect
             jitter_x = random.randint(-2, 2)
             jitter_y = random.randint(-2, 2)
-            
-            option_text = f"> {option['text']}"
-            draw_text(screen, option_text, 32, (0, 255, 0), 
-                     option_x + jitter_x, option_y + jitter_y + (i * option_spacing),
+
+            prefix = "> " if not is_hovered else ">> "
+            option_text = f"{prefix}{option['text']}"
+            option_color = (255, 255, 255) if is_hovered else (0, 255, 0)
+            draw_text(screen, option_text, 32, option_color,
+                     option_x + jitter_x, option_center_y + jitter_y,
                      align="center", max_width=self.game.settings.SCREEN_WIDTH - (2 * text_margin))
 
         # Reset animation if dialogue changes
