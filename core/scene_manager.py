@@ -10,6 +10,7 @@ class SceneManager:
         self.current_scene = None
         self.current_scene_name = None  # Added to track current scene name
         self.previous_scene_name = None
+        self.gameplay_scene_name = None  # Last real gameplay scene, for Resume Game
         self.scenes = {}
         # Load initial scene
         # self.set_scene("spawn_town", self.game.player) # Removed initial scene loading

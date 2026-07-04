@@ -334,6 +334,7 @@ class BaseGameplayScene(BaseScene):
             elif event.key == KEY_PASTE_TREE:
                 self.game.scene_manager.set_scene(STATE_PASTE_TREE, self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
             elif event.key == pygame.K_ESCAPE:
+                self.game.scene_manager.gameplay_scene_name = self.game.scene_manager.current_scene_name
                 self.game.scene_manager.set_scene(STATE_PAUSE_MENU, player=self.player, hud=self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
             elif event.key == KEY_OPTIONS_MENU:
                 self.game.scene_manager.set_scene(STATE_SETTINGS_MENU, self.player, self.hud, friendly_entities=self.friendly_entities.sprites()) # Pass friendly entities
