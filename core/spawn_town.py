@@ -601,7 +601,7 @@ class SpawnTown(BaseGameplayScene):
             text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
             screen.blit(text_surface, text_rect)
         elif self.display_message3:
-            text_surface = font.render("Mouse side button to attack...", True, (255, 255, 255))
+            text_surface = font.render("Mouse side button or Z/X to attack...", True, (255, 255, 255))
             text_rect = text_surface.get_rect(center=(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT // 2))
             screen.blit(text_surface, text_rect)
         elif self.display_message4:

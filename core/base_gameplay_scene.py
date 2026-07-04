@@ -12,7 +12,7 @@ from config.constants import (
     KEY_INVENTORY, KEY_PASTE_TREE, KEY_INTERACT, KEY_OPTIONS_MENU, # Added KEY_PASTE_TREE
     STATE_INVENTORY, STATE_PASTE_TREE, STATE_PAUSE_MENU, STATE_SETTINGS_MENU, TILE_SIZE,
     KEY_RIGHT_MOUSE, KEY_SKILL_1, KEY_SKILL_2, KEY_SKILL_3, KEY_SKILL_4, KEY_PAGE_UP, KEY_PAGE_DOWN,
-    KEY_SKILL_5, KEY_SKILL_6, FOG_RADIUS # Added KEY_SKILL_5, KEY_SKILL_6, FOG_RADIUS
+    KEY_SKILL_5, KEY_SKILL_6, KEY_SKILL_5_ALT, KEY_SKILL_6_ALT, FOG_RADIUS # Added KEY_SKILL_5, KEY_SKILL_6, FOG_RADIUS
 )
 import math # Import math for distance calculation
 
@@ -369,7 +369,23 @@ class BaseGameplayScene(BaseScene):
                                 # Start dialogue with this NPC
                                 self.game.dialogue_manager.start_dialogue(entity.dialogue_id)
                                 break # Interact with only one NPC at a time
+            elif event.key in (KEY_SKILL_5_ALT, KEY_SKILL_6_ALT): # Keyboard alternative to mouse side buttons
+                skill_key_constant = "KEY_SKILL_5" if event.key == KEY_SKILL_5_ALT else "KEY_SKILL_6"
+                if self.player:
+                    skill_id_to_activate = self.player.skill_key_bindings.get(skill_key_constant)
+                    if skill_id_to_activate:
+                        mouse_pos = pygame.mouse.get_pos()
+                        world_mouse_x = (mouse_pos[0] + self.camera_x * self.zoom_level) / self.zoom_level
+                        world_mouse_y = (mouse_pos[1] + self.camera_y * self.zoom_level) / self.zoom_level
+                        self.player.activate_skill(skill_id_to_activate, mouse_pos=(world_mouse_x, world_mouse_y))
 
+        if event.type == pygame.KEYUP:
+            if event.key in (KEY_SKILL_5_ALT, KEY_SKILL_6_ALT): # Keyboard alternative to mouse side buttons
+                skill_key_constant = "KEY_SKILL_5" if event.key == KEY_SKILL_5_ALT else "KEY_SKILL_6"
+                if self.player:
+                    skill_id_to_deactivate = self.player.skill_key_bindings.get(skill_key_constant)
+                    if skill_id_to_deactivate:
+                        self.player.deactivate_skill(skill_id_to_deactivate)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             print(f"Mouse button down event. Button: {event.button}")
