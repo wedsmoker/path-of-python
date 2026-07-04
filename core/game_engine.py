@@ -377,6 +377,7 @@ class GameEngine:
                         self.logger.debug(f"Skipping display reinitialize - in grace period ({time_since_display_change}ms < {self._display_grace_period}ms)")
 
                 self.scene_manager.update(dt)
+                self.music_manager.update()
                 # Check if the settings menu needs UI recreation
                 # DISABLED: UI recreation after fullscreen toggle causes freeze on Windows
                 # The UI will naturally update when the user exits and re-enters the settings menu
